@@ -1,12 +1,10 @@
-import gradio as gr
+import csv
 from tqdm import tqdm
 from multiprocessing import Pool
-import csv
-from cardinal import CJKTextSplitter, AutoStorage, AutoVectorStore
-from types import Text, CSV, DocIndex, Document
+from cardinal import AutoStorage, AutoVectorStore, CJKTextSplitter, AutoCondition
+from .filetypes import DocIndex, Document, Text, CSV, Operator
 
 
-# for test
 storage = AutoStorage[Document](name='test')
 vectorstore = AutoVectorStore[DocIndex](name='test')
 
@@ -62,13 +60,24 @@ def insert(file_contents: list[str], storage, vectorstore):
         vectorstore.insert(batch_text, batch_index)
         storage.insert(batch_ids, batch_document)
         
-#def process_file(filepath, storage:AutoStorage, vectorstore:AutoVectorStore):
+
 def process_file(filepath):
     file_contents = read_file(filepath)
     insert(file_contents, storage, vectorstore)
-    # TODO: proper return
-    
-if __name__ == '__main__':
-    gr_insert = gr.File(type="filepath", file_count="multiple", file_types=["txt", "csv"])
-    gr.Interface(fn=process_file, inputs=gr_insert, outputs=gr.Text()).launch()
-    
+    return "inserted successfully"
+
+def delete(query):
+    key = vectorstore.search(query=query, top_k=1)[0][0]
+    storage.delete(key=key.doc_id)
+    vectorstore.delete(AutoCondition(key="doc_id", value=key.doc_id, op=Operator.Eq))
+    return f"doc - {key.doc_id} deleted"
+
+def replace(query, new_content):
+    delete(query)
+    insert([new_content])
+    return 'replaced successfully'
+
+def search(query):
+    index = vectorstore.search(query=query, top_k=1)[0][0]
+    doc = storage.query(key=index.doc_id)
+    return doc.content
