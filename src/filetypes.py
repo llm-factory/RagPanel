@@ -4,18 +4,16 @@ from enum import IntEnum
 
 
 class Text:
-    def __init__(self, filepath:str, content:str) -> None:
+    def __init__(self, filepath:str, contents:str) -> None:
         self.filepath = filepath
-        self.content = content
-        
-    def __str__(self) -> str:
-        return self.content
+        self.contents = contents
     
     
-class CSV:
-    def __init__(self, filepath:str, content:map) -> None:
+class CSV():
+    def __init__(self, filepath:str, keys, contents) -> None:
         self.filepath = filepath
-        self.content = content
+        self.keys = keys
+        self.contents = contents
         
         
 class DocIndex(BaseModel):
@@ -24,6 +22,7 @@ class DocIndex(BaseModel):
 
 class Document(DocIndex):
     content: str
+
 
 class Operator(IntEnum):
     Eq = 0

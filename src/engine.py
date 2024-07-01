@@ -16,7 +16,12 @@ def read_csv(filepath):
     with open(filepath, "r", encoding="utf-8") as f:
         reader = csv.reader(f)
         # regard 1st col as key and 2nd col as value
-        return CSV(filepath, {row[0]: row[1] for row in reader})
+        keys = []
+        contents = []
+        for row in reader:
+            keys.append(row[0])
+            contents.append(row[1])
+        return CSV(filepath, keys, contents)
 
 def read_file(filepath):
     # input is list
@@ -28,56 +33,82 @@ def read_file(filepath):
     
     # only .txt or .csv suppoted
     if filepath.endswith('.txt'):
-        return [read_txt(filepath).content]
+        return [read_txt(filepath)]
     
     elif filepath.endswith('.csv'):
-        return [read_csv(filepath).content]
+        return [read_csv(filepath)]
     
     else:
         raise NotImplementedError
     
-def insert(file_contents: list[str], storage, vectorstore):
+def split(file):
     splitter = CJKTextSplitter()
+    if isinstance(file, CSV):
+        ret = []
+        for key, content in zip(file.keys, file.contents):
+            chunks = splitter.split(content)
+            for chunk in chunks:
+                ret.append({"content": chunk, "key": key})
+        return ret
+    
+    elif isinstance(file, Text):
+        ret = []
+        chunks = splitter.split(file.contents)
+        for chunk in chunks:
+            ret.append({"content": chunk, "key": None})
+        return ret
+        
+def insert(files):
     text_chunks = []
     with Pool(processes=32) as pool:
         for chunks in tqdm(
-            pool.imap_unordered(splitter.split, file_contents),
-            total=len(file_contents),
+            pool.imap_unordered(split, files),
+            total=len(files),
             desc="split files"
         ):
             text_chunks.extend(chunks)
     BATCH_SIZE=1000
     for i in tqdm(range(0, len(text_chunks), BATCH_SIZE), desc="build index"):
         batch_text = text_chunks[i : i + BATCH_SIZE]
-        batch_index, batch_ids, batch_document = [], [], []
+        texts, batch_index, batch_ids, batch_document = [], [], [], []
         for text in batch_text:
             index = DocIndex()
-            print(index.doc_id)
-            document = Document(doc_id=index.doc_id, content=text)
+            if text["key"] is None:
+                texts.append(text)
+            else:
+                texts.append(text["key"])
+            document = Document(doc_id=index.doc_id, content=text["content"])
             batch_ids.append(index.doc_id)
             batch_index.append(index)
             batch_document.append(document)
-        vectorstore.insert(batch_text, batch_index)
+        vectorstore.insert(texts, batch_index)
         storage.insert(batch_ids, batch_document)
-        
 
 def process_file(filepath):
-    file_contents = read_file(filepath)
-    insert(file_contents, storage, vectorstore)
+    files = read_file(filepath)
+    insert(files)
     return "inserted successfully"
 
-def delete(query):
-    key = vectorstore.search(query=query, top_k=1)[0][0]
-    storage.delete(key=key.doc_id)
-    vectorstore.delete(AutoCondition(key="doc_id", value=key.doc_id, op=Operator.Eq))
-    return f"doc - {key.doc_id} deleted"
+def delete(query, top_k):
+    keys = vectorstore.search(query=query, top_k=top_k)
+    ret = ""
+    for i in range(top_k):
+        doc_id = keys[i][0].doc_id
+        storage.delete(key=doc_id)
+        vectorstore.delete(AutoCondition(key="doc_id", value=doc_id, op=Operator.Eq))
+        ret += f"doc-{doc_id}\n"
+    return "Following docs are deleted:\n" + ret
 
 def replace(query, new_content):
-    delete(query)
+    delete(query, 1)
     insert([new_content])
     return 'replaced successfully'
 
-def search(query):
-    index = vectorstore.search(query=query, top_k=1)[0][0]
-    doc = storage.query(key=index.doc_id)
-    return doc.content
+def search(query, top_k):
+    index = vectorstore.search(query=query, top_k=top_k)
+    docs = []
+    for i in range(top_k):
+        doc_id = index[i][0].doc_id
+        doc = storage.query(key=doc_id).content
+        docs.append(doc)
+    return docs
