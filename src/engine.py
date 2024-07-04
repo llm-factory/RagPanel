@@ -2,7 +2,7 @@ import csv
 from tqdm import tqdm
 from multiprocessing import Pool
 from cardinal import AutoStorage, AutoVectorStore, CJKTextSplitter, AutoCondition
-from .filetypes import DocIndex, Document, Text, CSV, Operator
+from .typing import DocIndex, Document, Text, CSV, Operator
 
 
 storage = AutoStorage[Document](name='test')
@@ -58,7 +58,7 @@ def split(file):
             ret.append({"content": chunk, "key": None})
         return ret
         
-def insert(files):
+def insert_to_store(files):
     text_chunks = []
     with Pool(processes=32) as pool:
         for chunks in tqdm(
@@ -74,7 +74,7 @@ def insert(files):
         for text in batch_text:
             index = DocIndex()
             if text["key"] is None:
-                texts.append(text)
+                texts.append(text["content"])
             else:
                 texts.append(text["key"])
             document = Document(doc_id=index.doc_id, content=text["content"])
@@ -84,9 +84,9 @@ def insert(files):
         vectorstore.insert(texts, batch_index)
         storage.insert(batch_ids, batch_document)
 
-def process_file(filepath):
+def insert(filepath):
     files = read_file(filepath)
-    insert(files)
+    insert_to_store(files)
     return "inserted successfully"
 
 def delete(query, top_k):
@@ -99,9 +99,13 @@ def delete(query, top_k):
         ret += f"doc-{doc_id}\n"
     return "Following docs are deleted:\n" + ret
 
+def delete_by_id(id):
+    storage.delete(key=id)
+    vectorstore.delete(AutoCondition(key="doc_id", value=id, op=Operator.Eq))
+
 def replace(query, new_content):
     delete(query, 1)
-    insert([new_content])
+    insert(new_content)
     return 'replaced successfully'
 
 def search(query, top_k):
@@ -110,5 +114,5 @@ def search(query, top_k):
     for i in range(top_k):
         doc_id = index[i][0].doc_id
         doc = storage.query(key=doc_id).content
-        docs.append(doc)
+        docs.append([doc, doc_id])
     return docs

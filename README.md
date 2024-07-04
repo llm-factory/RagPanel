@@ -2,7 +2,9 @@
 ## Usage
 install [cardinal](https://github.com/the-seeds/cardinal.git)
 
-set envs
+install [redis](https://github.com/redis/redis.git) and start
+
+create a .env
 ```
 # imitater or openai
 OPENAI_BASE_URL=http://localhost:8000/v1
