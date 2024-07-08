@@ -2,7 +2,7 @@
 ## Usage
 install [cardinal](https://github.com/the-seeds/cardinal.git)
 
-install [redis](https://github.com/redis/redis.git) and start
+install [redis](https://github.com/redis/redis.git) and start server
 
 create a .env
 ```
@@ -32,7 +32,4 @@ MILVUS_URI=http://localhost:19530
 MILVUS_TOKEN=0
 ```
 
-Run `python launch.py`
-
-## Note
-当前demo只能选择某一操作进行，优先级insert > search > delete > replace，高优先级内容为空时才会进行低优先级操作，后续会进行调整
+Run `python web_ui.py`

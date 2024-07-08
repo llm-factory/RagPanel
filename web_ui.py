@@ -1,4 +1,10 @@
 import gradio as gr
+from dotenv import load_dotenv
+
+
+load_dotenv()
+
+
 from src.engine import search, delete_by_id, replace, insert
 import pandas as pd
 
@@ -46,7 +52,7 @@ with gr.Blocks() as demo:
     with gr.Tab("Search"):
         with gr.Row(equal_height=False):
             search_box = gr.Textbox(label="Query", lines=10)
-            slider = gr.Slider(0, 10, step=1, label="top_k")
+            slider = gr.Slider(1, 10, step=1, label="top_k")
 
         with gr.Row():
             search_btn = gr.Button("Search file")

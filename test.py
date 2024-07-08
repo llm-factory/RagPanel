@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 load_dotenv() #must before following import
 
 
-from src.engine import insert, delete, search, replace
+from src.engine import insert, delete, search, replace, launch_rag
 
 
 def process_inputs(filepath, text_search, text_delete, text_replace, file_replace):
@@ -18,6 +18,8 @@ def process_inputs(filepath, text_search, text_delete, text_replace, file_replac
         return delete(text_delete, top_k=1)
     if text_replace != "" and file_replace is not None:
         return replace(text_replace, file_replace)
+    else:
+        launch_rag("config.yaml", "build")
 
 if __name__ == '__main__': #demo
     iface = gr.Interface(

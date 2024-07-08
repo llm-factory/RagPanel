@@ -114,5 +114,10 @@ def search(query, top_k):
     for i in range(top_k):
         doc_id = index[i][0].doc_id
         doc = storage.query(key=doc_id).content
-        docs.append([doc, doc_id])
+        docs.append({"id": doc_id, "content": doc})
     return docs
+
+def launch_rag(config, action):
+    import subprocess
+    command = ["python", "api_demo/launch.py", "--config", config, "--action", action]
+    subprocess.Popen(command)
