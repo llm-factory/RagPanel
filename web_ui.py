@@ -1,15 +1,14 @@
 import gradio as gr
+import pandas as pd
 from dotenv import load_dotenv
 
 
 load_dotenv()
 
 
-from src import Engine
-import pandas as pd
 from subprocess import Popen
+from src import Engine, launch_rag
 
-load_dotenv()
 
 def info_fn():
     gr.Info("file uploaded")
@@ -22,13 +21,13 @@ def delete_docs(ids: list, docs: pd.DataFrame):
     docs = docs[~docs["id"].isin(ids)]
     return docs
 
-def launch(filepath, action):
-    if filepath and action:
-        command = f"python ./api_demo/launch.py --config {filepath} --action {action}"
-        Popen(command, shell=True)
+
+def launch(config, action):
+    if config and action:
+        launch_rag(config, action)
 
         gr.Info("Success")
-        
+
 
 if __name__ == '__main__':
     engine = Engine()
@@ -44,16 +43,7 @@ if __name__ == '__main__':
             label="Select database",
             allow_custom_value=True
         )
-        with gr.Tab("Launch"):
-            with gr.Row(equal_height=False):
-                config_file = gr.File(
-                    file_count="single",
-                    file_types=[".yml", "yaml"],
-                    label="Config file"
-                )
-
-                action = gr.Radio(["build", "launch", "dump"], label="Parameter", info="action")
-            launch_btn = gr.Button("Launch")
+        
         with gr.Tab("Insert"):
             file = gr.File(
                 file_count="single",
@@ -84,6 +74,16 @@ if __name__ == '__main__':
 
             replace_btn = gr.Button("Replace")
 
+        with gr.Tab("Launch"):
+            with gr.Row(equal_height=False):
+                config_file = gr.File(
+                    file_count="single",
+                    file_types=[".yml", "yaml"],
+                    label="Config file"
+                )
+
+                action = gr.Radio(["build", "launch", "dump"], label="Parameter", info="action")
+            launch_btn = gr.Button("Launch")
 
         @gr.render(inputs=result_state, triggers=[result_state.change])
         def show_results(docs: pd.DataFrame):
