@@ -33,3 +33,16 @@ MILVUS_TOKEN=0
 ```
 
 Run `python web_ui.py`
+
+## Function
+### Store
+
+### Insert
+
+### Search
+
+### Delete
+
+### Replace
+
+### Launch

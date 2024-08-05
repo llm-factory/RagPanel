@@ -2,7 +2,6 @@ import gradio as gr
 import pandas as pd
 from dotenv import load_dotenv
 
-
 load_dotenv()
 
 
@@ -35,15 +34,15 @@ if __name__ == '__main__':
     with gr.Blocks() as demo:
         result_state = gr.State()
 
-        # TODO:增加新建接口，可以输入名字新建数据库，可调用engine.new_store
-        # TODO:增加删除接口，可以根据名字删除某个数据库，可调用engine.rm_store
-        # TODO:调用engine.change_to来同步选择
+        # TODO:增加新建数据库接口，可以输入名字新建数据库，调用engine.new_store实现
+        # TODO:增加删除数据库接口，可以根据名字删除某个数据库，调用engine.rm_store实现
+        # TODO:调用engine.change_to来同步数据库选择
         dropdown = gr.Dropdown(
             choices=engine.store_names,
             label="Select database",
             allow_custom_value=True
         )
-        
+        # TODO:支持选择文件/文件夹
         with gr.Tab("Insert"):
             file = gr.File(
                 file_count="single",
