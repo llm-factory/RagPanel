@@ -30,7 +30,7 @@ def launch(config, action):
 
 if __name__ == '__main__':
     engine = Engine()
-
+    engine.destroy()
     with gr.Blocks() as demo:
         result_state = gr.State()
 
@@ -43,6 +43,7 @@ if __name__ == '__main__':
             allow_custom_value=True
         )
         # TODO:支持选择文件/文件夹
+        # TODO:显示加载进度（将stdout内容转移至前端）
         with gr.Tab("Insert"):
             file = gr.File(
                 file_count="single",
@@ -84,6 +85,8 @@ if __name__ == '__main__':
                 action = gr.Radio(["build", "launch", "dump"], label="Parameter", info="action")
             launch_btn = gr.Button("Launch")
 
+        # TODO:新增destroy功能，调用engine.destroy，随后赋值engine=Engine()
+
         @gr.render(inputs=result_state, triggers=[result_state.change])
         def show_results(docs: pd.DataFrame):
             if any(docs):
@@ -100,6 +103,6 @@ if __name__ == '__main__':
         replace_btn.click(engine.replace, [replace_content, file], None)
         
         launch_btn.click(launch, [config_file, action], None)
-         
+
     demo.launch()
           

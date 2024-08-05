@@ -1,7 +1,13 @@
 import csv
-from tqdm import tqdm
 import pandas as pd
+from tqdm import tqdm
 from multiprocessing import Pool
+from dotenv import load_dotenv
+
+
+load_dotenv() # must before cardinal
+
+
 from cardinal import AutoStorage, AutoVectorStore, CJKTextSplitter, AutoCondition
 from .typing import DocIndex, Document, Text, CSV, Operator
 
@@ -96,6 +102,10 @@ class Engine:
         if self.cur_vectorstore.name == name:
             self.cur_vectorstore = None
             self.cur_storage = None
+
+    def destroy(self):
+        for name in self.store_names:
+            self.rm_store(name)
 
     def insert_to_store(self, files):
         text_chunks = []
