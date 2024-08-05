@@ -1,12 +1,9 @@
-from .engine import insert, delete, replace, search, delete_by_id, launch_rag
+from .engine import Engine, launch_rag
 from .typing import DocIndex, Document
 
 
-__all__ = ["insert",
-           "delete",
-           "replace",
-           "search",
-           "delete_by_id",
+__all__ = ["Engine",
            "Document",
            "DocIndex",
            "launch_rag"]
+
