@@ -29,14 +29,13 @@ def launch(config, action):
 
 
 if __name__ == '__main__':
-    # TODO:将目前的stdout内容同步到前段
+    # TODO:将目前的stdout内容同步到前端
     engine = Engine()
     with gr.Blocks() as demo:
         result_state = gr.State()
 
         # TODO:增加新建数据库接口，可以输入名字新建数据库，调用engine.new_store实现
         # TODO:增加删除数据库接口，可以根据名字删除某个数据库，调用engine.rm_store实现
-        # TODO:增加清空数据库接口，可清空当前数据库内容，调用engine.clear_store实现
         dropdown = gr.Dropdown(
                 choices=engine.store_names,
                 label="Select database",
