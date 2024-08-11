@@ -29,24 +29,25 @@ def launch(config, action):
 
 
 if __name__ == '__main__':
+    # TODO:将目前的stdout内容同步到前段
     engine = Engine()
-    engine.destroy()
     with gr.Blocks() as demo:
         result_state = gr.State()
 
         # TODO:增加新建数据库接口，可以输入名字新建数据库，调用engine.new_store实现
         # TODO:增加删除数据库接口，可以根据名字删除某个数据库，调用engine.rm_store实现
-        # TODO:调用engine.change_to来同步数据库选择
+        # TODO:增加清空数据库接口，可清空当前数据库内容，调用engine.clear_store实现
         dropdown = gr.Dropdown(
-            choices=engine.store_names,
-            label="Select database",
-            allow_custom_value=True
-        )
-        # TODO:支持选择文件/文件夹
-        # TODO:显示加载进度（将stdout内容转移至前端）
+                choices=engine.store_names,
+                label="Select database",
+                allow_custom_value=True
+            )
+        choose_btn = gr.Button("Choose this database")
+            
+            
         with gr.Tab("Insert"):
             file = gr.File(
-                file_count="single",
+                file_count="multiple",
                 file_types=[".csv", ".txt"],
                 label="Add file",
             )
@@ -85,7 +86,6 @@ if __name__ == '__main__':
                 action = gr.Radio(["build", "launch", "dump"], label="Parameter", info="action")
             launch_btn = gr.Button("Launch")
 
-        # TODO:新增destroy功能，调用engine.destroy，随后赋值engine=Engine()
 
         @gr.render(inputs=result_state, triggers=[result_state.change])
         def show_results(docs: pd.DataFrame):
@@ -95,6 +95,7 @@ if __name__ == '__main__':
                     gr.DataFrame(value=docs)
                     delete_btn.click(delete_docs, [checkbox, result_state], result_state)
 
+        choose_btn.click(engine.change_to, dropdown)
 
         insert_btn.click(engine.insert, file, None).success(info_fn, None, None)
 

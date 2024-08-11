@@ -92,6 +92,7 @@ class Engine:
     def change_to(self, name):
         self.cur_storage = self.storages[name]
         self.cur_vectorstore = self.vectorstores[name]
+        print(f"choose {name} now")
 
     def rm_store(self, name):
         self.store_names.remove(name)
@@ -102,6 +103,9 @@ class Engine:
         if self.cur_vectorstore.name == name:
             self.cur_vectorstore = None
             self.cur_storage = None
+            
+    def clear_store(self):
+        pass
 
     def destroy(self):
         for name in self.store_names:

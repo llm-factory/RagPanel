@@ -35,14 +35,14 @@ MILVUS_TOKEN=0
 Run `python web_ui.py`
 
 ## Function
-### Store
-
+### Database
+Create a new database or choose a existing database.
 ### Insert
-
+Upload your files and they will be splitted and inserted to database.
 ### Search
-
+Enter a query, and top k related document chunks will be retrieved from database.
 ### Delete
-
+Choose from searched document chunks, and they will be deleted.
 ### Replace
 
-### Launch
+### Launch RAG
