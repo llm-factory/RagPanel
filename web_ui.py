@@ -36,20 +36,46 @@ if __name__ == '__main__':
     engine = Engine()
     with gr.Blocks() as demo:
         gr.HTML("<center><h1>RAG Panel</h1></center>")
+        database_state = gr.State(value=[])
         search_result_state = gr.State()
 
         # TODO:增加新建数据库接口，可以输入名字新建数据库，调用engine.new_store实现
         # TODO:增加删除数据库接口，可以根据名字删除某个数据库，调用engine.rm_store实现
         gr.HTML("<b>create and choose your database</b>")
-        dropdown = gr.Dropdown(
-                choices=engine.store_names,
-                label="Select database",
-                allow_custom_value=True,
-                info="Choose your database here"
-            )
-        choose_btn = gr.Button("Choose this database")
+        with gr.Blocks():
+            with gr.Tab("Create"):
+                with gr.Row():
+                    create_textbox = gr.Textbox(label="Create",
+                                                info="create your database here",
+                                                scale=3)
+                    create_btn = gr.Button("Create")
             
+            with gr.Tab("Delete"):
+                with gr.Row():
+                    delete_dropdown = gr.Dropdown(
+                        choices=engine.store_names,
+                        every=1,
+                        label="Delete database",
+                        allow_custom_value=True,
+                        multiselect=True,
+                        info="delete chosen database",
+                        scale=3
+                    )
+                    delete_store_btn = gr.Button("Delete chosen database")
             
+            with gr.Tab("Choose"):
+                with gr.Row():
+                    choose_dropdown = gr.Dropdown(
+                        choices=engine.store_names,
+                        every=1,
+                        label="Select database",
+                        allow_custom_value=True,
+                        info="choose your database here",
+                        scale=3
+                    )
+                    choose_btn = gr.Button("Choose this database")
+                
+        gr.HTML("<b>insert, search and delete</b>")
         with gr.Tab("Insert"):
             with gr.Row():
                 proc_slider = gr.Slider(1, 32, step=1, label="Multiprocess", info="set the number of processes", scale=1)
@@ -62,7 +88,8 @@ if __name__ == '__main__':
 
             insert_btn = gr.Button("Add file to database")
 
-            progress_textbox = gr.Textbox(label="progress", info="insertion progress is shown here")
+            progress_textbox = gr.Textbox(label="Insertion progress",
+                                          info="insertion progress is shown here")
 
         with gr.Tab("Search"):
             with gr.Row():
@@ -87,6 +114,7 @@ if __name__ == '__main__':
         #     replace_btn = gr.Button("Replace")
 
         with gr.Tab("Launch"):
+            gr.HTML("<b>launch a RAG demo, you should choose an action and upload your config file</b>")
             with gr.Row(equal_height=True):
                 action = gr.Radio(["build", "launch", "dump"], label="Parameter", info="action")
                 config_file = gr.File(
@@ -107,10 +135,20 @@ if __name__ == '__main__':
                     gr.DataFrame(value=docs)
                     delete_btn.click(delete_docs, [checkbox, search_result_state], search_result_state)
 
+        def info_create_database():
+            gr.Info(f"create successfully")
+            
+        def info_delete_database():
+            gr.Info(f"delete successfully")
+
         def info_choose_database():
             gr.Info(f"change to {engine.cur_name}")
+            
+        create_btn.click(engine.create_database, [create_textbox, database_state], outputs=database_state).success(info_create_database, None, None)
+            
+        delete_store_btn.click(engine.remove_database, [delete_dropdown, database_state], outputs=database_state).success(info_delete_database, None, None)
 
-        choose_btn.click(engine.change_to, dropdown).success(info_choose_database, None, None)
+        choose_btn.click(engine.change_to, choose_dropdown).success(info_choose_database, None, None)
 
         insert_btn.click(engine.insert, [file, proc_slider], progress_textbox, queue=True).success(info_file_upload, None, None)
 

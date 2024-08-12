@@ -74,8 +74,9 @@ def launch_rag(config, action):
 
 class Engine:
     def __init__(self):
-        """初始化存储"""
-        self.splitter = CJKTextSplitter()
+        """init database"""
+        # TODO: 读取已经存在的database
+        self.splitter = None
         self.store_names = []
         self.storages = {}
         self.vectorstores = {}
@@ -86,34 +87,38 @@ class Engine:
         self.storages.update({'init': self.cur_storage})
         self.vectorstores.update({'init': self.cur_vectorstore})
 
-    def new_store(self, name):
+    def create_database(self, name, state):
         self.store_names.append(name)
         self.storages.update({name: AutoStorage[Document](name)})
         self.vectorstores.update({name: AutoVectorStore[DocIndex](name)})
+        state.append(name)
+        return state
 
     def change_to(self, name):
         self.cur_name = name
         self.cur_storage = self.storages[name]
         self.cur_vectorstore = self.vectorstores[name]
 
-    def rm_store(self, name):
-        self.store_names.remove(name)
-        storage = self.storages[name]
-        storage.destroy()
-        vectorestore = self.vectorstores[name]
-        vectorestore.destroy()
-        if self.cur_vectorstore.name == name:
-            self.cur_vectorstore = None
-            self.cur_storage = None
+    def remove_database(self, names, state):
+        for name in names:
+            self.store_names.remove(name)
+            storage = self.storages[name]
+            storage.destroy()
+            vectorestore = self.vectorstores[name]
+            vectorestore.destroy()
+            if self.cur_vectorstore.name == name:
+                self.cur_vectorstore = None
+                self.cur_storage = None
+            state.remove(name)
+        return state
             
     def clear_store(self):
-        pass
+        pass #TODO
 
     def destroy(self):
-        for name in self.store_names:
-            self.rm_store(name)
+        self.remove_database(self.store_names)
 
-    def insert_to_store(self, files, num_proc):
+    def insert_to_store(self, files, num_proc): #TODO:结合多线程与gr.Process
         text_chunks = []
         progress = gr.Progress()
         progress(0, "start to split files")
@@ -143,6 +148,7 @@ class Engine:
     def insert(self, filepath, num_proc):
         files = read_file(filepath)
         self.insert_to_store(files, num_proc)
+        return "insertion finished"
 
     def delete(self, query, top_k):
         keys = self.cur_vectorstore.search(query=query, top_k=top_k)
