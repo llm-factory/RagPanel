@@ -9,7 +9,7 @@ from subprocess import Popen
 from src import Engine, launch_rag
 
 
-def info_fn():
+def info_file_upload():
     gr.Info("file uploaded")
 
 
@@ -18,6 +18,7 @@ def delete_docs(ids: list, docs: pd.DataFrame):
         engine.delete_by_id(doc_id)
 
     docs = docs[~docs["id"].isin(ids)]
+    gr.Info(f"{len(ids)} files are deleted")
     return docs
 
 
@@ -32,14 +33,17 @@ if __name__ == '__main__':
     # TODO:将目前的stdout内容同步到前端
     engine = Engine()
     with gr.Blocks() as demo:
-        result_state = gr.State()
+        gr.HTML("<center><h1>RAG Panel</h1></center>")
+        search_result_state = gr.State()
 
         # TODO:增加新建数据库接口，可以输入名字新建数据库，调用engine.new_store实现
         # TODO:增加删除数据库接口，可以根据名字删除某个数据库，调用engine.rm_store实现
+        gr.HTML("<b>create and choose your database</b>")
         dropdown = gr.Dropdown(
                 choices=engine.store_names,
                 label="Select database",
-                allow_custom_value=True
+                allow_custom_value=True,
+                info="Choose your database here"
             )
         choose_btn = gr.Button("Choose this database")
             
@@ -48,7 +52,7 @@ if __name__ == '__main__':
             file = gr.File(
                 file_count="multiple",
                 file_types=[".csv", ".txt"],
-                label="Add file",
+                label="Add file"
             )
 
             insert_btn = gr.Button("Add file to database")
@@ -86,19 +90,22 @@ if __name__ == '__main__':
             launch_btn = gr.Button("Launch")
 
 
-        @gr.render(inputs=result_state, triggers=[result_state.change])
-        def show_results(docs: pd.DataFrame):
+        @gr.render(inputs=search_result_state, triggers=[search_result_state.change])
+        def show_search_results(docs: pd.DataFrame):
             if any(docs):
                 with gr.Row():
                     checkbox = gr.Checkboxgroup(choices=docs["id"].tolist(), label="select file to delete")
                     gr.DataFrame(value=docs)
-                    delete_btn.click(delete_docs, [checkbox, result_state], result_state)
+                    delete_btn.click(delete_docs, [checkbox, search_result_state], search_result_state)
 
-        choose_btn.click(engine.change_to, dropdown)
+        def info_choose_database():
+            gr.Info(f"change to {engine.cur_name}")
 
-        insert_btn.click(engine.insert, file, None).success(info_fn, None, None)
+        choose_btn.click(engine.change_to, dropdown).success(info_choose_database, None, None)
 
-        search_btn.click(engine.search, [search_box, slider], result_state)
+        insert_btn.click(engine.insert, file, None).success(info_file_upload, None, None)
+
+        search_btn.click(engine.search, [search_box, slider], search_result_state)
 
         replace_btn.click(engine.replace, [replace_content, file], None)
         

@@ -79,6 +79,7 @@ class Engine:
         self.storages = {}
         self.vectorstores = {}
         self.store_names.append('init')
+        self.cur_name = "init"
         self.cur_storage = AutoStorage[Document](name='init')
         self.cur_vectorstore = AutoVectorStore[DocIndex](name='init')
         self.storages.update({'init': self.cur_storage})
@@ -90,9 +91,9 @@ class Engine:
         self.vectorstores.update({name: AutoVectorStore[DocIndex](name)})
 
     def change_to(self, name):
+        self.cur_name = name
         self.cur_storage = self.storages[name]
         self.cur_vectorstore = self.vectorstores[name]
-        print(f"choose {name} now")
 
     def rm_store(self, name):
         self.store_names.remove(name)
