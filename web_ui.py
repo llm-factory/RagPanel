@@ -5,7 +5,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-from subprocess import Popen
 from src import Engine, launch_rag
 
 
@@ -63,36 +62,40 @@ if __name__ == '__main__':
 
             insert_btn = gr.Button("Add file to database")
 
+            progress_textbox = gr.Textbox(label="progress", info="insertion progress is shown here")
+
         with gr.Tab("Search"):
-            with gr.Row(equal_height=False):
-                search_box = gr.Textbox(label="Query", lines=10)
+            with gr.Row():
                 slider = gr.Slider(1, 10, step=1, label="top_k")
+                search_box = gr.Textbox(label="Query", lines=10, scale=3)
 
             with gr.Row():
                 search_btn = gr.Button("Search file")
                 delete_btn = gr.Button("Delete")
 
-        with gr.Tab("Replace"):
-            with gr.Row():
-                replace_content = gr.Textbox(label="Content", lines=10)
+        # TODO:修改合适逻辑
+        # with gr.Tab("Replace"):
+        #     with gr.Row():
+        #         replace_content = gr.Textbox(label="Content", lines=10)
 
-                replace_file = gr.File(
-                    file_count="single",
-                    file_types=[".csv", ".txt"],
-                    label="Replace file"
-                )
+        #         replace_file = gr.File(
+        #             file_count="single",
+        #             file_types=[".csv", ".txt"],
+        #             label="Replace file"
+        #         )
 
-            replace_btn = gr.Button("Replace")
+        #     replace_btn = gr.Button("Replace")
 
         with gr.Tab("Launch"):
-            with gr.Row(equal_height=False):
+            with gr.Row(equal_height=True):
+                action = gr.Radio(["build", "launch", "dump"], label="Parameter", info="action")
                 config_file = gr.File(
                     file_count="single",
                     file_types=[".yml", "yaml"],
-                    label="Config file"
+                    label="Config file",
+                    scale=3
                 )
 
-                action = gr.Radio(["build", "launch", "dump"], label="Parameter", info="action")
             launch_btn = gr.Button("Launch")
 
 
@@ -109,11 +112,11 @@ if __name__ == '__main__':
 
         choose_btn.click(engine.change_to, dropdown).success(info_choose_database, None, None)
 
-        insert_btn.click(engine.insert, [file, proc_slider], gr.Textbox(label="progress"), queue=True).success(info_file_upload, None, None)
+        insert_btn.click(engine.insert, [file, proc_slider], progress_textbox, queue=True).success(info_file_upload, None, None)
 
         search_btn.click(engine.search, [search_box, slider], search_result_state)
 
-        replace_btn.click(engine.replace, [replace_content, file], None)
+        # replace_btn.click(engine.replace, [replace_content, file], None)
         
         launch_btn.click(launch, [config_file, action], None)
 
