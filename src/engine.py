@@ -77,48 +77,29 @@ class Engine:
         """init database"""
         # TODO: 读取已经存在的database
         self.splitter = None
-        self.store_names = []
-        self.storages = {}
-        self.vectorstores = {}
-        self.store_names.append('init')
-        self.cur_name = "init"
-        self.cur_storage = AutoStorage[Document](name='init')
-        self.cur_vectorstore = AutoVectorStore[DocIndex](name='init')
-        self.storages.update({'init': self.cur_storage})
-        self.vectorstores.update({'init': self.cur_vectorstore})
+        self.cur_name: str
+        self.cur_storage: AutoStorage
+        self.cur_vectorstore: AutoVectorStore
 
-    def create_database(self, name, state):
-        self.store_names.append(name)
-        self.storages.update({name: AutoStorage[Document](name)})
-        self.vectorstores.update({name: AutoVectorStore[DocIndex](name)})
-        state.append(name)
-        return state
-
-    def change_to(self, name):
+    def create_database(self, name):
         self.cur_name = name
-        self.cur_storage = self.storages[name]
-        self.cur_vectorstore = self.vectorstores[name]
+        self.cur_storage = AutoStorage[Document](name)
+        self.cur_vectorstore = AutoVectorStore[DocIndex](name)
 
-    def remove_database(self, names, state):
-        for name in names:
-            self.store_names.remove(name)
-            storage = self.storages[name]
-            storage.destroy()
-            vectorestore = self.vectorstores[name]
-            vectorestore.destroy()
-            if self.cur_vectorstore.name == name:
-                self.cur_vectorstore = None
-                self.cur_storage = None
-            state.remove(name)
-        return state
-            
-    def clear_store(self):
-        pass #TODO
+    def clear_database(self):
+        self.destroy_database()
+        self.create_database(self.cur_name)
 
-    def destroy(self):
-        self.remove_database(self.store_names)
+    def destroy_database(self):
+        self.cur_storage.destroy()
+        self.cur_vectorstore.destroy()
 
     def insert_to_store(self, files, num_proc): #TODO:结合多线程与gr.Process
+        if self.splitter is None:
+            progress = gr.Progress()
+            progress(0, "start to load splitter")
+            for i in progress.tqdm(range(1), desc="loading splitter"):
+                self.splitter = CJKTextSplitter()
         text_chunks = []
         progress = gr.Progress()
         progress(0, "start to split files")
@@ -170,7 +151,10 @@ class Engine:
         return 'replaced successfully'
 
     def search(self, query, top_k):
-        index = self.cur_vectorstore.search(query=query, top_k=top_k)
+        try:
+            index = self.cur_vectorstore.search(query=query, top_k=top_k)
+        except ValueError:
+            return pd.DataFrame([])
         docs = []
         for i in range(top_k):
             doc_id = index[i][0].doc_id

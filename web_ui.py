@@ -32,48 +32,25 @@ def launch(config, action):
 
 
 if __name__ == '__main__':
-    # TODO:将目前的stdout内容同步到前端
     engine = Engine()
     with gr.Blocks() as demo:
         gr.HTML("<center><h1>RAG Panel</h1></center>")
-        database_state = gr.State(value=[])
         search_result_state = gr.State()
 
-        # TODO:增加新建数据库接口，可以输入名字新建数据库，调用engine.new_store实现
-        # TODO:增加删除数据库接口，可以根据名字删除某个数据库，调用engine.rm_store实现
-        gr.HTML("<b>create and choose your database</b>")
+
+        gr.HTML("<b>choose your database</b>")
+        # TODO: 增加更多选择项(数据库类型、嵌入模型、分割器等)
         with gr.Blocks():
-            with gr.Tab("Create"):
-                with gr.Row():
-                    create_textbox = gr.Textbox(label="Create",
-                                                info="create your database here",
-                                                scale=3)
-                    create_btn = gr.Button("Create")
-            
-            with gr.Tab("Delete"):
-                with gr.Row():
-                    delete_dropdown = gr.Dropdown(
-                        choices=engine.store_names,
-                        every=1,
-                        label="Delete database",
-                        allow_custom_value=True,
-                        multiselect=True,
-                        info="delete chosen database",
-                        scale=3
-                    )
-                    delete_store_btn = gr.Button("Delete chosen database")
-            
-            with gr.Tab("Choose"):
-                with gr.Row():
-                    choose_dropdown = gr.Dropdown(
-                        choices=engine.store_names,
-                        every=1,
-                        label="Select database",
-                        allow_custom_value=True,
-                        info="choose your database here",
-                        scale=3
-                    )
-                    choose_btn = gr.Button("Choose this database")
+            with gr.Row():
+                database_textbox = gr.Textbox(
+                    label="Database name",
+                    info="enter the name of your database",
+                    scale=3
+                )
+                database_confirm_btn = gr.Button("Confirm")
+            with gr.Row():
+                database_clear_btn = gr.Button("Clear database")
+                database_destroy_btn = gr.Button("Destroy database")
                 
         gr.HTML("<b>insert, search and delete</b>")
         with gr.Tab("Insert"):
@@ -134,23 +111,28 @@ if __name__ == '__main__':
                     checkbox = gr.Checkboxgroup(choices=docs["id"].tolist(), label="select file to delete")
                     gr.DataFrame(value=docs)
                     delete_btn.click(delete_docs, [checkbox, search_result_state], search_result_state)
+            else:
+                gr.Info("No matching docs")
 
         def info_create_database():
-            gr.Info(f"create successfully")
+            gr.Info("create successfully")
+        
+        def info_clear_database():
+            gr.Info("clear successfully")
             
-        def info_delete_database():
-            gr.Info(f"delete successfully")
+        def info_destroy_database():
+            gr.Info("destroy successfully")
 
         def info_choose_database():
             gr.Info(f"change to {engine.cur_name}")
             
-        create_btn.click(engine.create_database, [create_textbox, database_state], outputs=database_state).success(info_create_database, None, None)
-            
-        delete_store_btn.click(engine.remove_database, [delete_dropdown, database_state], outputs=database_state).success(info_delete_database, None, None)
+        database_confirm_btn.click(engine.create_database, database_textbox).success(info_create_database)
 
-        choose_btn.click(engine.change_to, choose_dropdown).success(info_choose_database, None, None)
+        database_clear_btn.click(engine.clear_database).success
 
-        insert_btn.click(engine.insert, [file, proc_slider], progress_textbox, queue=True).success(info_file_upload, None, None)
+        database_destroy_btn.click(engine.destroy_database).success(info_destroy_database)
+
+        insert_btn.click(engine.insert, [file, proc_slider], progress_textbox, queue=True).success(info_file_upload)
 
         search_btn.click(engine.search, [search_box, slider], search_result_state)
 
