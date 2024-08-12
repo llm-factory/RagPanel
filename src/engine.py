@@ -1,7 +1,6 @@
 import csv
 import pandas as pd
-from tqdm import tqdm
-from multiprocessing import Pool
+import gradio as gr
 from dotenv import load_dotenv
 
 
@@ -12,8 +11,7 @@ from cardinal import AutoStorage, AutoVectorStore, CJKTextSplitter, AutoConditio
 from .typing import DocIndex, Document, Text, CSV, Operator
 
 
-def split(file):
-    splitter = CJKTextSplitter()
+def split(file, splitter):
     if isinstance(file, CSV):
         ret = []
         for key, content in zip(file.keys, file.contents):
@@ -50,8 +48,10 @@ def read_csv(filepath):
 def read_file(filepath):
     # input is list
     if isinstance(filepath, list):
+        progress = gr.Progress()
+        progress(0, "start to load files")
         files = []
-        for f in tqdm(filepath, desc="load files"):
+        for f in progress.tqdm(filepath, desc="load files"):
             files.extend(read_file(f))
         return files
 
@@ -75,6 +75,7 @@ def launch_rag(config, action):
 class Engine:
     def __init__(self):
         """初始化存储"""
+        self.splitter = CJKTextSplitter()
         self.store_names = []
         self.storages = {}
         self.vectorstores = {}
@@ -114,15 +115,16 @@ class Engine:
 
     def insert_to_store(self, files, num_proc):
         text_chunks = []
-        with Pool(processes=num_proc) as pool:
-            for chunks in tqdm(
-                    pool.imap_unordered(split, files),
-                    total=len(files),
-                    desc="split files"
-            ):
-                text_chunks.extend(chunks)
+        progress = gr.Progress()
+        progress(0, "start to split files")
+        for chunks in progress.tqdm(
+            files,
+            desc="split files"
+        ):
+            text_chunks.extend(split(chunks, self.splitter))
         BATCH_SIZE = 1000
-        for i in tqdm(range(0, len(text_chunks), BATCH_SIZE), desc="build index"):
+        progress(0, "start to build index")
+        for i in progress.tqdm(range(0, len(text_chunks), BATCH_SIZE), desc="build index"):
             batch_text = text_chunks[i: i + BATCH_SIZE]
             texts, batch_index, batch_ids, batch_document = [], [], [], []
             for text in batch_text:
@@ -141,7 +143,6 @@ class Engine:
     def insert(self, filepath, num_proc):
         files = read_file(filepath)
         self.insert_to_store(files, num_proc)
-        return "inserted successfully"
 
     def delete(self, query, top_k):
         keys = self.cur_vectorstore.search(query=query, top_k=top_k)
@@ -159,7 +160,7 @@ class Engine:
 
     def replace(self, query, new_content):
         self.delete(query, 1)
-        self.insert(new_content)
+        self.insert(new_content, 1)
         return 'replaced successfully'
 
     def search(self, query, top_k):

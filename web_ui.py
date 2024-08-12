@@ -109,7 +109,7 @@ if __name__ == '__main__':
 
         choose_btn.click(engine.change_to, dropdown).success(info_choose_database, None, None)
 
-        insert_btn.click(engine.insert, [file, proc_slider], None).success(info_file_upload, None, None)
+        insert_btn.click(engine.insert, [file, proc_slider], gr.Textbox(label="progress"), queue=True).success(info_file_upload, None, None)
 
         search_btn.click(engine.search, [search_box, slider], search_result_state)
 
