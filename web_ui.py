@@ -18,7 +18,10 @@ def delete_docs(ids: list, docs: pd.DataFrame):
         engine.delete_by_id(doc_id)
 
     docs = docs[~docs["id"].isin(ids)]
-    gr.Info(f"{len(ids)} files are deleted")
+    if len(ids) == 1:
+        gr.Info("1 file is deleted")
+    elif len(ids) > 1:
+        gr.Info(f"{len(ids)} files are deleted")
     return docs
 
 
@@ -49,11 +52,14 @@ if __name__ == '__main__':
             
             
         with gr.Tab("Insert"):
-            file = gr.File(
-                file_count="multiple",
-                file_types=[".csv", ".txt"],
-                label="Add file"
-            )
+            with gr.Row():
+                proc_slider = gr.Slider(1, 32, step=1, label="Multiprocess", info="set the number of processes", scale=1)
+                file = gr.File(
+                    file_count="multiple",
+                    file_types=[".csv", ".txt"],
+                    label="Add file",
+                    scale=3
+                )
 
             insert_btn = gr.Button("Add file to database")
 
@@ -103,7 +109,7 @@ if __name__ == '__main__':
 
         choose_btn.click(engine.change_to, dropdown).success(info_choose_database, None, None)
 
-        insert_btn.click(engine.insert, file, None).success(info_file_upload, None, None)
+        insert_btn.click(engine.insert, [file, proc_slider], None).success(info_file_upload, None, None)
 
         search_btn.click(engine.search, [search_box, slider], search_result_state)
 

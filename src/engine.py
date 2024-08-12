@@ -112,9 +112,9 @@ class Engine:
         for name in self.store_names:
             self.rm_store(name)
 
-    def insert_to_store(self, files):
+    def insert_to_store(self, files, num_proc):
         text_chunks = []
-        with Pool(processes=32) as pool:
+        with Pool(processes=num_proc) as pool:
             for chunks in tqdm(
                     pool.imap_unordered(split, files),
                     total=len(files),
@@ -138,9 +138,9 @@ class Engine:
             self.cur_vectorstore.insert(texts, batch_index)
             self.cur_storage.insert(batch_ids, batch_document)
 
-    def insert(self, filepath):
+    def insert(self, filepath, num_proc):
         files = read_file(filepath)
-        self.insert_to_store(files)
+        self.insert_to_store(files, num_proc)
         return "inserted successfully"
 
     def delete(self, query, top_k):
