@@ -140,15 +140,16 @@ class Engine:
         self.insert_to_store(files, num_proc)
         return "insertion finished"
 
-    def delete(self, query, top_k):
-        self.check_database()
-        keys = self.cur_vectorstore.search(query=query, top_k=top_k)
-        ret = ""
-        for i in range(top_k):
-            doc_id = keys[i][0].doc_id
-            self.cur_storage.delete(key=doc_id)
-            self.cur_vectorstore.delete(AutoCondition(key="doc_id", value=doc_id, op=Operator.Eq))
-            ret += f"doc-{doc_id}\n"
+    def delete(self, ids, docs):
+        for doc_id in ids:
+            self.delete_by_id(doc_id)
+
+        docs = docs[~docs["id"].isin(ids)]
+        if len(ids) == 1:
+            gr.Info("1 file is deleted")
+        elif len(ids) > 1:
+            gr.Info(f"{len(ids)} files are deleted")
+        return docs
 
     def delete_by_id(self, id):
         self.cur_storage.delete(key=id)
@@ -167,12 +168,13 @@ class Engine:
         except ValueError:
             return pd.DataFrame([])
         docs = []
-        for i in range(top_k):
+        for i in range(min(top_k, len(index))):
             score = index[i][1]
             if score < threshold:
                 break
             doc_id = index[i][0].doc_id
             doc = self.cur_storage.query(key=doc_id).content
             docs.append({"id": doc_id, "content": doc})
-        print(docs)
+        if len(docs) < top_k:
+            gr.Info("No enough candidates")
         return pd.DataFrame(docs)

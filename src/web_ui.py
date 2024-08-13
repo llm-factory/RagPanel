@@ -8,23 +8,6 @@ load_dotenv()
 from src.engine import Engine, launch_rag
 
 
-def info_file_upload():
-    gr.Info("file uploaded")
-
-
-def delete_docs(engine: Engine, ids: list, docs: pd.DataFrame):
-    for doc_id in ids:
-        engine.delete_by_id(doc_id)
-
-    docs = docs[~docs["id"].isin(ids)]
-    if len(ids) == 1:
-        gr.Info("1 file is deleted")
-    elif len(ids) > 1:
-        gr.Info(f"{len(ids)} files are deleted")
-    return docs
-
-
-
 def launch():
     engine = Engine()
     with gr.Blocks() as demo:
@@ -106,9 +89,12 @@ def launch():
                 with gr.Row():
                     checkbox = gr.Checkboxgroup(choices=docs["id"].tolist(), label="select file to delete")
                     gr.DataFrame(value=docs)
-                    delete_btn.click(delete_docs, [engine, checkbox, search_result_state], search_result_state)
+                    delete_btn.click(engine.delete, [checkbox, search_result_state], search_result_state)
             else:
                 gr.Info("No matching docs")
+
+        def info_file_upload():
+            gr.Info("file uploaded")
 
         def info_create_database():
             gr.Info("create successfully")
