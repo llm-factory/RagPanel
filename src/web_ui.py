@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-from .engine import Engine, launch_rag
+from src.engine import Engine, launch_rag
 
 
 def info_file_upload():
@@ -64,7 +64,9 @@ def launch():
 
         with gr.Tab("Search"):
             with gr.Row():
-                slider = gr.Slider(1, 10, step=1, label="top_k")
+                with gr.Column():
+                    threshold_slider = gr.Slider(0, 1, step=0.02, label="threshold", info="results with similarity less than the threshold will be filtered")
+                    top_k_slider = gr.Slider(1, 10, step=1, label="top_k", info="k document chunks with the highest similarity will be retrieved")
                 search_box = gr.Textbox(label="Query", lines=10, scale=3)
 
             with gr.Row():
@@ -125,7 +127,7 @@ def launch():
 
         insert_btn.click(engine.insert, [file, proc_slider], progress_textbox, queue=True).success(info_file_upload)
 
-        search_btn.click(engine.search, [search_box, slider], search_result_state)
+        search_btn.click(engine.search, [search_box, threshold_slider, top_k_slider], search_result_state)
 
         # replace_btn.click(engine.replace, [replace_content, file], None)
         

@@ -77,9 +77,9 @@ class Engine:
         """init database"""
         # TODO: 读取已经存在的database
         self.splitter = None
-        self.cur_name: str
-        self.cur_storage: AutoStorage
-        self.cur_vectorstore: AutoVectorStore
+        self.cur_name = None
+        self.cur_storage = None
+        self.cur_vectorstore = None
 
     def create_database(self, name):
         self.cur_name = name
@@ -93,6 +93,14 @@ class Engine:
     def destroy_database(self):
         self.cur_storage.destroy()
         self.cur_vectorstore.destroy()
+        self.cur_storage = None
+        self.cur_vectorstore = None
+
+    def check_database(self):
+        if self.cur_storage is None:
+            gr.Info("Please create a database first")
+            # TODO: 定义error
+            raise ValueError
 
     def insert_to_store(self, files, num_proc): #TODO:结合多线程与gr.Process
         if self.splitter is None:
@@ -127,11 +135,13 @@ class Engine:
             self.cur_storage.insert(batch_ids, batch_document)
 
     def insert(self, filepath, num_proc):
+        self.check_database()
         files = read_file(filepath)
         self.insert_to_store(files, num_proc)
         return "insertion finished"
 
     def delete(self, query, top_k):
+        self.check_database()
         keys = self.cur_vectorstore.search(query=query, top_k=top_k)
         ret = ""
         for i in range(top_k):
@@ -139,26 +149,30 @@ class Engine:
             self.cur_storage.delete(key=doc_id)
             self.cur_vectorstore.delete(AutoCondition(key="doc_id", value=doc_id, op=Operator.Eq))
             ret += f"doc-{doc_id}\n"
-        return "Following docs are deleted:\n" + ret
 
     def delete_by_id(self, id):
         self.cur_storage.delete(key=id)
         self.cur_vectorstore.delete(AutoCondition(key="doc_id", value=id, op=Operator.Eq))
 
-    def replace(self, query, new_content):
-        self.delete(query, 1)
-        self.insert(new_content, 1)
-        return 'replaced successfully'
+    # TODO: 修改合适逻辑
+    # def replace(self, query, new_content):
+    #     self.delete(query, 1)
+    #     self.insert(new_content, 1)
+    #     return 'replaced successfully'
 
-    def search(self, query, top_k):
+    def search(self, query, threshold, top_k):
+        self.check_database()
         try:
             index = self.cur_vectorstore.search(query=query, top_k=top_k)
         except ValueError:
             return pd.DataFrame([])
         docs = []
         for i in range(top_k):
+            score = index[i][1]
+            if score < threshold:
+                break
             doc_id = index[i][0].doc_id
             doc = self.cur_storage.query(key=doc_id).content
             docs.append({"id": doc_id, "content": doc})
+        print(docs)
         return pd.DataFrame(docs)
-

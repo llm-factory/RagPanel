@@ -32,17 +32,17 @@ MILVUS_URI=http://localhost:19530
 MILVUS_TOKEN=0
 ```
 
-Run `python web_ui.py`
+Run `python launch.py`
 
-## Function
+## Functions
 ### Database
-Create a new database or choose a existing database.
+Create a new database, clear current database or destroy current database here.
 ### Insert
-Upload your files and they will be splitted and inserted to database.
+Upload your files and they will be splitted, embedded and inserted to database.
 ### Search
-Enter a query, and top k related document chunks will be retrieved from database.
+Enter a query, set similarity_threshold and top_k. Related document chunks will be retrieved from database.
 ### Delete
-Choose from searched document chunks, and they will be deleted.
-### Replace
-
+After searching, you can select from the search result and delete them.
 ### Launch RAG
+Launch the demo in api_demo folder. It is dependent from src.  
+You need to choose an action from build (build index with your data), launch (launch RAG chat engine) and dump (dump history).
