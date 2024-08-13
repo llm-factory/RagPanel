@@ -5,14 +5,14 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-from src import Engine, launch_rag
+from .engine import Engine, launch_rag
 
 
 def info_file_upload():
     gr.Info("file uploaded")
 
 
-def delete_docs(ids: list, docs: pd.DataFrame):
+def delete_docs(engine: Engine, ids: list, docs: pd.DataFrame):
     for doc_id in ids:
         engine.delete_by_id(doc_id)
 
@@ -24,14 +24,8 @@ def delete_docs(ids: list, docs: pd.DataFrame):
     return docs
 
 
-def launch(config, action):
-    if config and action:
-        launch_rag(config, action)
 
-        gr.Info("Success")
-
-
-if __name__ == '__main__':
+def launch():
     engine = Engine()
     with gr.Blocks() as demo:
         gr.HTML("<center><h1>RAG Panel</h1></center>")
@@ -110,7 +104,7 @@ if __name__ == '__main__':
                 with gr.Row():
                     checkbox = gr.Checkboxgroup(choices=docs["id"].tolist(), label="select file to delete")
                     gr.DataFrame(value=docs)
-                    delete_btn.click(delete_docs, [checkbox, search_result_state], search_result_state)
+                    delete_btn.click(delete_docs, [engine, checkbox, search_result_state], search_result_state)
             else:
                 gr.Info("No matching docs")
 
@@ -122,13 +116,10 @@ if __name__ == '__main__':
             
         def info_destroy_database():
             gr.Info("destroy successfully")
-
-        def info_choose_database():
-            gr.Info(f"change to {engine.cur_name}")
             
         database_confirm_btn.click(engine.create_database, database_textbox).success(info_create_database)
 
-        database_clear_btn.click(engine.clear_database).success
+        database_clear_btn.click(engine.clear_database).success(info_clear_database)
 
         database_destroy_btn.click(engine.destroy_database).success(info_destroy_database)
 
@@ -138,7 +129,7 @@ if __name__ == '__main__':
 
         # replace_btn.click(engine.replace, [replace_content, file], None)
         
-        launch_btn.click(launch, [config_file, action], None)
+        launch_btn.click(launch_rag, [config_file, action], None)
 
     demo.launch()
           
