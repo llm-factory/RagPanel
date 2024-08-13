@@ -87,10 +87,12 @@ class Engine:
         self.cur_vectorstore = AutoVectorStore[DocIndex](name)
 
     def clear_database(self):
+        self.check_database()
         self.destroy_database()
         self.create_database(self.cur_name)
 
     def destroy_database(self):
+        self.check_database()
         self.cur_storage.destroy()
         self.cur_vectorstore.destroy()
         self.cur_storage = None
@@ -98,9 +100,7 @@ class Engine:
 
     def check_database(self):
         if self.cur_storage is None:
-            gr.Info("Please create a database first")
-            # TODO: 定义error
-            raise ValueError
+            raise gr.Error("Please create a database first")
 
     def insert_to_store(self, files, num_proc): #TODO:结合多线程与gr.Process
         if self.splitter is None:
@@ -176,5 +176,5 @@ class Engine:
             doc = self.cur_storage.query(key=doc_id).content
             docs.append({"id": doc_id, "content": doc})
         if len(docs) < top_k:
-            gr.Info("No enough candidates")
+            gr.Warning("No enough candidates")
         return pd.DataFrame(docs)

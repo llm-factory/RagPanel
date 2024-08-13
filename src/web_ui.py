@@ -45,7 +45,7 @@ def launch():
             progress_textbox = gr.Textbox(label="Insertion progress",
                                           info="insertion progress is shown here")
 
-        with gr.Tab("Search"):
+        with gr.Tab("Search & Delete"):
             with gr.Row():
                 with gr.Column():
                     threshold_slider = gr.Slider(0, 1, step=0.02, label="threshold", info="results with similarity less than the threshold will be filtered")
@@ -91,7 +91,7 @@ def launch():
                     gr.DataFrame(value=docs)
                     delete_btn.click(engine.delete, [checkbox, search_result_state], search_result_state)
             else:
-                gr.Info("No matching docs")
+                gr.Warning("No matching docs")
 
         def info_file_upload():
             gr.Info("file uploaded")
