@@ -66,12 +66,6 @@ def read_file(filepath):
         raise NotImplementedError
 
 
-def launch_rag(config, action):
-    import subprocess
-    command = ["python", "api_demo/launch.py", "--config", config, "--action", action]
-    subprocess.Popen(command)
-
-
 class Engine:
     def __init__(self):
         """init database"""
@@ -178,3 +172,8 @@ class Engine:
         if len(docs) < top_k:
             gr.Warning("No enough candidates")
         return pd.DataFrame(docs)
+    
+    def launch_rag(self, config, action):
+        import subprocess
+        command = ["python", "api_demo/launch.py", "--config", config, "--action", action]
+        subprocess.Popen(command)
