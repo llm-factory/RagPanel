@@ -74,12 +74,22 @@ class Engine:
         self.cur_name = None
         self.cur_storage = None
         self.cur_vectorstore = None
+        self.chat_model = None
+
+    def set_model(self, url, api, chat_model, embed_model):
+        save_to_env("OPENAI_BASE_URL", url)
+        save_to_env("OPENAI_API_KEY", api)
+        save_to_env("DEFAULT_CHAT_MODEL", chat_model)
+        save_to_env("DEFAULT_EMBED_MODEL", embed_model)
+        from cardinal.model.config import settings
+        settings.default_chat_model = chat_model
+        settings.default_embed_model = embed_model
 
     def set_splitter(self, path, chunk_size, chunk_overlap):
         save_to_env("HF_TOKENIZER_PATH", path)
         save_to_env("DEFAULT_CHUNK_SIZE", chunk_size)
         save_to_env("DEFAULT_CHUNK_OVERLAP", chunk_overlap)
-        from cardinal.model.token_counter import settings
+        from cardinal.model.config import settings
         settings.hf_tokenizer_path = path
         self.splitter = CJKTextSplitter(chunk_size, chunk_overlap)
 
