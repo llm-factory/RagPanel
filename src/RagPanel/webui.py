@@ -6,7 +6,7 @@ load_dotenv()
 
 
 from .engine import Engine
-from .components import create_database_block, create_insert_tab, create_search_delete_tab, create_launch_rag_tab
+from .components import create_database_block, create_functions_block, create_tools_block
 
 
 def create_ui():
@@ -14,15 +14,15 @@ def create_ui():
         engine = Engine()
         gr.HTML("<center><h1>RAG Panel</h1></center>")
         search_result_state = gr.State()
-
+        
+        # tools
+        gr.HTML("<b>configure your tools")
+        create_tools_block(engine)
+            
+        # database
         gr.HTML("<b>choose your database</b>")
         create_database_block(engine)
-                
-        gr.HTML("<b>insert, search and delete</b>")
-        with gr.Tab("Insert"):
-            create_insert_tab(engine)
-        with gr.Tab("Search&Delete"):
-            create_search_delete_tab(engine, search_result_state)
-        with gr.Tab("Launch api_demo"):
-            create_launch_rag_tab(engine)
+        
+        # functions
+        create_functions_block(engine, search_result_state)
     return demo

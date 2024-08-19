@@ -5,14 +5,14 @@ def create_database_block(engine):
     with gr.Blocks() as demo:
         with gr.Row():
             database_textbox = gr.Textbox(
-                label="Database name",
+                label="database name",
                 info="enter the name of your database",
                 scale=3
             )
-            database_confirm_btn = gr.Button("Confirm")
+            database_confirm_btn = gr.Button("confirm")
         with gr.Row():
-            database_clear_btn = gr.Button("Clear database")
-            database_destroy_btn = gr.Button("Destroy database")
+            database_clear_btn = gr.Button("clear database")
+            database_destroy_btn = gr.Button("destroy database")
 
     def info_create_database():
         gr.Info("create successfully")

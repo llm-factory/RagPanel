@@ -8,7 +8,7 @@ load_dotenv() # must before cardinal
 
 
 from cardinal import AutoStorage, AutoVectorStore, CJKTextSplitter, AutoCondition
-from .typing import DocIndex, Document, Text, CSV, Operator
+from .doc_types import DocIndex, Document, Text, CSV, Operator
 
 
 def split(file, splitter):
@@ -148,12 +148,6 @@ class Engine:
     def delete_by_id(self, id):
         self.cur_storage.delete(key=id)
         self.cur_vectorstore.delete(AutoCondition(key="doc_id", value=id, op=Operator.Eq))
-
-    # TODO: 修改合适逻辑
-    # def replace(self, query, new_content):
-    #     self.delete(query, 1)
-    #     self.insert(new_content, 1)
-    #     return 'replaced successfully'
 
     def search(self, query, threshold, top_k):
         self.check_database()

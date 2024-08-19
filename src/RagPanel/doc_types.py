@@ -1,6 +1,6 @@
 import uuid
 from pydantic import BaseModel, Field
-from enum import IntEnum
+from cardinal.vectorstore.schema import Operator
 
 
 class Text:
@@ -22,17 +22,3 @@ class DocIndex(BaseModel):
 
 class Document(DocIndex):
     content: str
-
-
-class Operator(IntEnum):
-    Eq = 0
-    Ne = 1
-    Gt = 2
-    Ge = 3
-    Lt = 4
-    Le = 5
-    In = 6
-    Notin = 7
-    And = 8
-    Or = 9
-    
