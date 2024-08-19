@@ -75,6 +75,11 @@ class Engine:
         self.cur_storage = None
         self.cur_vectorstore = None
 
+    def set_splitter(self, path, chunk_size, chunk_overlap):
+        from cardinal.model.token_counter import settings
+        settings.hf_tokenizer_path = path
+        self.splitter = CJKTextSplitter(chunk_size, chunk_overlap)
+
     def create_database(self, name):
         self.cur_name = name
         self.cur_storage = AutoStorage[Document](name)
