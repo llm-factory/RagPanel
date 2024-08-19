@@ -8,6 +8,7 @@ load_dotenv() # must before cardinal
 
 
 from cardinal import AutoStorage, AutoVectorStore, CJKTextSplitter, AutoCondition
+from .save_env import save_to_env
 from .doc_types import DocIndex, Document, Text, CSV, Operator
 
 
@@ -69,13 +70,15 @@ def read_file(filepath):
 class Engine:
     def __init__(self):
         """init database"""
-        # TODO: 读取已经存在的database
         self.splitter = None
         self.cur_name = None
         self.cur_storage = None
         self.cur_vectorstore = None
 
     def set_splitter(self, path, chunk_size, chunk_overlap):
+        save_to_env("HF_TOKENIZER_PATH", path)
+        save_to_env("DEFAULT_CHUNK_SIZE", chunk_size)
+        save_to_env("DEFAULT_CHUNK_OVERLAP", chunk_overlap)
         from cardinal.model.token_counter import settings
         settings.hf_tokenizer_path = path
         self.splitter = CJKTextSplitter(chunk_size, chunk_overlap)
