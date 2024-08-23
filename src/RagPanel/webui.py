@@ -16,7 +16,7 @@ def create_ui():
         search_result_state = gr.State()
         
         # database
-        gr.HTML("<b>choose your database</b>")
+        gr.HTML("<b>configure your database</b>")
         create_database_block(engine)
 
         # tools

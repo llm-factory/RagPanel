@@ -35,12 +35,14 @@ def create_database_block(engine):
 
             vectorstore_path = get_vectorstore_path(vectorstore)
             vectorstore_choice.change(get_vectorstore_path, vectorstore_choice, vectorstore_path)
+            
+            vectorstore_token = get_vectorstore_token(vectorstore)
+            vectorstore_choice.change(get_vectorstore_token, vectorstore_choice, vectorstore_token)
+
             vectorstore_name = gr.Textbox(
                 label="vector store collection",
                 info="the name of your vectorstore collection"
             )
-            vectorstore_token = get_vectorstore_token(vectorstore)
-            vectorstore_choice.change(get_vectorstore_token, vectorstore_choice, vectorstore_token)
 
         with gr.Row():
             database_confirm_btn = gr.Button("confirm")
