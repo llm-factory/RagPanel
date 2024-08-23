@@ -1,15 +1,9 @@
 import csv
 import pandas as pd
 import gradio as gr
-from dotenv import load_dotenv
-
-
-load_dotenv() # must before cardinal
-
-
-from cardinal import AutoStorage, AutoVectorStore, CJKTextSplitter, AutoCondition
-from .save_env import save_to_env
+from .save_env import save_to_env, save_storage_path, save_vectorstore_path
 from .doc_types import DocIndex, Document, Text, CSV, Operator
+from cardinal import AutoStorage, AutoVectorStore, CJKTextSplitter, AutoCondition
 
 
 def split(file, splitter):
@@ -71,7 +65,14 @@ class Engine:
     def __init__(self):
         """init database"""
         self.splitter = None
-        self.cur_name = None
+        self.supported_storages = [
+            "redis",
+            "es"
+        ]
+        self.supported_vectorstores = [
+            "chroma",
+            "milvus"
+        ]
         self.cur_storage = None
         self.cur_vectorstore = None
         self.chat_model = None
@@ -86,6 +87,8 @@ class Engine:
         settings.default_embed_model = embed_model
 
     def set_splitter(self, path, chunk_size, chunk_overlap):
+        chunk_size = int(chunk_size)
+        chunk_overlap = int(chunk_overlap)
         save_to_env("HF_TOKENIZER_PATH", path)
         save_to_env("DEFAULT_CHUNK_SIZE", chunk_size)
         save_to_env("DEFAULT_CHUNK_OVERLAP", chunk_overlap)
@@ -93,14 +96,21 @@ class Engine:
         settings.hf_tokenizer_path = path
         self.splitter = CJKTextSplitter(chunk_size, chunk_overlap)
 
-    def create_database(self, name):
-        self.cur_name = name
+    def create_database(self, storage, storage_path, storage_name, vectorstore, vectorestore_path, vectorstore_name, vectorstore_token):
+        save_to_env("STORAGE", storage)
+        save_to_env("VECTORSTORE", vectorstore)
+        from cardinal.storage.config import settings
+        settings.storage = storage
+        save_storage_path(storage_path, settings)
+        from cardinal.vectorstore.config import settings
+        settings.vectorstore = vectorstore
+        save_vectorstore_path(vectorestore_path, vectorstore_token, settings)
         try:
-            self.cur_storage = AutoStorage[Document](name)
+            self.cur_storage = AutoStorage[Document](storage_name)
         except Exception:
             raise gr.Error("storage connection error")
         try:
-            self.cur_vectorstore = AutoVectorStore[DocIndex](name)
+            self.cur_vectorstore = AutoVectorStore[DocIndex](vectorstore_name)
         except Exception:
             raise gr.Error("vectorstore connection error")
 

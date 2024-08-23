@@ -15,13 +15,13 @@ def create_ui():
         gr.HTML("<center><h1>RAG Panel</h1></center>")
         search_result_state = gr.State()
         
-        # tools
-        gr.HTML("<b>configure your tools")
-        create_tools_block(engine)
-            
         # database
         gr.HTML("<b>choose your database</b>")
         create_database_block(engine)
+
+        # tools
+        gr.HTML("<b>configure your tools")
+        create_tools_block(engine)
         
         # functions
         create_functions_block(engine, search_result_state)
