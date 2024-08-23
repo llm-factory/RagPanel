@@ -95,8 +95,14 @@ class Engine:
 
     def create_database(self, name):
         self.cur_name = name
-        self.cur_storage = AutoStorage[Document](name)
-        self.cur_vectorstore = AutoVectorStore[DocIndex](name)
+        try:
+            self.cur_storage = AutoStorage[Document](name)
+        except Exception:
+            raise gr.Error("storage connection error")
+        try:
+            self.cur_vectorstore = AutoVectorStore[DocIndex](name)
+        except Exception:
+            raise gr.Error("vectorstore connection error")
 
     def clear_database(self):
         self.check_database()
