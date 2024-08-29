@@ -1,4 +1,4 @@
-import csv
+import os
 import pandas as pd
 import gradio as gr
 from .save_env import save_to_env, save_storage_path, save_vectorstore_path
@@ -29,6 +29,7 @@ def read_txt(filepath):
 
 
 def read_csv(filepath):
+    import csv
     with open(filepath, "r", encoding="utf-8") as f:
         reader = csv.reader(f)
         # regard 1st col as key and 2nd col as value
@@ -37,6 +38,16 @@ def read_csv(filepath):
         for row in reader:
             keys.append(row[0])
             contents.append(row[1])
+        return CSV(filepath, keys, contents)
+    
+
+def read_json(filepath):
+    import json
+    with open(filepath, "r", encoding='utf-8') as f:
+        jsons = json.load(f)
+        keys = jsons.keys()
+        contents = jsons.values()
+        contents = [str(content) for content in contents]
         return CSV(filepath, keys, contents)
 
 
@@ -51,11 +62,16 @@ def read_file(filepath):
         return files
 
     # only .txt or .csv suppoted
-    if filepath.endswith('.txt'):
+    _, extension = os.path.splitext(filepath)
+    extension = extension.lower()
+    if extension == '.txt':
         return [read_txt(filepath)]
 
-    elif filepath.endswith('.csv'):
+    elif extension == '.csv':
         return [read_csv(filepath)]
+    
+    elif extension == '.json':
+        return [read_json(filepath)]
 
     else:
         raise NotImplementedError
@@ -114,10 +130,11 @@ class Engine:
         except Exception:
             raise gr.Error("vectorstore connection error")
 
-    def clear_database(self):
-        self.check_database()
-        self.destroy_database()
-        self.create_database(self.cur_name)
+    # TODO
+    # def clear_database(self):
+    #     self.check_database()
+    #     self.destroy_database()
+    #     self.create_database(self.cur_name)
 
     def destroy_database(self):
         self.check_database()

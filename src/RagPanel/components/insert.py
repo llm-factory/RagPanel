@@ -7,7 +7,7 @@ def create_insert_tab(engine):
             proc_slider = gr.Slider(1, 32, step=1, label="multiprocess", info="set the number of processes", scale=1)
             file = gr.File(
                 file_count="multiple",
-                file_types=[".csv", ".txt"],
+                file_types=[".csv", ".txt", ".json"],
                 label="add file",
                 scale=3
             )
