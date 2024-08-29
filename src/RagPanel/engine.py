@@ -90,7 +90,9 @@ class Engine:
             "milvus"
         ]
         self.cur_storage = None
+        self.cur_storage_name = None
         self.cur_vectorstore = None
+        self.cur_vectorstore_name = None
         self.chat_model = None
 
     def set_model(self, url, api, chat_model, embed_model):
@@ -113,6 +115,7 @@ class Engine:
         self.splitter = CJKTextSplitter(chunk_size, chunk_overlap)
 
     def create_database(self, storage, storage_path, storage_name, vectorstore, vectorestore_path, vectorstore_name, vectorstore_token):
+        # config
         save_to_env("STORAGE", storage)
         save_to_env("VECTORSTORE", vectorstore)
         from cardinal.storage.config import settings
@@ -121,20 +124,29 @@ class Engine:
         from cardinal.vectorstore.config import settings
         settings.vectorstore = vectorstore
         save_vectorstore_path(vectorestore_path, vectorstore_token, settings)
+        # create
         try:
             self.cur_storage = AutoStorage[Document](storage_name)
+            self.cur_storage_name = storage_name
         except Exception:
             raise gr.Error("storage connection error")
         try:
             self.cur_vectorstore = AutoVectorStore[DocIndex](vectorstore_name)
+            self.cur_vectorstore_name = vectorstore_name
         except Exception:
             raise gr.Error("vectorstore connection error")
 
-    # TODO
-    # def clear_database(self):
-    #     self.check_database()
-    #     self.destroy_database()
-    #     self.create_database(self.cur_name)
+    def clear_database(self):
+        self.check_database()
+        self.destroy_database()
+        try:
+            self.cur_storage = AutoStorage[Document](self.cur_storage_name)
+        except Exception:
+            raise gr.Error("storage connection error")
+        try:
+            self.cur_vectorstore = AutoVectorStore[DocIndex](self.cur_vectorstore_name)
+        except Exception:
+            raise gr.Error("vectorstore connection error")
 
     def destroy_database(self):
         self.check_database()
