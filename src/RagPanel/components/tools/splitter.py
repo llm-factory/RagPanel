@@ -1,6 +1,6 @@
 import os
 import gradio as gr
-from .info import info_set_success
+from ..info import info_set_success
 
 
 def create_splitter_tab(engine):

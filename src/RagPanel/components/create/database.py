@@ -1,6 +1,6 @@
 import os
 import gradio as gr
-from .info import info_clear_database, info_create_database, info_destroy_database
+from ..info import info_clear_database, info_create_database, info_destroy_database
 
 
 def create_database_block(engine):

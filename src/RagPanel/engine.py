@@ -150,6 +150,8 @@ class Engine:
 
     def destroy_database(self):
         self.check_database()
+        if not self.cur_storage.exists():
+            return
         self.cur_storage.destroy()
         self.cur_vectorstore.destroy()
         self.cur_storage = None
