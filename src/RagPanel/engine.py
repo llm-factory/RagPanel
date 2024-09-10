@@ -12,14 +12,14 @@ def split(file, splitter):
         for key, content in zip(file.keys, file.contents):
             chunks = splitter.split(content)
             for chunk in chunks:
-                ret.append({"content": chunk, "key": key})
+                ret.append({"content": chunk, "key": key, "path": file.filepath})
         return ret
 
     elif isinstance(file, Text):
         ret = []
         chunks = splitter.split(file.contents)
         for chunk in chunks:
-            ret.append({"content": chunk, "key": None})
+            ret.append({"content": chunk, "key": None, "path": file.filepath})
         return ret
 
 
@@ -61,7 +61,7 @@ def read_file(filepath):
             files.extend(read_file(f))
         return files
 
-    # only .txt or .csv suppoted
+    # only .txt, .json or .csv suppoted
     _, extension = os.path.splitext(filepath)
     extension = extension.lower()
     if extension == '.txt':
@@ -75,7 +75,7 @@ def read_file(filepath):
 
     else:
         raise NotImplementedError
-
+    
 
 class Engine:
     def __init__(self):
@@ -94,6 +94,8 @@ class Engine:
         self.cur_vectorstore = None
         self.cur_vectorstore_name = None
         self.chat_model = None
+        self.file_history = []
+        self.file_chunk_map = {}
 
     def set_model(self, url, api, chat_model, embed_model):
         save_to_env("OPENAI_BASE_URL", url)
@@ -182,6 +184,7 @@ class Engine:
             texts, batch_index, batch_ids, batch_document = [], [], [], []
             for text in batch_text:
                 index = DocIndex()
+                self.file_chunk_map.update({text["path"]: index.doc_id})
                 if text["key"] is None:
                     texts.append(text["content"])
                 else:
@@ -195,6 +198,7 @@ class Engine:
 
     def insert(self, filepath, num_proc):
         self.check_database()
+        self.file_history.extend(filepath)
         files = read_file(filepath)
         self.insert_to_store(files, num_proc)
         return "insertion finished"
@@ -213,6 +217,10 @@ class Engine:
     def delete_by_id(self, id):
         self.cur_storage.delete(key=id)
         self.cur_vectorstore.delete(AutoCondition(key="doc_id", value=id, op=Operator.Eq))
+
+    def delete_by_file(self, files):
+        for file in files:
+            self.delete_by_id(self.file_chunk_map[file])
 
     def search(self, query, threshold, top_k):
         self.check_database()
