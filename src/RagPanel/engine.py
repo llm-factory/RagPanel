@@ -3,7 +3,7 @@ import pandas as pd
 import gradio as gr
 from .save_env import save_to_env, save_storage_path, save_vectorstore_path
 from .doc_types import DocIndex, Document, Text, CSV, Operator
-from cardinal import AutoStorage, AutoVectorStore, CJKTextSplitter, AutoCondition
+from cardinal import AutoStorage, AutoVectorStore, CJKTextSplitter, AutoCondition, DenseRetriever
 
 
 def split(file, splitter):
@@ -217,22 +217,14 @@ class Engine:
     def search(self, query, threshold, top_k):
         self.check_database()
         try:
-            index = self.cur_vectorstore.search(query=query, top_k=top_k)
+            retriever = DenseRetriever[DocIndex](vectorstore_name=self.cur_vectorstore_name, threshold=1.0, verbose=True)
+            doc_ids = retriever.retrieve(query=query, top_k=top_k, threshold = threshold)
         except ValueError:
             return pd.DataFrame([])
         docs = []
-        for i in range(min(top_k, len(index))):
-            score = index[i][1]
-            if score < threshold:
-                break
-            doc_id = index[i][0].doc_id
+        for doc_id in doc_ids:
             doc = self.cur_storage.query(key=doc_id).content
             docs.append({"id": doc_id, "content": doc})
         if len(docs) < top_k:
             gr.Warning("No enough candidates")
         return pd.DataFrame(docs)
-    
-    def launch_rag(self, config, action):
-        import subprocess
-        command = ["python", "api_demo/launch.py", "--config", config, "--action", action]
-        subprocess.Popen(command)
