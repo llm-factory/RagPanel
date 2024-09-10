@@ -221,6 +221,8 @@ class Engine:
     def delete_by_file(self, files):
         for file in files:
             self.delete_by_id(self.file_chunk_map[file])
+            self.file_chunk_map.pop(file)
+            self.file_history.remove(file)
 
     def search(self, query, threshold, top_k):
         self.check_database()
