@@ -10,4 +10,6 @@ def create_functions_block(engine, search_result_state):
             create_insert_tab(engine)
         with gr.Tab("Search&Delete"):
             create_search_delete_tab(engine, search_result_state)
+#        with gr.Tab("Chat"):
+#            create_chat_tab(engine)
     return demo

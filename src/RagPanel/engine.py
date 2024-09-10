@@ -217,12 +217,13 @@ class Engine:
     def search(self, query, threshold, top_k):
         self.check_database()
         try:
-            retriever = DenseRetriever[DocIndex](vectorstore_name=self.cur_vectorstore_name, threshold=1.0, verbose=True)
-            doc_ids = retriever.retrieve(query=query, top_k=top_k, threshold = threshold)
+            retriever = DenseRetriever[DocIndex](vectorstore_name=self.cur_vectorstore_name, threshold=threshold)
+            doc_indexes = retriever.retrieve(query=query, top_k=top_k)
         except ValueError:
             return pd.DataFrame([])
         docs = []
-        for doc_id in doc_ids:
+        for index in doc_indexes:
+            doc_id = index.doc_id
             doc = self.cur_storage.query(key=doc_id).content
             docs.append({"id": doc_id, "content": doc})
         if len(docs) < top_k:
