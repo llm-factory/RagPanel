@@ -2,7 +2,7 @@ import os
 import pandas as pd
 import gradio as gr
 from .save_env import save_to_env, save_storage_path, save_vectorstore_path
-from .doc_types import DocIndex, Document, Text, CSV, Operator
+from .protocol import DocIndex, Document, Text, CSV, Operator
 from cardinal import AutoStorage, AutoVectorStore, CJKTextSplitter, AutoCondition, DenseRetriever
 
 

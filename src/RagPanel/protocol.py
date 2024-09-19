@@ -1,4 +1,6 @@
 import uuid
+from typing import List
+from cardinal import BaseMessage
 from pydantic import BaseModel, Field
 from cardinal.vectorstore.schema import Operator
 
@@ -22,3 +24,8 @@ class DocIndex(BaseModel):
 
 class Document(DocIndex):
     content: str
+
+
+class History(BaseModel):
+    messages: List[BaseMessage]
+    
