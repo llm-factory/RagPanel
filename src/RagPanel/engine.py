@@ -184,7 +184,10 @@ class Engine:
             texts, batch_index, batch_ids, batch_document = [], [], [], []
             for text in batch_text:
                 index = DocIndex()
-                self.file_chunk_map.update({text["path"]: index.doc_id})
+                if text["path"] not in self.file_chunk_map.keys():
+                    self.file_chunk_map.update({text["path"]: [index.doc_id]})
+                else:
+                    self.file_chunk_map[text["path"]].append(index.doc_id)
                 if text["key"] is None:
                     texts.append(text["content"])
                 else:
@@ -220,7 +223,12 @@ class Engine:
 
     def delete_by_file(self, files):
         for file in files:
-            self.delete_by_id(self.file_chunk_map[file])
+            try:
+                ids = self.file_chunk_map[file]
+                for id in ids:
+                    self.delete_by_id(id)
+            except:
+                gr.Warning("")
             self.file_chunk_map.pop(file)
             self.file_history.remove(file)
 
