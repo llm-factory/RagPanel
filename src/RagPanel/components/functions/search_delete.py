@@ -5,8 +5,8 @@ def create_search_delete_tab(engine, search_result_state):
     with gr.Blocks() as demo:
         with gr.Row():
             with gr.Column():
-                threshold_slider = gr.Slider(0, 10, step=0.02, label="threshold", info="results with Euclidean distance greater than the threshold will be filtered")
-                top_k_slider = gr.Slider(1, 32, step=1, label="top_k", info="top k document chunks with the smallest Euclidean distance will be retrieved")
+                threshold_slider = gr.Slider(0, 2, value=1, step=0.02, label="threshold", info="results with Euclidean distance greater than the threshold will be filtered")
+                top_k_slider = gr.Slider(1, 32, value=5, step=1, label="top_k", info="top k document chunks with the smallest Euclidean distance will be retrieved")
             search_box = gr.Textbox(label="query", lines=10, scale=3)
 
         with gr.Row():

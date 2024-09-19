@@ -19,6 +19,7 @@ def create_database_block(engine):
             storage_choice.change(get_storage_path, storage_choice, storage_path)
 
             storage_name = gr.Textbox(
+                value="init",
                 label="storage collection",
                 info="the name of your storage collection"
             )
@@ -40,6 +41,7 @@ def create_database_block(engine):
             vectorstore_choice.change(get_vectorstore_token, vectorstore_choice, vectorstore_token)
 
             vectorstore_name = gr.Textbox(
+                value="init",
                 label="vector store collection",
                 info="the name of your vectorstore collection"
             )
