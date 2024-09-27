@@ -4,11 +4,23 @@ from ..info import info_set_success
 
 
 def create_splitter_tab(engine):
-    with gr.Row() as demo:
-        path = gr.Textbox(label="splitter path", info="path of your splitter (from hugging face or local), use tiktoken if empty", value=os.getenv('HF_TOKENIZER_PATH', "01-ai/Yi-6B-Chat"), scale=3)
-        chunk_size = gr.Number(value=os.getenv('DEFAULT_CHUNK_SIZE', "300"), step=50, label="chunk size", info="the max size of each document chunk", scale=2)
-        chunk_overlap = gr.Number(value=os.getenv('DEFAULT_CHUNK_OVERLAP', "30"), step=10, label="chunk overlap", info="the size of overlap between document chunks", scale=2)
-        confirm_button = gr.Button("apply")
+    with gr.Blocks() as demo:
+        with gr.Row():
+            path = gr.Textbox(info="path of your splitter (from hugging face or local), use tiktoken if empty",
+                              value=os.getenv('HF_TOKENIZER_PATH', "01-ai/Yi-6B-Chat"),
+                              label="splitter path",
+                              scale=3)
+            chunk_size = gr.Number(info="the max size of each document chunk",
+                                   value=os.getenv('DEFAULT_CHUNK_SIZE', "300"),
+                                   label="chunk size",
+                                   step=50, 
+                                   scale=2)
+            chunk_overlap = gr.Number(info="the size of overlap between document chunks",
+                                      value=os.getenv('DEFAULT_CHUNK_OVERLAP', "30"),
+                                      label="chunk overlap",
+                                      step=10, 
+                                      scale=2)
+            confirm_button = gr.Button("apply")
     confirm_button.click(engine.set_splitter, [path, chunk_size, chunk_overlap]).success(info_set_success)
     return demo
     

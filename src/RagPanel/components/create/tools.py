@@ -10,6 +10,6 @@ def create_tools_block(engine):
             create_splitter_tab(engine)
         with gr.Tab("Model"):
             create_model_tab(engine)
-        save_config_button = gr.Button("save config")
-    save_config_button.click(save_as_dotenv)
+        save_env_button = gr.Button("save env")
+    save_env_button.click(save_as_dotenv)
     return demo
