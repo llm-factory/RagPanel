@@ -7,7 +7,7 @@ from ..functions.search_delete import create_search_delete_tab
 
 
 def create_functions_block(engine, search_result_state):
-    chat_engine = ChatEngine("init", engine)
+    chat_engine = ChatEngine("collector_history", engine)
     with gr.Blocks() as demo:
         gr.HTML("<b>insert, search and delete</b>")
         with gr.Tab("Insert"):
