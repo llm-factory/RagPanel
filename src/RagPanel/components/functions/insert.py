@@ -11,7 +11,6 @@ def create_insert_tab(engine):
                                     info="set the number of processes",
                                     scale=1)
             file = gr.File(file_count="multiple",
-                file_types=[".csv", ".txt", ".json"],
                 label="add file",
                 scale=3)
 

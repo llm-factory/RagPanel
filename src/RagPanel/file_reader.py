@@ -29,7 +29,33 @@ def read_json(filepath):
         contents = jsons.values()
         contents = [str(content) for content in contents]
         return CSV(filepath, keys, contents)
+    
 
+def read_word(filepath, is_doc):
+    try:
+        from docx import Document
+    except ImportError:
+        print("please install python-docx with 'pip install python-docx' to read .docx files")
+        raise
+    
+    if is_doc: #TODO: change to .docx first
+        pass
+    
+    doc = Document(filepath)
+    contents = "\n".join(para.text for para in doc.paragraphs)
+    return Text(filepath, contents)
+
+
+def read_pdf(filepath):
+    try:
+        from PyPDF2 import PdfReader
+    except ImportError:
+        print("please install PyPDF2 with 'pip install PyPDF2' to read .pdf files")
+        raise
+
+    reader = PdfReader(filepath)
+    contents = "\n".join(page.extract_text() for page in reader.pages)
+    return Text(filepath, contents)
 
 def read_file(filepath):
     # input is list
@@ -41,7 +67,7 @@ def read_file(filepath):
             files.extend(read_file(f))
         return files
 
-    # only .txt, .json or .csv suppoted
+    # supported types: .txt, .json, .docx, .doc, .pdf, .csv
     _, extension = os.path.splitext(filepath)
     extension = extension.lower()
     if extension == '.txt':
@@ -52,9 +78,15 @@ def read_file(filepath):
     
     elif extension == '.json':
         return [read_json(filepath)]
+    
+    elif extension == '.docx' or extension == '.doc':
+        return [read_word(filepath, extension=='.doc')]
+    
+    elif extension == '.pdf':
+        return [read_pdf(filepath)]
 
     else:
-        raise NotImplementedError
+        raise gr.Error(f"unsupported file type: {extension}")
     
 
 def split(file, splitter):
