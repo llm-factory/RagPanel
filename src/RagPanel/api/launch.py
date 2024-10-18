@@ -46,7 +46,9 @@ def interactive_cli(config, action):
         build_database(folder, database)
     elif action == Action.LAUNCH:
         database = config_dict["launch"]["database"]
-        launch_app(database)
+        host = config_dict["launch"]["host"]
+        port = int(config_dict["launch"]["port"])
+        launch_app(database, host, port)
     elif action == Action.DUMP:
         database = config_dict["dump"]["database"]
         folder = Path(config_dict["dump"]["folder"])

@@ -21,7 +21,7 @@ from .protocol import (
 )
 
 
-def launch_app(database: str) -> None:
+def launch_app(database: str, host: str, port: int) -> None:
     app = FastAPI()
     app.add_middleware(
         CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"]
@@ -70,4 +70,4 @@ def launch_app(database: str) -> None:
     async def list_models():
         return ModelList(data=[ModelCard()])
 
-    uvicorn.run(app, host="0.0.0.0", port=int(os.environ.get("SERVICE_PORT", "8000")))
+    uvicorn.run(app, host=host, port=port)
