@@ -8,10 +8,10 @@
  ```
 
 2. Start database server, including a storage server and a vectorstore server.  
-Supported storage: `redis,  elasticsearch.`  
-Supported vectorstore: `chroma, milvus.`
+Supported storages: `redis`,  `elasticsearch`.  
+Supported vectorstores: `chroma`, `milvus`.
 
-3. Create a .env and a config.yaml as follows:
+3. Create a `.env` and a `config.yaml` as follows:
 
 ```
 # .env
@@ -57,11 +57,13 @@ dump:
   folder: output
 ```
 
-4. Run `python launch.py --config config.yaml`, and choose your action:  
-   build: build index.  
-   launch: launch app server.  
-   dump: dump chat history.  
-   webui: visual webui (driven by Gradio).
+4. Run `python launch.py`, and then choose your action and fill the path of your config file.  
+
+   You can also directly run `python launch.py --action YOUR_ACTION --config CONFIG_FILE` to start. Here are action choices:  
+   `build`: read data, split docs and build index.  
+   `launch`: launch app server.  
+   `dump`: dump chat history.  
+   `webui`: visual webui (driven by Gradio).
    
 ## Web UI
 You can start a webui server to set and test your environment as follows:
