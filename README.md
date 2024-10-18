@@ -58,6 +58,12 @@ dump:
 4. Run `python launch.py --config config.yaml`, and choose your action:  
    build: build index.  
    launch: launch app server.  
-   dump: dump chat history.
-   webui: visual webui (driven by Gradio)
+   dump: dump chat history.  
+   webui: visual webui (driven by Gradio).
    
+## Web UI
+You can start a webui server to set and test your environment as follows:
+1. Run `python launch.py --action webui`. You will see ui like:
+![Web UI](./assets/webui.png)
+
+2. Set proper parameters and then try to insert, retrieve and chat to check your environment.

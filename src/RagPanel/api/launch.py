@@ -31,11 +31,14 @@ class Action(str, Enum):
 
 
 @click.command()
-@click.option("--config", required=True, prompt="Config file")
+@click.option("--config", help="Path to your config file")
 @click.option("--action", required=True, type=click.Choice([act.value for act in Action]), prompt="Choose an action")
 def interactive_cli(config, action):
-    with open(config, "r", encoding="utf-8") as config_file:
-        config_dict = yaml.safe_load(config_file)
+    if action != Action.WEBUI:
+        if config is None:
+            config = click.prompt('path to your config file')
+        with open(config, "r", encoding="utf-8") as config_file:
+            config_dict = yaml.safe_load(config_file)
 
     if action == Action.BUILD:
         database = config_dict["build"]["database"]
@@ -51,6 +54,3 @@ def interactive_cli(config, action):
     elif action == Action.WEBUI:
         from ..webui import create_ui
         create_ui().launch()
-
-if __name__ == "__main__":
-    interactive_cli()
