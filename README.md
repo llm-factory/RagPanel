@@ -59,3 +59,5 @@ dump:
    build: build index.  
    launch: launch app server.  
    dump: dump chat history.
+   webui: visual webui (driven by Gradio)
+   

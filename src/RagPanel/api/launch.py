@@ -26,6 +26,7 @@ class Action(str, Enum):
     BUILD = "build"
     LAUNCH = "launch"
     DUMP = "dump"
+    WEBUI = "webui"
     EXIT = "exit"
 
 
@@ -47,7 +48,9 @@ def interactive_cli(config, action):
         database = config_dict["dump"]["database"]
         folder = Path(config_dict["dump"]["folder"])
         dump_history(Path(folder), database)
-
+    elif action == Action.WEBUI:
+        from ..webui import create_ui
+        create_ui().launch()
 
 if __name__ == "__main__":
     interactive_cli()
