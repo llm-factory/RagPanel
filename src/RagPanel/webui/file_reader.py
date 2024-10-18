@@ -48,13 +48,12 @@ def read_word(filepath, is_doc):
 
 def read_pdf(filepath):
     try:
-        from PyPDF2 import PdfReader
+        from pdfminer.high_level import extract_text
     except ImportError:
-        print("please install PyPDF2 with 'pip install PyPDF2' to read .pdf files")
+        print("please install pdfminer.six with 'pip install pdfminer.six' to read .pdf files")
         raise
 
-    reader = PdfReader(filepath)
-    contents = "\n".join(page.extract_text() for page in reader.pages)
+    contents = extract_text(filepath)
     return Text(filepath, contents)
 
 def read_file(filepath):
