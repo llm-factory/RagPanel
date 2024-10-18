@@ -1,5 +1,4 @@
-from src.RagPanel.webui import create_ui
+from src.RagPanel.api import interactive_cli
 
 if __name__ == '__main__':
-    demo = create_ui()
-    demo.launch()
+    interactive_cli()

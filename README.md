@@ -11,8 +11,51 @@
 Supported storage: `redis,  elasticsearch.`  
 Supported vectorstore: `chroma, milvus.`
 
-3. Launch web demo with `python launch.py`, set and save env (A .env file will be generated). You can try your env on the web demo.
+3. Create a .env and a config.yaml as follows:
 
-![web demo](./assets/web_demo.png)
+```
+# .env
+# imitater or openai
+OPENAI_BASE_URL=http://localhost:8000/v1
+OPENAI_API_KEY=0
 
-4. Insert your docs into database on the web demo, and start to chat.
+# models
+DEFAULT_EMBED_MODEL=text-embedding-ada-002
+DEFAULT_CHAT_MODEL=gpt-3.5-turbo
+HF_TOKENIZER_PATH=01-ai/Yi-6B-Chat
+
+# text splitter
+DEFAULT_CHUNK_SIZE=300
+DEFAULT_CHUNK_OVERLAP=100
+
+# storages
+STORAGE=redis
+SEARCH_TARGET=content
+REDIS_URI=redis://localhost:6379
+ELASTICSEARCH_URI=http://localhost:9001
+
+# vectorstore
+VECTORSTORE=chroma
+CHROMA_PATH=./chroma
+MILVUS_URI=http://localhost:19530
+MILVUS_TOKEN=0
+```
+
+```
+# config.yaml
+build:
+  database: init
+  folder: input
+
+launch:
+  database: init
+
+dump:
+  database: init
+  folder: output
+```
+
+4. Run `python launch.py --config config.yaml`, and choose your action:  
+   build: build index.  
+   launch: launch app server.  
+   dump: dump chat history.
