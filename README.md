@@ -1,18 +1,17 @@
 # RagPanel
 ## Quick Start
- 1. Install [cardinal](https://github.com/the-seeds/cardinal.git) with
- ```
-    git clone https://github.com/the-seeds/cardinal.git
-    pip install -e .
-    pip install -r requirements-dev.txt
- ```
-
-2. Start database server, including a storage server and a vectorstore server.  
+1. Start database server, including a storage server and a vectorstore server.  
 Supported storages: `redis`,  `elasticsearch`.  
 Supported vectorstores: `chroma`, `milvus`.
 
-3. Create a `.env` and a `config.yaml` as follows:
+2. Install according to your database server. Take `elasticsearch`+`milvus` as an example:
+```
+git clone https://github.com/the-seeds/RagPanel
+cd RagPanel
+pip install -e ".[es, milvus]"
+```
 
+3. Create a `.env` and a `config.yaml` as follows:
 ```
 # .env
 # imitater or openai
