@@ -1,6 +1,6 @@
 import os
 import gradio as gr
-from ...save_env import save_to_env
+from ....utils.save_env import save_to_env
 
 
 def create_model_tab():

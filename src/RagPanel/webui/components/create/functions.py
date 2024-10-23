@@ -1,5 +1,5 @@
 import gradio as gr
-from ...chat_engine import ChatEngine
+from ....utils.chat_engine import ChatEngine
 from ..functions.chat import create_chat_tab
 from ..functions.insert import create_insert_tab
 from ..functions.delete import create_delete_tab

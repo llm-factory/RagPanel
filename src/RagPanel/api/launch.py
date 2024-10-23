@@ -9,7 +9,9 @@ from dotenv import load_dotenv
 load_dotenv()  # must before utils
 
 
-from .utils import build_database, dump_history, launch_app  # noqa: E402
+from .app import launch_app
+from .viewer import dump_history
+from .builder import build_database
 
 
 try:
