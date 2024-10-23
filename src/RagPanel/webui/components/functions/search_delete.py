@@ -33,9 +33,9 @@ def create_search_delete_tab(engine, search_result_state):
     def show_search_results(docs: pd.DataFrame):
         if any(docs):
             with gr.Row():
-                checkbox = gr.Checkboxgroup(choices=docs["id"].tolist(), 
+                checkbox = gr.Checkboxgroup(choices=docs["content"].tolist(),
+                                            type="index", 
                                             label="select file to delete")
-                gr.DataFrame(value=docs)
                 delete_btn.click(engine.delete,
                                  [checkbox, search_result_state],
                                  search_result_state)

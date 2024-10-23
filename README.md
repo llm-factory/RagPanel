@@ -1,10 +1,11 @@
 # RagPanel
+[English | [简体中文](README_zh.md)]
 ## Quick Start
 1. Start database server, including a storage server and a vectorstore server.  
 Supported storages: `redis`,  `elasticsearch`.  
 Supported vectorstores: `chroma`, `milvus`.
 
-2. Install according to your database server. Take `elasticsearch`+`milvus` as an example:
+2. Install dependencies according to your database server. Take `elasticsearch`+`milvus` as an example:
 ```
 git clone https://github.com/the-seeds/RagPanel
 cd RagPanel
@@ -56,7 +57,7 @@ dump:
   folder: output
 ```
 
-4. Run `python launch.py`, and then choose your action and fill the path of your config file.  
+4. Run `python launch.py`, and then follow the tips to choose your action and fill the path of your config file.  
 
    You can also directly run `python launch.py --action YOUR_ACTION --config CONFIG_FILE` to start. Here are action choices:  
    `build`: read data, split docs and build index.  

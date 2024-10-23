@@ -127,31 +127,34 @@ class Engine:
         self.insert_to_store(files, num_proc)
         return "insertion finished"
 
-    def delete(self, ids, docs):
-        for doc_id in ids:
-            self.delete_by_id(doc_id)
+    def delete(self, del_index, docs):
+        doc_ids = docs['id'].tolist()
+        del_ids = []
+        for index in del_index:
+            del_ids.append(doc_ids[index])
 
-        docs = docs[~docs["id"].isin(ids)]
-        if len(ids) == 1:
-            gr.Info("1 file is deleted")
-        elif len(ids) > 1:
-            gr.Info(f"{len(ids)} files are deleted")
+        docs = docs[~docs["id"].isin(del_ids)]
+        if len(del_ids) == 1:
+            gr.Info("1 chunk is deleted")
+        elif len(del_ids) > 1:
+            gr.Info(f"{len(del_ids)} chunks are deleted")
         return docs
 
     def delete_by_id(self, id):
         self.cur_storage.delete(key=id)
         self.cur_vectorstore.delete(AutoCondition(key="doc_id", value=id, op=Operator.Eq))
 
-    def delete_by_file(self, files):
-        for file in files:
+    def delete_by_file(self, del_file_indexes):
+        for index in del_file_indexes:
             try:
-                ids = self.file_chunk_map[file]
+                file_to_del = self.file_history[index]
+                ids = self.file_chunk_map[file_to_del]
                 for id in ids:
                     self.delete_by_id(id)
+                self.file_chunk_map.pop(file_to_del)
+                self.file_history.remove(file_to_del)
             except:
-                gr.Warning("")
-            self.file_chunk_map.pop(file)
-            self.file_history.remove(file)
+                gr.Warning("") # TODO
 
     def search(self, query, threshold, top_k):
         self.check_database()

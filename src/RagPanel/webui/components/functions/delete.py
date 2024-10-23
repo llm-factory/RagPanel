@@ -3,13 +3,14 @@ import gradio as gr
 def create_delete_tab(engine):
     def get_delete_dropdown():
         return gr.Dropdown(
-            choices=engine.file_history,
+            choices=[path.split('/')[-1] for path in engine.file_history],
             multiselect=True,
+            type="index",
             allow_custom_value=True,
             label="delete files"
         )
     
-    with gr.Blocks() as demo:
+    with gr.Blocks():
         dropdown = get_delete_dropdown()
         delete_button = gr.Button("delete selected files")
         
