@@ -4,6 +4,7 @@
 1. 启动数据库服务，包括一个传统数据库和一个向量数据库。
 目前支持的传统数据库: `redis`,  `elasticsearch`  
 目前支持的向量数据库: `chroma`, `milvus`
+![database_zh](assets/database_zh.png)
 
 2. 根据启动的数据库服务安装依赖项。 以 `elasticsearch`+`milvus` 为例:
 ```

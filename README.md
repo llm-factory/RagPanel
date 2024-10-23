@@ -3,7 +3,8 @@
 ## Quick Start
 1. Start database server, including a storage server and a vectorstore server.  
 Supported storages: `redis`,  `elasticsearch`.  
-Supported vectorstores: `chroma`, `milvus`.
+Supported vectorstores: `chroma`, `milvus`.  
+![database](assets/database.png)
 
 2. Install dependencies according to your database server. Take `elasticsearch`+`milvus` as an example:
 ```
@@ -68,6 +69,6 @@ dump:
 ## Web UI
 You can start a webui server to set and test your environment as follows:
 1. Run `python launch.py --action webui`. You will see ui like:
-![Web UI](./assets/webui.png)
+![Web UI](assets/webui.png)
 
 2. Set proper parameters and then try to insert, retrieve and chat to check your environment.
