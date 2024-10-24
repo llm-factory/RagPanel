@@ -10,12 +10,12 @@ if TYPE_CHECKING:
 
 
 class ChatEngine:
-    def __init__(self, database: str) -> None:
+    def __init__(self, storage_collection: str, vectorstore_collection) -> None:
         self._window_size = 6
         self._chat_model = ChatOpenAI()
-        self._collector = BaseCollector[History](storage_name=database)
-        self._retriever = DenseRetriever[DocIndex](vectorstore_name=database, threshold=1.0, verbose=True)
-        self._storage = AutoStorage[Document](name=database)
+        self._collector = BaseCollector[History](storage_name=storage_collection)
+        self._retriever = DenseRetriever[DocIndex](vectorstore_name=vectorstore_collection, threshold=1.0, verbose=True)
+        self._storage = AutoStorage[Document](name=storage_collection)
         self._kbqa_template = Template("充分理解以下事实描述：{context}\n\n回答下面的问题：{query}")
 
     def stream_chat(self, messages: Sequence["BaseMessage"], **kwargs) -> Generator[str, None, None]:

@@ -13,9 +13,9 @@ logger = get_logger(__name__)
 BATCH_SIZE = 1000
 
 
-def build_database(folder: Path, database: str, verbose: Optional[bool] = True) -> None:
-    vectorstore = AutoVectorStore[DocIndex](name=database)
-    storage = AutoStorage[Document](name=database)
+def build_database(folder: Path, storage_collection: str, vectorstore_collection:str, verbose: Optional[bool] = True) -> None:
+    vectorstore = AutoVectorStore[DocIndex](name=vectorstore_collection)
+    storage = AutoStorage[Document](name=storage_collection)
     splitter = CJKTextSplitter()
 
     input_files: List[Path] = []

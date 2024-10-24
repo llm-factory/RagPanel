@@ -6,10 +6,9 @@ from .protocol import History
 
 
 class ChatEngine:
-    def __init__(self, database: str, engine) -> None:
+    def __init__(self, engine) -> None:
         self._chat_model = None
         self._collector = None
-        self._storage_name = database
         self._kbqa_template = Template("充分理解以下事实描述：{context}\n\n回答下面的问题：{query}")
         self.engine = engine
         

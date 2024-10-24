@@ -41,20 +41,19 @@ def interactive_cli(config, action):
             config = click.prompt('path to your config file')
         with open(config, "r", encoding="utf-8") as config_file:
             config_dict = yaml.safe_load(config_file)
+            storage_collection = config_dict["database"]["storage_collection"]
+            vectorstore_collection = config_dict["database"]["vectorstore_collection"]
 
     if action == Action.BUILD:
-        database = config_dict["build"]["database"]
         folder = Path(config_dict["build"]["folder"])
-        build_database(folder, database)
+        build_database(folder, storage_collection, vectorstore_collection)
     elif action == Action.LAUNCH:
-        database = config_dict["launch"]["database"]
         host = config_dict["launch"]["host"]
         port = int(config_dict["launch"]["port"])
-        launch_app(database, host, port)
+        launch_app(storage_collection, vectorstore_collection, host, port)
     elif action == Action.DUMP:
-        database = config_dict["dump"]["database"]
         folder = Path(config_dict["dump"]["folder"])
-        dump_history(Path(folder), database)
+        dump_history(Path(folder), storage_collection)
     elif action == Action.WEBUI:
         from ..webui import create_ui
         create_ui().launch()

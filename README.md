@@ -44,18 +44,19 @@ MILVUS_TOKEN=0
 
 ```
 # config.yaml
+database:
+  storage_collection: init
+  vectorstore_collection: init
+
 build:
-  database: init
-  folder: input
+  folder: ./input
 
 launch:
-  database: init
   host: 127.0.0.1
   port: 8000
 
 dump:
-  database: init
-  folder: output
+  folder: ./chat_history
 ```
 
 4. Run `python launch.py`, and then follow the tips to choose your action and fill the path of your config file.  

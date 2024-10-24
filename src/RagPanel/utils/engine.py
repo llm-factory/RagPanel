@@ -9,21 +9,11 @@ from cardinal import AutoStorage, AutoVectorStore, CJKTextSplitter, AutoConditio
 
 class Engine:
     def __init__(self):
-        """init database"""
         self.splitter = None
-        self.supported_storages = [
-            "redis",
-            "es"
-        ]
-        self.supported_vectorstores = [
-            "chroma",
-            "milvus"
-        ]
         self.cur_storage = None
         self.cur_storage_name = None
         self.cur_vectorstore = None
         self.cur_vectorstore_name = None
-        self.chat_model = None
         self.file_history = []
         self.file_chunk_map = {}
         

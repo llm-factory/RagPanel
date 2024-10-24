@@ -44,18 +44,19 @@ MILVUS_TOKEN=0
 
 ```
 # config.yaml
+database:
+  storage_collection: init
+  vectorstore_collection: init
+
 build:
-  database: init
-  folder: input
+  folder: ./input
 
 launch:
-  database: init
   host: 127.0.0.1
   port: 8000
 
 dump:
-  database: init
-  folder: output
+  folder: ./chat_history
 ```
 
 4. 运行 `python launch.py`，然后根据提示选择行为，输入config文件路径。  
