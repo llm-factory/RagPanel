@@ -1,7 +1,6 @@
 import gradio as gr
-from ....utils.save_env import save_as_dotenv
-from ..tools.splitter import create_splitter_tab
-from ..tools.model import create_model_tab
+from ....utils import save_as_dotenv
+from ..tools import create_splitter_tab,create_model_tab
 
 
 def create_tools_block(engine):

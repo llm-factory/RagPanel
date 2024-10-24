@@ -1,9 +1,6 @@
 import gradio as gr
-from ....utils.chat_engine import ChatEngine
-from ..functions.chat import create_chat_tab
-from ..functions.insert import create_insert_tab
-from ..functions.delete import create_delete_tab
-from ..functions.search_delete import create_search_delete_tab
+from ....utils import ChatEngine
+from ..functions import create_chat_tab, create_delete_tab, create_insert_tab, create_search_delete_tab
 
 
 def create_functions_block(engine, search_result_state):
