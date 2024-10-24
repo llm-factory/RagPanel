@@ -4,7 +4,7 @@ from pathlib import Path
 
 from cardinal import BaseCollector, get_logger
 
-from .protocol import History
+from ..utils.protocol import History
 
 
 logger = get_logger(__name__)

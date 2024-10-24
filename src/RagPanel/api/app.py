@@ -1,5 +1,4 @@
 import json
-import os
 from typing import Any, Dict, Generator
 
 import uvicorn
@@ -10,7 +9,7 @@ from sse_starlette import EventSourceResponse
 from cardinal import Role
 
 from .chat import ChatEngine
-from .protocol import (
+from ..utils.protocol import (
     ChatCompletionMessage,
     ChatCompletionRequest,
     ChatCompletionResponse,

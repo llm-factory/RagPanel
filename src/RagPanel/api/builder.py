@@ -6,7 +6,7 @@ from tqdm import tqdm
 
 from cardinal import AutoStorage, AutoVectorStore, CJKTextSplitter, get_logger
 
-from .protocol import DocIndex, Document
+from ..utils.protocol import DocIndex, Document
 
 
 logger = get_logger(__name__)
