@@ -1,22 +1,34 @@
-from typing import Generator
+from typing import TYPE_CHECKING, Generator, Sequence
 
 from cardinal import AssistantMessage, BaseCollector, ChatOpenAI, HumanMessage, Template
 
 from .protocol import History
 
+if TYPE_CHECKING:
+    from cardinal import BaseMessage
+    
 
 class ChatEngine:
-    def __init__(self, engine) -> None:
-        self._chat_model = None
-        self._collector = None
-        self._kbqa_template = Template("充分理解以下事实描述：{context}\n\n回答下面的问题：{query}")
+    def __init__(self, database, engine) -> None:
+        self.chat_model = None
+        self.storage_name = database
+        self.collector = None
+        self.hello = "您好，有什么我可以帮助您的吗？"
+        self.kbqa_template = Template("充分理解以下事实描述：{context}\n\n回答下面的问题：{query}")
+        self.top_k = 2
+        self.threshold = 1.0
         self.engine = engine
         
+    def update(self, top_k, threshold, template):
+        self.kbqa_template = Template(template)
+        self.top_k = top_k
+        self.threshold = threshold
+        
     def get_history(self):
-        ret = [[None, "您好，有什么我可以帮助您的吗？"]]
-        if self._collector is None:
+        ret = [[None, self.hello]]
+        if self.collector is None:
             return ret
-        histories = self._collector.dump()
+        histories = self.collector.dump()
         if not len(histories):
             return ret
         for history in histories:
@@ -26,29 +38,34 @@ class ChatEngine:
     
     def clear_history(self):
         try:
-            self._collector._storage.destroy()
-            self._collector = BaseCollector[History](storage_name=self._storage_name)
+            self.collector._storage.destroy()
+            self.collector = BaseCollector[History](storage_name=self.storage_name)
         except:
             return
-    
-    def stream_chat(self, history, query, threshold, top_k, template, **kwargs) -> Generator[str, None, None]:
-        if self._chat_model is None:
-            try:
-                self._chat_model = ChatOpenAI()
-            except:
-                import gradio as gr
-                raise gr.Error("Cannot connect to openai, please check your url and api_key")
-        if self._collector is None:
-            self._collector = BaseCollector[History](storage_name=self._storage_name)
-        search_result = self.engine.search(query, threshold=threshold, top_k=top_k)
-        if any(search_result):
-            documents = search_result["content"].tolist()
-            query = Template(str(template)).apply(context="\n".join(documents), query=query)
+            
+    def rag_chat(self, messages: Sequence["BaseMessage"], **kwargs) -> Generator[str, None, None]:
+        if self.chat_model is None:
+            self.chat_model = ChatOpenAI()
+        if self.collector is None:
+            self.collector = BaseCollector[History](storage_name=self.database)
+        messages = messages[-(self._window_size * 2 + 1) :]
+        query = messages[-1].content
 
-        augmented_messages = [HumanMessage(content=query)]
-        history += [[query, None]]
-        history[-1][1] = ""
-        for new_token in self._chat_model.stream_chat(augmented_messages, **kwargs):
-            history[-1][1] += new_token
-            yield history
-        self._collector.collect(History(messages=(augmented_messages + [AssistantMessage(content=history[-1][1])])))
+        documents = self.engine.search(query=query, threshold=self.threshold, top_k=self.top_k)
+        if len(documents):
+            documents = documents["content"].tolist()
+            query = self.kbqa_template.apply(context="\n".join(documents), query=query)
+
+        augmented_messages = messages[:-1] + [HumanMessage(content=query)]
+        response = ""
+        for new_token in self.chat_model.stream_chat(augmented_messages, **kwargs):
+            yield new_token
+            response += new_token
+
+        self.collector.collect(History(messages=(augmented_messages + [AssistantMessage(content=response)])))
+        
+    def ui_chat(self, query):
+        if self.collector is None:
+            self.collector = BaseCollector[History](storage_name=self.storage_name)
+        messages = self.collector.dump() + HumanMessage(content=query)
+        yield self.rag_chat(messages=messages)

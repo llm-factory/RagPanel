@@ -16,6 +16,14 @@ class Engine:
         self.cur_vectorstore_name = None
         self.file_history = []
         self.file_chunk_map = {}
+        self.supported_storages = [
+            "redis",
+            "es"
+        ]
+        self.supported_vectorstores = [
+            "chroma",
+            "milvus"
+        ]
         
     def set_tools(self):
         from cardinal.model.config import settings
@@ -39,6 +47,8 @@ class Engine:
         try:
             self.cur_storage = AutoStorage[Document](storage_name)
             self.cur_storage_name = storage_name
+        except NameError:
+            raise gr.Error("Please install dependencies according to your database")
         except Exception:
             raise gr.Error("storage connection error")
         try:
