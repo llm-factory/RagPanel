@@ -51,7 +51,7 @@ def create_database_block(engine):
             database_clear_btn = gr.Button("clear database")
             database_destroy_btn = gr.Button("destroy database")
 
-    database_confirm_btn.click(engine.create_database,
+    database_confirm_btn.click(engine.create_database_ui,
                                 [storage_choice, storage_path, storage_name, vectorstore_choice, vectorstore_path, vectorstore_name, vectorstore_token]
                                 ).success(info_create_database)
     database_clear_btn.click(engine.clear_database).success(info_clear_database)

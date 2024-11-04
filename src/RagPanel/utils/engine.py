@@ -32,8 +32,15 @@ class Engine:
         settings.hf_tokenizer_path = os.getenv("HF_TOKENIZER_PATH")
         self.splitter = CJKTextSplitter(int(os.getenv("DEFAULT_CHUNK_SIZE")),
                                         int(os.getenv("DEFAULT_CHUNK_OVERLAP")))
+        
+    def create_database(self, storage_name, vectorstore_name):
+        self.cur_storage = AutoStorage[Document](storage_name)
+        self.cur_storage_name = storage_name
+        self.cur_vectorstore = AutoVectorStore[DocIndex](vectorstore_name)
+        self.cur_vectorstore_name = vectorstore_name
 
-    def create_database(self, storage, storage_path, storage_name, vectorstore, vectorestore_path, vectorstore_name, vectorstore_token):
+
+    def create_database_ui(self, storage, storage_path, storage_name, vectorstore, vectorestore_path, vectorstore_name, vectorstore_token):
         # config
         save_to_env("STORAGE", storage)
         save_to_env("VECTORSTORE", vectorstore)
