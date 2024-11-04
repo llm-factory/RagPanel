@@ -35,12 +35,12 @@ def create_chat_tab(chat_engine):
                     clear_button = gr.Button("clear history")
             chat_button.click(chat_engine.get_history, None, chat_bot).then(
                 chat_engine.ui_chat, 
-                query_box, 
+                [chat_bot, query_box], 
                 chat_bot
             )
             query_box.submit(chat_engine.get_history, None, chat_bot).then(
                 chat_engine.ui_chat, 
-                query_box, 
+                [chat_bot, query_box], 
                 chat_bot
             )
             clear_button.click(chat_engine.clear_history)
