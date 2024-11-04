@@ -168,7 +168,7 @@ class Engine:
         try:
             retriever = DenseRetriever[DocIndex](vectorstore_name=self.cur_vectorstore_name, threshold=threshold)
             doc_indexes = retriever.retrieve(query=query, top_k=top_k)
-        except ValueError:
+        except:
             return pd.DataFrame([])
         docs = []
         for index in doc_indexes:

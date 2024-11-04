@@ -36,7 +36,7 @@ class Action(str, Enum):
 @click.option("--config", help="Path to your config file")
 @click.option("--action", required=True, type=click.Choice([act.value for act in Action]), prompt="Choose an action")
 def interactive_cli(config, action):
-    if action != Action.WEBUI:
+    if action != Action.WEBUI and action != Action.EXIT:
         if config is None:
             config = click.prompt('path to your config file')
         with open(config, "r", encoding="utf-8") as config_file:

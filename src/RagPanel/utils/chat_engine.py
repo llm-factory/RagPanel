@@ -9,12 +9,13 @@ if TYPE_CHECKING:
     
 
 class ChatEngine:
-    def __init__(self, engine) -> None:
+    def __init__(self, engine, name) -> None:
         self.engine = engine
         self.chat_model = None
+        self.name = name
         # 可能还未确定database
         try:
-            self.collector = BaseCollector[History](storage_name=self.engine.cur_storage_name)
+            self.collector = BaseCollector[History](storage_name=name)
         except:
             self.collector = None
         self.hello = "您好，有什么我可以帮助您的吗？"
@@ -24,18 +25,18 @@ class ChatEngine:
         self.threshold = 1.0
         self.with_doc = False
         
-    def update(self, top_k, threshold, template, with_doc):
+    def update(self, top_k, threshold, template):
         self.kbqa_template = Template(template)
         self.top_k = top_k
         self.threshold = threshold
-        self.with_doc = with_doc
         
     def get_history(self):
         ret = [[None, self.hello]]
         if self.collector is None:
             return ret
-        histories = self.collector.dump()
-        if not len(histories):
+        try:
+            histories = self.collector.dump()
+        except:
             return ret
         for history in histories:
             messages = [message.content for message in history.messages]
@@ -45,7 +46,7 @@ class ChatEngine:
     def clear_history(self):
         try:
             self.collector._storage.destroy()
-            self.collector = BaseCollector[History](storage_name=self.storage_name)
+            self.collector = BaseCollector[History](storage_name=self.name)
         except:
             return
             
@@ -53,7 +54,7 @@ class ChatEngine:
         if self.chat_model is None:
             self.chat_model = ChatOpenAI()
         if self.collector is None:
-            self.collector = BaseCollector[History](storage_name=self.database)
+            self.collector = BaseCollector[History](storage_name=self.engine.name)
         messages = messages[-(self.window_size * 2 + 1) :]
         query = messages[-1].content
 
@@ -74,9 +75,12 @@ class ChatEngine:
             
     def ui_chat(self, history, query):
         if self.collector is None:
-            self.collector = BaseCollector[History](storage_name=self.storage_name)
+            self.collector = BaseCollector[History](storage_name=self.name)
 
-        messages = self.collector.dump() + [HumanMessage(content=query)]
+        try:
+            messages = self.collector.dump() + [HumanMessage(content=query)]
+        except:
+            messages = [AssistantMessage(content=self.hello), HumanMessage(content=query)]
         history += [[query, ""]]
         for new_token in self.rag_chat(messages=messages):
             history[-1][1] += new_token
