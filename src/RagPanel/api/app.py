@@ -8,7 +8,8 @@ from sse_starlette import EventSourceResponse
 
 from cardinal import Role
 
-from .chat import ChatEngine
+from ..utils.engine import Engine
+from ..utils.chat_engine import ChatEngine
 from ..utils.protocol import (
     ChatCompletionMessage,
     ChatCompletionRequest,
@@ -20,19 +21,20 @@ from ..utils.protocol import (
 )
 
 
-def launch_app(storage_collection: str, vectorstore_collection: str, host: str, port: int) -> None:
+def launch_app(host: str, port: int) -> None:
     app = FastAPI()
     app.add_middleware(
         CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"]
     )
-    engine = ChatEngine(storage_collection, vectorstore_collection)
+    engine = Engine()
+    chat_engine = ChatEngine(engine)
 
     def stream_response(input_kwargs: Dict[str, Any]) -> Generator[str, None, None]:
         choice_data = ChatCompletionResponseStreamChoice(delta=ChatCompletionMessage(role=Role.ASSISTANT, content=""))
         chunk = ChatCompletionResponse(choices=[choice_data])
         yield json.dumps(chunk.model_dump(exclude_unset=True), ensure_ascii=False)
 
-        for new_token in engine.stream_chat(**input_kwargs):
+        for new_token in chat_engine.stream_chat(**input_kwargs):
             choice_data = ChatCompletionResponseStreamChoice(delta=ChatCompletionMessage(content=new_token))
             chunk = ChatCompletionResponse(choices=[choice_data])
             yield json.dumps(chunk.model_dump(exclude_unset=True), ensure_ascii=False)
@@ -57,7 +59,7 @@ def launch_app(storage_collection: str, vectorstore_collection: str, host: str, 
             return EventSourceResponse(stream_response(input_kwargs), media_type="text/event-stream")
 
         response = ""
-        for new_token in engine.stream_chat(**input_kwargs):
+        for new_token in chat_engine.stream_chat(**input_kwargs):
             response += new_token
 
         choice_data = ChatCompletionResponseChoice(

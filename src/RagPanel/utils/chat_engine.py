@@ -9,12 +9,12 @@ if TYPE_CHECKING:
     
 
 class ChatEngine:
-    def __init__(self, database, engine) -> None:
+    def __init__(self, engine) -> None:
+        self.engine = engine
         self.chat_model = None
-        self.storage_name = database
         # 可能还未确定database
         try:
-            self.collector = BaseCollector[History](storage_name=self.storage_name)
+            self.collector = BaseCollector[History](storage_name=self.engine.cur_storage_name)
         except:
             self.collector = None
         self.hello = "您好，有什么我可以帮助您的吗？"
@@ -22,7 +22,6 @@ class ChatEngine:
         self.window_size = 6
         self.top_k = 2
         self.threshold = 1.0
-        self.engine = engine
         self.with_doc = False
         
     def update(self, top_k, threshold, template, with_doc):
