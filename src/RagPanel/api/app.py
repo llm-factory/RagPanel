@@ -8,8 +8,7 @@ from sse_starlette import EventSourceResponse
 
 from cardinal import Role
 
-from ..utils.engine import Engine
-from ..utils.chat_engine import ChatEngine
+from ..engines import ApiEngine, ChatEngine
 from ..utils.protocol import (
     ChatCompletionMessage,
     ChatCompletionRequest,
@@ -21,14 +20,12 @@ from ..utils.protocol import (
 )
 
 
-def launch_app(storage_collection: str, vectorstore_collection: str, host: str, port: int) -> None:
+def launch_app(engine:ApiEngine, host: str, port: int) -> None:
     app = FastAPI()
     app.add_middleware(
         CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"]
     )
-    engine = Engine()
-    engine.create_database(storage_collection, vectorstore_collection)
-    chat_engine = ChatEngine(engine)
+    chat_engine = ChatEngine(engine, "chat_history")
 
     def stream_response(input_kwargs: Dict[str, Any]) -> Generator[str, None, None]:
         choice_data = ChatCompletionResponseStreamChoice(delta=ChatCompletionMessage(role=Role.ASSISTANT, content=""))

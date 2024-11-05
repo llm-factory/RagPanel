@@ -1,13 +1,13 @@
 import os
 import pandas as pd
 import gradio as gr
-from .file_reader import read_file, split
-from .protocol import DocIndex, Document, Operator
-from .save_env import save_to_env, save_storage_path, save_vectorstore_path
+from ..utils.file_reader import read_file, split
+from ..utils.protocol import DocIndex, Document, Operator
+from ..utils.save_env import save_to_env, save_storage_path, save_vectorstore_path
 from cardinal import AutoStorage, AutoVectorStore, CJKTextSplitter, AutoCondition, DenseRetriever
 
 
-class Engine:
+class ApiEngine:
     def __init__(self):
         self.splitter = None
         self.cur_storage = None
@@ -38,7 +38,6 @@ class Engine:
         self.cur_storage_name = storage_name
         self.cur_vectorstore = AutoVectorStore[DocIndex](vectorstore_name)
         self.cur_vectorstore_name = vectorstore_name
-
 
     def create_database_ui(self, storage, storage_path, storage_name, vectorstore, vectorestore_path, vectorstore_name, vectorstore_token):
         # config
@@ -178,3 +177,7 @@ class Engine:
         if len(docs) < top_k:
             gr.Warning("No enough candidates")
         return pd.DataFrame(docs)
+
+    def launch_app(self, host, port):
+        from ..api.app import launch_app
+        launch_app(self, host=host, port=port)

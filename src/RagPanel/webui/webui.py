@@ -5,13 +5,13 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-from ..utils import Engine
+from ..engines import UiEngine
 from .components import create_database_block, create_functions_block, create_tools_block
 
 
 def create_ui():
     with gr.Blocks() as demo:
-        engine = Engine()
+        engine = UiEngine()
         gr.HTML("<center><h1>RAG Panel</h1></center>")
         search_result_state = gr.State()
         

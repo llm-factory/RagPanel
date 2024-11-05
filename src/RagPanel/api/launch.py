@@ -9,9 +9,8 @@ from dotenv import load_dotenv
 load_dotenv()  # must before utils
 
 
-from .app import launch_app
 from .viewer import dump_history
-from .builder import build_database
+from ..engines import ApiEngine
 
 
 try:
@@ -43,17 +42,20 @@ def interactive_cli(config, action):
             config_dict = yaml.safe_load(config_file)
             storage_collection = config_dict["database"]["storage_collection"]
             vectorstore_collection = config_dict["database"]["vectorstore_collection"]
+            engine = ApiEngine()
+            engine.create_database(storage_collection, vectorstore_collection)
+
 
     if action == Action.BUILD:
-        folder = Path(config_dict["build"]["folder"])
-        build_database(folder, storage_collection, vectorstore_collection)
+        folder = config_dict["build"]["folder"]
+        engine.insert(folder, 32)
     elif action == Action.LAUNCH:
         host = config_dict["launch"]["host"]
         port = int(config_dict["launch"]["port"])
-        launch_app(storage_collection, vectorstore_collection, host, port)
+        engine.launch_app(host, port)
     elif action == Action.DUMP:
         folder = Path(config_dict["dump"]["folder"])
-        dump_history(Path(folder), storage_collection)
+        dump_history(Path(folder), "chat_history")
     elif action == Action.WEBUI:
         from ..webui import create_ui
         create_ui().launch()

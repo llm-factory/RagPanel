@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING, Generator, Sequence, Optional
 
 from cardinal import AssistantMessage, BaseCollector, ChatOpenAI, HumanMessage, Template
 
-from .protocol import History
+from ..utils.protocol import History
 
 if TYPE_CHECKING:
     from cardinal import BaseMessage
