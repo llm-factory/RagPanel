@@ -49,14 +49,14 @@ database:
   vectorstore_collection: init
 
 build:
-  folder: ./input
+  folder: ./examples/inputs
 
 launch:
   host: 127.0.0.1
   port: 8000
 
 dump:
-  folder: ./chat_history
+  folder: ./examples/chat_history
 ```
 
 4. Run `python launch.py`, and then follow the tips to choose your action and fill the path of your config file.  

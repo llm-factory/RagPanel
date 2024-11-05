@@ -3,11 +3,11 @@ database:
   vectorstore_collection: init
 
 build:
-  folder: ./input
+  folder: ./examples/inputs
 
 launch:
   host: 127.0.0.1
   port: 8000
 
 dump:
-  folder: ./chat_history
+  folder: ./examples/chat_history
