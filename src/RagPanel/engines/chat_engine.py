@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Generator, Sequence, Optional
+from typing import TYPE_CHECKING, Generator, Sequence
 
 from cardinal import AssistantMessage, BaseCollector, ChatOpenAI, HumanMessage, Template
 
@@ -30,18 +30,17 @@ class ChatEngine:
         self.top_k = top_k
         self.threshold = threshold
         
-    def get_history(self):
-        ret = [[None, self.hello]]
-        if self.collector is None:
-            return ret
-        try:
-            histories = self.collector.dump()
-        except:
-            return ret
-        for history in histories:
-            messages = [message.content for message in history.messages]
-            ret.append(messages)
-        return ret
+    def dump_history(self):
+        histories = [[message.model_dump()
+                    for message in history.messages]
+                    for history in self.collector.dump()
+                    ]
+        return histories
+        
+    def dump_history_ui(self):
+        histories = [
+            
+        ]
     
     def clear_history(self):
         try:
@@ -54,7 +53,7 @@ class ChatEngine:
         if self.chat_model is None:
             self.chat_model = ChatOpenAI()
         if self.collector is None:
-            self.collector = BaseCollector[History](storage_name=self.engine.name)
+            self.collector = BaseCollector[History](storage_name=self.name)
         messages = messages[-(self.window_size * 2 + 1) :]
         query = messages[-1].content
 
@@ -68,19 +67,13 @@ class ChatEngine:
         for new_token in self.chat_model.stream_chat(augmented_messages, **kwargs):
             yield new_token
             response += new_token
-        if self.with_doc:
-            self.collector.collect(History(messages=(augmented_messages + [AssistantMessage(content=response)])))
-        else:
-            self.collector.collect(History(messages=(messages + [AssistantMessage(content=response)])))
+        self.collector.collect(History(messages=(augmented_messages + [AssistantMessage(content=response)])))
             
     def ui_chat(self, history, query):
         if self.collector is None:
             self.collector = BaseCollector[History](storage_name=self.name)
 
-        try:
-            messages = self.collector.dump() + [HumanMessage(content=query)]
-        except:
-            messages = [AssistantMessage(content=self.hello), HumanMessage(content=query)]
+        messages = self.collector.dump()[0].messages + [HumanMessage(content=query)]
         history += [[query, ""]]
         for new_token in self.rag_chat(messages=messages):
             history[-1][1] += new_token

@@ -1,5 +1,7 @@
-from ..utils.protocol import DocIndex, Document, Operator
-from cardinal import AutoStorage, AutoVectorStore, AutoCondition, DenseRetriever
+from abc import abstractmethod
+from .chat_engine import ChatEngine
+from ..utils.protocol import DocIndex, Document
+from cardinal import AutoStorage, AutoVectorStore, DenseRetriever, BaseCollector
 
 
 class BaseEngine:
@@ -8,7 +10,8 @@ class BaseEngine:
         self.collection = None
         self._storage = None
         self._vectorstore = None
-        self._retriver = None
+        self._retriever = None
+        self.chat_engine = ChatEngine(self, "history_init")
         self.supported_storages = [
             "redis",
             "es"
@@ -21,11 +24,13 @@ class BaseEngine:
     def create_database(self, collection):
         self._storage = AutoStorage[Document](collection)
         self._vectorstore = AutoVectorStore[DocIndex](collection)
-        self._retriver = DenseRetriever[DocIndex](vectorstore_name=self.collection, threshold=1.0)
+        self._retriever = DenseRetriever[DocIndex](vectorstore_name=collection, threshold=1.0)
+        self.chat_engine.name = "history_" + collection
+        self.chat_engine.collector = BaseCollector(storage_name="history_" + collection)
         self.collection = collection
         
     def check_database(self):
-        if self._storage is None or self._vectorstore is None or self._retriver is None:
+        if self._storage is None or self._vectorstore is None or self._retriever is None:
             raise ValueError("Please create a database first")
 
     def clear_database(self):
@@ -47,23 +52,26 @@ class BaseEngine:
             return
         self._storage.destroy()
         self._vectorstore.destroy()
-        self.collection = None
+        
+    @abstractmethod
+    def insert(self):
+        r"""
+        read, split and embed files
+        """
+        ...
 
-    def delete_by_id(self, id):
-        self._storage.delete(key=id)
-        self._vectorstore.delete(AutoCondition(key="doc_id", value=id, op=Operator.Eq))
-
-    def search(self, query, top_k):
+    def search(self, query, top_k, threshold = None):
         self.check_database()
-        try:
-            doc_indexes = self._retriever.retrieve(query=query, top_k=top_k)
-        except:
-            return []
+        tmp_threshold = self._retriever._threshold
+        if threshold is not None:
+            self._retriever._threshold = threshold
+        doc_indexes = self._retriever.retrieve(query=query, top_k=top_k)
         docs = []
         for index in doc_indexes:
             doc_id = index.doc_id
             doc = self._storage.query(key=doc_id).content
             docs.append({"id": doc_id, "content": doc})
+        self._retriever._threshold = tmp_threshold
         return docs
 
     def launch_app(self, host, port):

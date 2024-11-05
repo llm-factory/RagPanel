@@ -18,10 +18,9 @@ def create_database_block(engine):
             storage_path = get_storage_path(storage)
             storage_choice.change(get_storage_path, storage_choice, storage_path)
 
-            storage_name = gr.Textbox(
+            collection = gr.Textbox(
                 value="init",
-                label="storage collection",
-                info="the name of your storage collection"
+                label="collection name",
             )
 
         with gr.Row():
@@ -40,19 +39,13 @@ def create_database_block(engine):
             vectorstore_token = get_vectorstore_token(vectorstore)
             vectorstore_choice.change(get_vectorstore_token, vectorstore_choice, vectorstore_token)
 
-            vectorstore_name = gr.Textbox(
-                value="init",
-                label="vector store collection",
-                info="the name of your vectorstore collection"
-            )
-
         with gr.Row():
-            database_confirm_btn = gr.Button("confirm")
+            database_confirm_btn = gr.Button("apply and save")
             database_clear_btn = gr.Button("clear database")
-            database_destroy_btn = gr.Button("destroy database")
+            database_destroy_btn = gr.Button("delete database")
 
-    database_confirm_btn.click(engine.create_database_ui,
-                                [storage_choice, storage_path, storage_name, vectorstore_choice, vectorstore_path, vectorstore_name, vectorstore_token]
+    database_confirm_btn.click(engine.create_database,
+                                [collection, storage_choice, storage_path, vectorstore_choice, vectorstore_path, vectorstore_token]
                                 ).success(info_create_database)
     database_clear_btn.click(engine.clear_database).success(info_clear_database)
     database_destroy_btn.click(engine.destroy_database).success(info_destroy_database)
@@ -70,7 +63,6 @@ def get_storage_path(storage):
         default_path = os.getenv("REDIS_URI", "redis://localhost:6379")
     storage_path = gr.Textbox(
         label="storage uri",
-        info="the uri (or local path) of your storage",
         value=default_path,
         scale=2
     )
