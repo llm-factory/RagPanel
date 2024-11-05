@@ -24,7 +24,7 @@ def create_chat_tab(engine):
                 apply_btn = gr.Button("apply")
                 apply_btn.click(engine.chat_engine.update, [top_k_slider, threshold_slider, template_box])
             def new_chat():
-                return gr.Chatbot(label="chat", value=engine.chat_engine.dump_history())
+                return gr.Chatbot(label="chat", value="", placeholder="Ask me anything")
             chat_bot = new_chat()
             with gr.Row():
                 def new_query():
@@ -35,12 +35,12 @@ def create_chat_tab(engine):
                 with gr.Column():
                     chat_button = gr.Button("enter")
                     clear_button = gr.Button("clear history")
-            chat_button.click(engine.chat_engine.dump_history, None, chat_bot).then(
+            chat_button.click(
                 engine.chat_engine.ui_chat, 
                 [chat_bot, query_box], 
                 chat_bot
             )
-            query_box.submit(engine.chat_engine.dump_history, None, chat_bot).then(
+            query_box.submit(
                 engine.chat_engine.ui_chat, 
                 [chat_bot, query_box], 
                 chat_bot
