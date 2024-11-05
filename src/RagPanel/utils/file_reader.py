@@ -1,5 +1,5 @@
 import os
-import gradio as gr
+from tqdm import tqdm
 from .protocol import Text, CSV
 
 
@@ -56,16 +56,8 @@ def read_pdf(filepath):
     contents = extract_text(filepath)
     return Text(filepath, contents)
 
-def read_file(filepath):
-    # input is list
-    if isinstance(filepath, list):
-        progress = gr.Progress()
-        progress(0, "start to load files")
-        files = []
-        for f in progress.tqdm(filepath, desc="load files"):
-            files.extend(read_file(f))
-        return files
 
+def read_file(filepath):
     # supported types: .txt, .json, .docx, .doc, .pdf, .csv
     _, extension = os.path.splitext(filepath)
     extension = extension.lower()
@@ -85,10 +77,21 @@ def read_file(filepath):
         return [read_pdf(filepath)]
 
     else:
-        raise gr.Error(f"unsupported file type: {extension}")
-    
+        raise NotImplementedError
 
-def split(file, splitter):
+
+def read_folder(folder):
+    input_files = []
+    for path in folder.rglob("*.*"):
+        if path.is_file():
+            input_files.append(path)
+    contents = []
+    for file in tqdm(input_files, desc="Extract content"):
+        contents.extend(read_file(file))
+    return contents
+
+
+def split(splitter, file):
     if isinstance(file, CSV):
         ret = []
         for key, content in zip(file.keys, file.contents):

@@ -1,6 +1,5 @@
 database:
-  storage_collection: init
-  vectorstore_collection: init
+  collection: init
 
 build:
   folder: ./examples/inputs

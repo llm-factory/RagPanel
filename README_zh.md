@@ -45,8 +45,7 @@ MILVUS_TOKEN=0
 ```
 # config.yaml
 database:
-  storage_collection: init
-  vectorstore_collection: init
+  collection: init
 
 build:
   folder: ./examples/inputs

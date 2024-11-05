@@ -8,7 +8,7 @@ from sse_starlette import EventSourceResponse
 
 from cardinal import Role
 
-from ..engines import ApiEngine, ChatEngine
+from ..engines import BaseEngine, ChatEngine
 from ..utils.protocol import (
     ChatCompletionMessage,
     ChatCompletionRequest,
@@ -20,7 +20,7 @@ from ..utils.protocol import (
 )
 
 
-def launch_app(engine:ApiEngine, host: str, port: int) -> None:
+def launch_app(engine:BaseEngine, host: str, port: int) -> None:
     app = FastAPI()
     app.add_middleware(
         CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"]

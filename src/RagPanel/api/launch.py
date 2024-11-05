@@ -40,14 +40,13 @@ def interactive_cli(config, action):
             config = click.prompt('path to your config file')
         with open(config, "r", encoding="utf-8") as config_file:
             config_dict = yaml.safe_load(config_file)
-            storage_collection = config_dict["database"]["storage_collection"]
-            vectorstore_collection = config_dict["database"]["vectorstore_collection"]
+            collection = config_dict["database"]["collection"]
             engine = ApiEngine()
-            engine.create_database(storage_collection, vectorstore_collection)
+            engine.create_database(collection)
 
 
     if action == Action.BUILD:
-        folder = config_dict["build"]["folder"]
+        folder = Path(config_dict["build"]["folder"])
         engine.insert(folder, 32)
     elif action == Action.LAUNCH:
         host = config_dict["launch"]["host"]
