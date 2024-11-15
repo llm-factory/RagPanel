@@ -4,6 +4,7 @@
 1. Start database server, including a storage server and a vectorstore server.  
 Supported storages: `redis`,  `elasticsearch`.  
 Supported vectorstores: `chroma`, `milvus`.  
+You can deploy them using docker. (See [docker](docker/) folder)
 ![database](assets/database.png)
 
 2. Install dependencies according to your database server. Take `elasticsearch`+`milvus` as an example:

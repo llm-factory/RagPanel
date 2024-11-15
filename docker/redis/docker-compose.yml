@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7.4.1
+    container_name: redis-container
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - redis-network
+    restart: always
+
+networks:
+  redis-network:
+    driver: bridge
+
+volumes:
+  redis-data:
+    driver: local
