@@ -53,19 +53,25 @@ build:
 
 launch:
   host: 127.0.0.1
-  port: 8000
+  port: 8080
 
 dump:
   folder: ./examples/chat_history
 ```
 
-4. Run `python launch.py`, and then follow the tips to choose your action and fill the path of your config file.  
+4. Run `python launch.py --action YOUR_ACTION --config CONFIG_FILE` to start.  
+Here are action choices:  
+`build`: read data, split docs and build index.  
+`launch`: launch app server.  
+`dump`: dump chat history.  
+`webui`: visual webui (driven by Gradio).
 
-   You can also directly run `python launch.py --action YOUR_ACTION --config CONFIG_FILE` to start. Here are action choices:  
-   `build`: read data, split docs and build index.  
-   `launch`: launch app server.  
-   `dump`: dump chat history.  
-   `webui`: visual webui (driven by Gradio).
+## Api Example
+Assuming you have created **.env** and **config.yaml** properly, take data in [examples](examples) folder as an example.  
+1. Run `python launch.py --action build --config examples/config/config.yaml` to build index.  
+2. Run `python launch.py --action launch --config examples/config/config.yaml` to launch api service.
+3. Send post to server like [post.py](examples/post.py). You can run `python examples/post.py` to test.  
+4. Run `python launch.py --action dump --config examples/config/config.yaml` to dump your chat history if needed.
    
 ## Web UI
 You can start a webui server to set and test your environment as follows:

@@ -53,19 +53,25 @@ build:
 
 launch:
   host: 127.0.0.1
-  port: 8000
+  port: 8080
 
 dump:
   folder: ./examples/chat_history
 ```
 
-4. 运行 `python launch.py`，然后根据提示选择行为，输入config文件路径。  
+4. 运行 `python launch.py --action YOUR_ACTION --config CONFIG_FILE_PATH`  
+所有行为如下:  
+`build`: 读取数据，分割嵌入。  
+`launch`: 启动app服务。  
+`dump`: 导出聊天历史。  
+`webui`: 可视化网页UI (由Gradio驱动)。
 
-   您也可以直接运行 `python launch.py --action YOUR_ACTION --config CONFIG_FILE_PATH`. 所有行为如下:  
-   `build`: 读取数据，分割嵌入。  
-   `launch`: 启动app服务。  
-   `dump`: 导出聊天历史。  
-   `webui`: 可视化网页UI (由Gradio驱动)。
+## Api服务样例
+假设您已经创建完 **.env**和 **config.yaml**，以[examples](examples)文件夹下的内容为例。  
+1. 运行 `python launch.py --action build --config examples/config/config.yaml`来构建索引。  
+2. 运行 `python launch.py --action launch --config examples/config/config.yaml`来启动api服务。
+3. 向服务器发送post请求，格式参考[post.py](examples/post.py)，您可以试运行`python examples/post.py`来查看结果。  
+4. 如果需要导出聊天记录，可以运行`python launch.py --action dump --config examples/config/config.yaml`来导出。
    
 ## 网页UI
 您可以启动网页UI来设置和测试您的环境配置，如下所示:
