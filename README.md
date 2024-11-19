@@ -67,7 +67,7 @@ Here are action choices:
 `webui`: visual webui (driven by Gradio).
 
 ## Api Example
-Assuming you have created **.env** and **config.yaml** properly, take data in [examples](examples) folder as an example.  
+Assuming you have created **.env** and **config.yaml** properly, and **started your database server**, take data in [examples](examples) folder as an example.  
 1. Run `python launch.py --action build --config examples/config/config.yaml` to build index.  
 2. Run `python launch.py --action launch --config examples/config/config.yaml` to launch api service.
 3. Send post to server like [post.py](examples/post.py). You can run `python examples/post.py` to test.  

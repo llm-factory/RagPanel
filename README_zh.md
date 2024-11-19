@@ -67,7 +67,7 @@ dump:
 `webui`: 可视化网页UI (由Gradio驱动)。
 
 ## Api服务样例
-假设您已经创建完 **.env**和 **config.yaml**，以[examples](examples)文件夹下的内容为例。  
+假设您已经创建完 **.env**和 **config.yaml**，并且**启动了数据库服务**，下面以[examples](examples)文件夹下的内容为例来展示如何启动和使用api服务。  
 1. 运行 `python launch.py --action build --config examples/config/config.yaml`来构建索引。  
 2. 运行 `python launch.py --action launch --config examples/config/config.yaml`来启动api服务。
 3. 向服务器发送post请求，格式参考[post.py](examples/post.py)，您可以试运行`python examples/post.py`来查看结果。  
