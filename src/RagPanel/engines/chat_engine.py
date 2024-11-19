@@ -10,14 +10,17 @@ if TYPE_CHECKING:
 class ChatEngine:
     def __init__(self, engine, name) -> None:
         self.engine = engine
-        self.chat_model = None
+        try:
+            self.chat_model = ChatOpenAI()
+        except:
+            self.chat_model = None
         self.name = name
         # 可能还未确定database
         try:
             self.collector = BaseCollector[History](storage_name=name)
         except:
             self.collector = None
-        self.kbqa_template = Template("充分理解以下事实描述：{context}\n\n回答下面的问题：{query}")
+        self.kbqa_template = Template("Based on the following context:{context}\n\nAnswer this question:{query}")
         self.window_size = 6
         self.top_k = 2
         self.threshold = 1.0
@@ -42,7 +45,7 @@ class ChatEngine:
         except:
             return
             
-    def rag_chat(self, messages: Sequence["BaseMessage"], **kwargs) -> Generator[str, None, None]:
+    def stream_chat(self, messages: Sequence["BaseMessage"], **kwargs) -> Generator[str, None, None]:
         if self.chat_model is None:
             self.chat_model = ChatOpenAI()
         if self.collector is None:

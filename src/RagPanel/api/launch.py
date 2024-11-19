@@ -51,10 +51,10 @@ def interactive_cli(config, action):
     elif action == Action.LAUNCH:
         host = config_dict["launch"]["host"]
         port = int(config_dict["launch"]["port"])
-        engine.launch_app(host, port)
+        engine.launch_app(collection, host, port)
     elif action == Action.DUMP:
         folder = Path(config_dict["dump"]["folder"])
-        dump_history(Path(folder), "chat_history")
+        dump_history(Path(folder), "history_" + collection)
     elif action == Action.WEBUI:
         from ..webui import create_ui
         create_ui().launch()

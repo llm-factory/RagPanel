@@ -29,7 +29,8 @@ class Document(DocIndex):
 
 class History(BaseModel):
     messages: List[BaseMessage]
-    
+
+
 class ChatCompletionRequest(BaseModel):
     model: str = "gpt-3.5-turbo"
     messages: List[BaseMessage]

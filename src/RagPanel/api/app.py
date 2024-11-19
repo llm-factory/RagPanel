@@ -20,12 +20,12 @@ from ..utils.protocol import (
 )
 
 
-def launch_app(engine:BaseEngine, host: str, port: int) -> None:
+def launch_app(engine:BaseEngine, collection:str, host: str, port: int) -> None:
     app = FastAPI()
     app.add_middleware(
         CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"]
     )
-    chat_engine = ChatEngine(engine, "chat_history")
+    chat_engine = ChatEngine(engine, "history_" + collection)
 
     def stream_response(input_kwargs: Dict[str, Any]) -> Generator[str, None, None]:
         choice_data = ChatCompletionResponseStreamChoice(delta=ChatCompletionMessage(role=Role.ASSISTANT, content=""))

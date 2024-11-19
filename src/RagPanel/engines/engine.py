@@ -74,6 +74,6 @@ class BaseEngine:
         self._retriever._threshold = tmp_threshold
         return docs
 
-    def launch_app(self, host, port):
+    def launch_app(self, collection, host, port):
         from ..api.app import launch_app
-        launch_app(self, host=host, port=port)
+        launch_app(self, collection, host=host, port=port)
