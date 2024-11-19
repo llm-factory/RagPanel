@@ -32,6 +32,7 @@ def main():
         python_requires=">=3.9.0",
         install_requires=get_requires(),
         extras_require=extras_require,
+        entry_points={"console_scripts": ["ragpanel-cli = RagPanel.api.launch:interactive_cli"]},
         classifiers=[
             "Development Status :: 3 - Alpha",
             "Intended Audience :: Developers",

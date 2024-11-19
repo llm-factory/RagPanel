@@ -59,7 +59,7 @@ dump:
   folder: ./examples/chat_history
 ```
 
-4. 运行 `python launch.py --action YOUR_ACTION --config CONFIG_FILE_PATH`  
+4. 运行 `ragpanel-cli --action YOUR_ACTION --config CONFIG_FILE_PATH`  
 所有行为如下:  
 `build`: 读取数据，分割嵌入。  
 `launch`: 启动app服务。  
@@ -68,14 +68,14 @@ dump:
 
 ## Api服务样例
 假设您已经创建完 **.env**和 **config.yaml**，并且**启动了数据库服务**，下面以[examples](examples)文件夹下的内容为例来展示如何启动和使用api服务。  
-1. 运行 `python launch.py --action build --config examples/config/config.yaml`来构建索引。  
-2. 运行 `python launch.py --action launch --config examples/config/config.yaml`来启动api服务。
+1. 运行 `ragpanel-cli --action build --config examples/config/config.yaml`来构建索引。  
+2. 运行 `ragpanel-cli --action launch --config examples/config/config.yaml`来启动api服务。
 3. 向服务器发送post请求，格式参考[post.py](examples/post.py)，您可以试运行`python examples/post.py`来查看结果。  
-4. 如果需要导出聊天记录，可以运行`python launch.py --action dump --config examples/config/config.yaml`来导出。
+4. 如果需要导出聊天记录，可以运行`ragpanel-cli --action dump --config examples/config/config.yaml`来导出。
    
 ## 网页UI
 您可以启动网页UI来设置和测试您的环境配置，如下所示:
-1. 运行 `python launch.py --action webui`。 您会看到如下界面：
+1. 运行 `ragpanel-cli --action webui`。 您会看到如下界面：
 ![Web UI](./assets/webui.png)
 
 2. 设置合适的环境参数，并尝试构建索引、查询、聊天等，以测试环境配置是否有效。

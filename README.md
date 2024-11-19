@@ -59,7 +59,7 @@ dump:
   folder: ./examples/chat_history
 ```
 
-4. Run `python launch.py --action YOUR_ACTION --config CONFIG_FILE` to start.  
+4. Run `ragpanel-cli --action YOUR_ACTION --config CONFIG_FILE` to start.  
 Here are action choices:  
 `build`: read data, split docs and build index.  
 `launch`: launch app server.  
@@ -68,14 +68,14 @@ Here are action choices:
 
 ## Api Example
 Assuming you have created **.env** and **config.yaml** properly, and **started your database server**, take data in [examples](examples) folder as an example.  
-1. Run `python launch.py --action build --config examples/config/config.yaml` to build index.  
-2. Run `python launch.py --action launch --config examples/config/config.yaml` to launch api service.
+1. Run `ragpanel-cli --action build --config examples/config/config.yaml` to build index.  
+2. Run `ragpanel-cli --action launch --config examples/config/config.yaml` to launch api service.
 3. Send post to server like [post.py](examples/post.py). You can run `python examples/post.py` to test.  
-4. Run `python launch.py --action dump --config examples/config/config.yaml` to dump your chat history if needed.
+4. Run `ragpanel-cli --action dump --config examples/config/config.yaml` to dump your chat history if needed.
    
 ## Web UI
 You can start a webui server to set and test your environment as follows:
-1. Run `python launch.py --action webui`. You will see ui like:
+1. Run `ragpanel-cli --action webui`. You will see ui like:
 ![Web UI](assets/webui.png)
 
 2. Set proper parameters and then try to insert, retrieve and chat to check your environment.
