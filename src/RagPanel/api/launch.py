@@ -57,4 +57,5 @@ def interactive_cli(config, action):
         dump_history(Path(folder), "history_" + collection)
     elif action == Action.WEBUI:
         from ..webui import create_ui
-        create_ui().launch()
+        lang = click.prompt('choose your language', type=click.Choice(["en", "zh"]))
+        create_ui(lang).launch()

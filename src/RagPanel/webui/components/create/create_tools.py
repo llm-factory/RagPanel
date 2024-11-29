@@ -3,13 +3,13 @@ from ....utils import save_as_dotenv
 from ..tools import create_splitter_tab,create_model_tab
 
 
-def create_tools_block(engine):
+def create_tools_block(engine, LOCALES):
     with gr.Blocks() as demo:
-        with gr.Tab("Splitter"):
-            create_splitter_tab()
-        with gr.Tab("Model"):
-            create_model_tab()
-        save_env_button = gr.Button("apply and save")
+        with gr.Tab(LOCALES["Splitter"]):
+            create_splitter_tab(LOCALES)
+        with gr.Tab(LOCALES["Model"]):
+            create_model_tab(LOCALES)
+        save_env_button = gr.Button(LOCALES["apply_and_save"])
     save_env_button.click(save_as_dotenv)
     save_env_button.click(engine.update_tools)
     return demo
