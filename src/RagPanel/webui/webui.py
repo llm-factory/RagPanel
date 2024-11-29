@@ -27,5 +27,5 @@ def create_ui(lang):
         create_tools_block(engine, LOCALES)
 
         # functions
-        create_functions_block(engine, search_result_state)
+        create_functions_block(engine, search_result_state, LOCALES)
     return demo

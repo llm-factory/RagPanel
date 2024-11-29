@@ -12,7 +12,6 @@ def create_database_block(engine, LOCALES):
             storage = os.getenv("STORAGE", engine.supported_storages[0])
             storage_choice = gr.Dropdown(
                 label=LOCALES["kv_storage"],
-                info="please start selected storage service first",
                 choices=engine.supported_storages,
                 value=storage,
                 allow_custom_value=True
@@ -23,14 +22,13 @@ def create_database_block(engine, LOCALES):
 
             collection = gr.Textbox(
                 value="init",
-                label="collection name",
+                label=locales["collection_name"],
             )
 
         with gr.Row():
             vectorstore = os.getenv('VECTORSTORE', engine.supported_vectorstores[0])
             vectorstore_choice = gr.Dropdown(
                 label=LOCALES["vectorstore"],
-                info="please start selected vector store service first",
                 choices=engine.supported_vectorstores,
                 value=vectorstore,
                 allow_custom_value=True
@@ -72,19 +70,16 @@ def get_storage_path(storage):
 
 def get_vectorstore_path(vectorstore):
     label = locales["vectorstore_uri"]
-    info = "the uri of your vectorstore"
     if vectorstore is not None:
         if vectorstore == 'chroma':
             default_path = os.getenv("CHROMA_PATH", "./chroma")
             label = locales["vectorstore_path"]
-            info = "the path of your vectorstore"
         elif vectorstore == 'milvus':
             default_path = os.getenv("MILVUS_URI", "http://localhost:19530")
     else:
         default_path = os.getenv("CHROMA_PATH", "./chroma")
     vectorstore_path = gr.Textbox(
         label=label,
-        info=info,
         value=default_path,
         scale=2
     )
@@ -97,7 +92,7 @@ def get_vectorstore_token(vectorstore):
         visible = True
     vectorstore_token = gr.Textbox(
         label=locales["vectorstore_token"],
-        info="the token of your vectorstore (ignore this if not set)",
+        info="ignore this if not set",
         value="0",
         visible=visible
     )

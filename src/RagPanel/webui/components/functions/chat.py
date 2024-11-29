@@ -1,6 +1,6 @@
 import gradio as gr
 
-def create_chat_tab(engine):
+def create_chat_tab(engine, LOCALES):
     with gr.Blocks() as demo:
         with gr.Column():
             with gr.Row():
@@ -8,31 +8,32 @@ def create_chat_tab(engine):
                                              maximum=2, 
                                              value=1, 
                                              step=0.02,
-                                             label="threshold",
-                                             info="results with Euclidean distance greater than the threshold will be filtered")
+                                             label=LOCALES["threshold"],
+                                             info=LOCALES["threshold_info"])
                 top_k_slider = gr.Slider(minimum=1,
                                          maximum=32,
                                          value=5,
                                          step=1, 
                                          label="top_k",
-                                         info="top k document chunks with the smallest Euclidean distance will be retrieved")
-                template_box = gr.Textbox(value="充分理解以下事实描述：{context}\n\n回答下面的问题：{query}",
+                                         info=LOCALES["top_k_info"])
+                template_box = gr.Textbox(value=LOCALES["template"],
                                           scale=3,
                                           lines=3,
-                                          label="template",
-                                          info="RAG template")
+                                          label=LOCALES["template_label"],
+                                          info=LOCALES["template_info"])
             def new_chat():
-                return gr.Chatbot(label="chat", value="", placeholder="Ask me anything")
+                return gr.Chatbot(label=LOCALES["chat"], value="", placeholder=LOCALES["hello"])
             chat_bot = new_chat()
             with gr.Row():
                 def new_query():
                     return gr.Textbox(value="",
+                                      label="",
                                       scale=6,
                                       lines=5)
                 query_box = new_query()
                 with gr.Column():
-                    chat_button = gr.Button("enter", scale=3)
-                    clear_button = gr.Button("clear history", scale=3)
+                    chat_button = gr.Button(LOCALES["enter"], scale=3)
+                    clear_button = gr.Button(LOCALES["clear_history"], scale=3)
                     
             chat_button.click(
                 engine.chat_engine.update, 

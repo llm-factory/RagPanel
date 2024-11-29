@@ -87,117 +87,117 @@ LOCALES = {
         "en": "Chat",
         "zh": "聊天"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "collection_name": {
+        "en": "collection name",
+        "zh": "集合(Collection)名称"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "tokenizer_info": {
+        "en": "path of your tokenizer (from hugging face or local), use tiktoken if empty",
+        "zh": "huggingface或本地路径，为空则使用tiktoken"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "Insert": {
+        "en": "Insert",
+        "zh": "插入文档"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "Search": {
+        "en": "Retrieve",
+        "zh": "检索"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "Delete": {
+        "en": "Delete",
+        "zh": "删除"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "Chat": {
+        "en": "Chat",
+        "zh": "聊天"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "number_of_processes": {
+        "en": "number of processes",
+        "zh": "线程数"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "insert_file": {
+        "en": "insert file",
+        "zh": "加入文档"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "insertion_progress": {
+        "en": "insertion progress",
+        "zh": "加入进度"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "file_uploaded": {
+        "en": "files inserted",
+        "zh": "文档加入成功"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "threshold": {
+        "en": "threshold",
+        "zh": "阈值"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "threshold_info": {
+        "en": "results with Euclidean distance greater than the threshold will be filtered",
+        "zh": "欧氏距离大于阈值的结果会被过滤"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "top_k_info": {
+        "en": "top k document chunks with the smallest Euclidean distance will be retrieved",
+        "zh": "欧氏距离最小的前k个结果会被检索"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "query": {
+        "en": "query",
+        "zh": "查询"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "search_file": {
+        "en": "retrieve",
+        "zh": "检索"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "delete_btn_1": {
+        "en": "delete",
+        "zh": "删除"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "select_file_delete": {
+        "en": "select chunks to delete",
+        "zh": "选中需要删除的文档块"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "No_matching_docs": {
+        "en": "No matching chunks",
+        "zh": "无匹配文档块"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "files_deleted": {
+        "en": "chunks deleted",
+        "zh": "文档块已删除"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "delete_selected_files": {
+        "en": "delete selected files",
+        "zh": "删除所选文件"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "delete_files": {
+        "en": "delete files",
+        "zh": "删除文件"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "template": {
+        "en": "Based on the following context:{context}\n\nAnswer this question:{query}",
+        "zh": "充分理解以下事实描述：{context}\n\n回答下面的问题：{query}"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "template_label": {
+        "en": "template",
+        "zh": "模板"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "template_info": {
+        "en": "RAG template",
+        "zh": "RAG模板"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "hello": {
+        "en": "Ask me anything",
+        "zh": "请提出您的问题"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "chat": {
+        "en": "chat",
+        "zh": "聊天"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "enter": {
+        "en": "enter",
+        "zh": "输入"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "clear_history": {
+        "en": "clear history",
+        "zh": "清空聊天记录"
     },
     "": {
         "en": "",

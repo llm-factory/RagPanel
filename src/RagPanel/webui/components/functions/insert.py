@@ -1,25 +1,22 @@
 import gradio as gr
 
 
-def create_insert_tab(engine):
+def create_insert_tab(engine, LOCALES):
     with gr.Blocks() as demo:
         with gr.Row():
             proc_slider = gr.Slider(minimum=1,
                                     maximum=32,
                                     step=1,
-                                    label="multiprocess",
-                                    info="set the number of processes",
+                                    label=LOCALES["number_of_processes"],
                                     scale=1)
             file = gr.File(file_count="multiple",
-                label="add file",
-                scale=3)
+                           scale=3)
 
-        insert_btn = gr.Button("add file to database")
-        progress_textbox = gr.Textbox(label="insertion progress",
-                                        info="insertion progress is shown here")
+        insert_btn = gr.Button(LOCALES["insert_file"])
+        progress_textbox = gr.Textbox(label=LOCALES["insertion_progress"])
         
     def info_file_upload():
-        gr.Info("file uploaded")
+        gr.Info(LOCALES["file_uploaded"])
     
     insert_btn.click(engine.insert, 
                      [file, proc_slider],

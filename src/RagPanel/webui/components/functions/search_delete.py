@@ -1,7 +1,7 @@
 import gradio as gr
 import pandas as pd
 
-def create_search_delete_tab(engine, search_result_state):
+def create_search_delete_tab(engine, search_result_state, LOCALES):
     with gr.Blocks() as demo:
         with gr.Row():
             with gr.Column():
@@ -9,21 +9,21 @@ def create_search_delete_tab(engine, search_result_state):
                                              maximum=2,
                                              value=1, 
                                              step=0.02,
-                                             label="threshold",
-                                             info="results with Euclidean distance greater than the threshold will be filtered")
+                                             label=LOCALES["threshold"],
+                                             info=LOCALES["threshold_info"])
                 top_k_slider = gr.Slider(minimum=1, 
                                          maximum=32,
                                          value=5,
                                          step=1,
                                          label="top_k",
-                                         info="top k document chunks with the smallest Euclidean distance will be retrieved")
-            search_box = gr.Textbox(label="query",
+                                         info=LOCALES["top_k_info"])
+            search_box = gr.Textbox(label=LOCALES["query"],
                                     lines=10,
                                     scale=3)
 
         with gr.Row():
-            search_btn = gr.Button("search file")
-            delete_btn = gr.Button("delete")
+            search_btn = gr.Button(LOCALES["search_file"])
+            delete_btn = gr.Button(LOCALES["delete_btn_1"])
 
         search_btn.click(engine.search,
                          [search_box, threshold_slider, top_k_slider],
@@ -35,10 +35,10 @@ def create_search_delete_tab(engine, search_result_state):
             with gr.Row():
                 checkbox = gr.Checkboxgroup(choices=docs["content"].tolist(),
                                             type="index", 
-                                            label="select file to delete")
+                                            label=LOCALES["select_file_delete"])
                 delete_btn.click(engine.delete,
                                  [checkbox, search_result_state],
                                  search_result_state)
         else:
-            gr.Warning("No matching docs")
+            gr.Warning(LOCALES["No_matching_docs"])
     return demo
