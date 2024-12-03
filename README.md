@@ -80,3 +80,6 @@ You can start a webui server to set and test your environment as follows:
 ![Web UI](assets/webui.png)
 
 2. Set proper parameters and then try to insert, retrieve and chat to check your environment.
+
+## Local Model Support
+Our framework only supports API calls, so if you would like to use local model, you can run [imitater](https://github.com/the-seeds/imitater) to convert local model to a form that supports the OpenAI API.
