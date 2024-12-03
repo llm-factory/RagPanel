@@ -1,4 +1,5 @@
 ## 使用
+[[English](README.md) | 简体中文]
 ### 索引构建
 索引构建部分包括加载文件、文档分块、文档嵌入和插入数据库，设置妥当后，您可以运行`ragpanel-cli --action build --config ./config/config.yaml`来启动索引构建工作。  
 分词器、词嵌入模型、数据库类型等在`.env`中设置：

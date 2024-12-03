@@ -1,4 +1,5 @@
 ## Usage
+[English | [简体中文](README_zh.md)]
 ### Build index
 Building index includes load files, split files, embed chunks and insert to database. With proper config, you can run `ragpanel-cli --action build --config ./config/config.yaml` to start building index.  
 Tokenizer、Embedding Model、database are set in `.env`:

@@ -71,7 +71,8 @@ Assuming you have created **.env** and **config.yaml** properly, and **started y
 1. Run `ragpanel-cli --action build --config examples/config/config.yaml` to build index.  
 2. Run `ragpanel-cli --action launch --config examples/config/config.yaml` to launch api service.
 3. Send post to server like [post.py](examples/post.py). You can run `python examples/post.py` to test.  
-4. Run `ragpanel-cli --action dump --config examples/config/config.yaml` to dump your chat history if needed.
+4. Run `ragpanel-cli --action dump --config examples/config/config.yaml` to dump your chat history if needed.  
+You can see README in [examples](examples) folder for more details.
    
 ## Web UI
 You can start a webui server to set and test your environment as follows:

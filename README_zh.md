@@ -71,7 +71,8 @@ dump:
 1. 运行 `ragpanel-cli --action build --config examples/config/config.yaml`来构建索引。  
 2. 运行 `ragpanel-cli --action launch --config examples/config/config.yaml`来启动api服务。
 3. 向服务器发送post请求，格式参考[post.py](examples/post.py)，您可以试运行`python examples/post.py`来查看结果。  
-4. 如果需要导出聊天记录，可以运行`ragpanel-cli --action dump --config examples/config/config.yaml`来导出。
+4. 如果需要导出聊天记录，可以运行`ragpanel-cli --action dump --config examples/config/config.yaml`来导出。  
+您可以查看[examples](examples)文件夹下的README来了解更多信息。
    
 ## 网页UI
 您可以启动网页UI来设置和测试您的环境配置，如下所示:
