@@ -127,8 +127,11 @@ class UiEngine(BaseEngine):
             except:
                 gr.Warning("") # TODO
 
-    def search(self, query, threshold, top_k):
+    def search(self, query, threshold, top_k, rerank):
         docs = super().search(query, top_k, threshold)
+        if rerank=="Cohere":
+            from ..utils.reranker import rerank
+            docs = rerank(docs)
         if len(docs) < top_k and len(docs) != 0:
             gr.Warning("No enough candidates")
         return pd.DataFrame(docs)

@@ -17,6 +17,10 @@ def create_search_delete_tab(engine, search_result_state, LOCALES):
                                          step=1,
                                          label="top_k",
                                          info=LOCALES["top_k_info"])
+                rerank_dropdown = gr.Dropdown(label="reranker",
+                                              choices=["None", "Cohere"],
+                                              value="None",
+                                              type="value")
             search_box = gr.Textbox(label=LOCALES["query"],
                                     lines=10,
                                     scale=3)
@@ -26,7 +30,7 @@ def create_search_delete_tab(engine, search_result_state, LOCALES):
             delete_btn = gr.Button(LOCALES["delete_btn_1"])
 
         search_btn.click(engine.search,
-                         [search_box, threshold_slider, top_k_slider],
+                         [search_box, threshold_slider, top_k_slider, rerank_dropdown],
                          search_result_state)
 
     @gr.render(inputs=search_result_state, triggers=[search_result_state.change])
