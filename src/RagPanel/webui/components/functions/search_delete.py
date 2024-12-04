@@ -30,7 +30,7 @@ def create_search_delete_tab(engine, search_result_state, LOCALES):
             delete_btn = gr.Button(LOCALES["delete_btn_1"])
 
         search_btn.click(engine.search,
-                         [search_box, threshold_slider, top_k_slider, rerank_dropdown],
+                         [search_box, top_k_slider, rerank_dropdown, threshold_slider],
                          search_result_state)
 
     @gr.render(inputs=search_result_state, triggers=[search_result_state.change])

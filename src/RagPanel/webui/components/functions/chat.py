@@ -16,6 +16,10 @@ def create_chat_tab(engine, LOCALES):
                                          step=1, 
                                          label="top_k",
                                          info=LOCALES["top_k_info"])
+                rerank_dropdown = gr.Dropdown(label="reranker",
+                                        choices=["None", "Cohere"],
+                                        value="None",
+                                        type="value")
                 template_box = gr.Textbox(value=LOCALES["template"],
                                           scale=3,
                                           lines=3,
@@ -37,8 +41,7 @@ def create_chat_tab(engine, LOCALES):
                     
             chat_button.click(
                 engine.chat_engine.update, 
-                [top_k_slider, threshold_slider, 
-                template_box]
+                [top_k_slider, threshold_slider, rerank_dropdown, template_box]
             ).then(
                 engine.chat_engine.ui_chat, 
                 [chat_bot, query_box], 
@@ -47,7 +50,7 @@ def create_chat_tab(engine, LOCALES):
             
             query_box.submit(
                 engine.chat_engine.update, 
-                [top_k_slider, threshold_slider, template_box]
+                [top_k_slider, threshold_slider, rerank_dropdown, template_box]
             ).then(
                 engine.chat_engine.ui_chat, 
                 [chat_bot, query_box], 

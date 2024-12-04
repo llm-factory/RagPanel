@@ -15,7 +15,7 @@ def create_delete_tab(engine, LOCALES):
         delete_button = gr.Button(LOCALES["delete_selected_files"])
         
     def info_file_deleted():
-        gr.Info(LOCALES["files deleted"])
+        gr.Info(LOCALES["files_deleted"])
 
     gr.Timer().tick(get_delete_dropdown, outputs=dropdown)
 

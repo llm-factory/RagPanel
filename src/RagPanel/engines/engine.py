@@ -60,7 +60,7 @@ class BaseEngine:
         """
         ...
 
-    def search(self, query, top_k, threshold = None):
+    def search(self, query, top_k, reranker, threshold = None):
         self.check_database()
         tmp_threshold = self._retriever._threshold
         if threshold is not None:
@@ -72,6 +72,9 @@ class BaseEngine:
             doc = self._storage.query(key=doc_id).content
             docs.append({"id": doc_id, "content": doc})
         self._retriever._threshold = tmp_threshold
+        if reranker == 'cohere':
+            from ..utils.reranker import rerank
+            docs = rerank(docs)
         return docs
 
     def launch_app(self, collection, host, port):

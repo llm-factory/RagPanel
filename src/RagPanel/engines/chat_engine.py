@@ -25,10 +25,12 @@ class ChatEngine:
         self.top_k = 2
         self.threshold = 1.0
         self.with_doc = False
+        self.reranker = "None"
         
-    def update(self, top_k, threshold, template):
+    def update(self, top_k, threshold, reranker, template):
         self.kbqa_template = Template(template)
         self.top_k = top_k
+        self.reranker = reranker
         self.threshold = threshold
         
     def dump_history(self):
@@ -53,7 +55,7 @@ class ChatEngine:
         messages = messages[-(self.window_size * 2 + 1) :]
         query = messages[-1].content
 
-        docs = self.engine.search(query=query, threshold=self.threshold, top_k=self.top_k)
+        docs = self.engine.search(query=query, threshold=self.threshold, top_k=self.top_k, reranker=self.reranker)
         if len(docs):
             docs = [doc["content"] for doc in docs]
             query = self.kbqa_template.apply(context="\n".join(docs), query=query)
@@ -76,7 +78,7 @@ class ChatEngine:
             messages.append(AssistantMessage(content=ai_message))
         
         gr.Info("retrieving docs...")
-        docs = self.engine.search(query=query, threshold=self.threshold, top_k=self.top_k)
+        docs = self.engine.search(query=query, threshold=self.threshold, top_k=self.top_k, reranker=self.reranker)
         if len(docs):
             docs = docs["content"].tolist()
             query = self.kbqa_template.apply(context="\n".join(docs), query=query)
