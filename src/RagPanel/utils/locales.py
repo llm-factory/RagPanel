@@ -259,9 +259,9 @@ LOCALES = {
         "en": "No enough candidates",
         "zh": "无足够候选文档"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "token_info": {
+        "en": "0 if not set",
+        "zh": "如未设置请填0"
     },
     "": {
         "en": "",

@@ -45,7 +45,7 @@ def create_database_block(engine, LOCALES):
             visible = True
         vectorstore_token = gr.Textbox(
             label=LOCALES["vectorstore_token"],
-            info="ignore this if not set",
+            info=LOCALES["token_info"],
             value="0",
             visible=visible
         )
