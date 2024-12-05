@@ -9,10 +9,11 @@ from cardinal import AutoStorage, AutoVectorStore, CJKTextSplitter, AutoConditio
 
 
 class UiEngine(BaseEngine):
-    def __init__(self):
+    def __init__(self, LOCALES):
         super().__init__()
         self.file_history = []
         self.file_chunk_map = {}
+        self.LOCALES = LOCALES
         
     def update_tools(self):
         from cardinal.model.config import settings
@@ -36,13 +37,15 @@ class UiEngine(BaseEngine):
         try:
             self._storage = AutoStorage[Document](collection)
         except NameError:
-            raise gr.Error("Please install dependencies according to your database")
+            raise gr.Error(self.LOCALES["dep_error"])
         except Exception:
-            raise gr.Error("storage connection error")
+            raise gr.Error(self.LOCALES["storage_connection_error"])
         try:
             self._vectorstore = AutoVectorStore[DocIndex](collection)
+        except NameError:
+            raise gr.Error(self.LOCALES["dep_error"])
         except Exception:
-            raise gr.Error("vectorstore connection error")
+            raise gr.Error(self.LOCALES["vectorstore_connection_error"])
         self._retriever = DenseRetriever[DocIndex](vectorstore_name=collection, threshold=1.0)
         self.chat_engine.name = "history_" + collection
         self.chat_engine.collector = BaseCollector(storage_name="history_" + collection)
@@ -52,25 +55,25 @@ class UiEngine(BaseEngine):
         try:
             super().clear_database()
         except TimeoutError:
-            raise gr.Error("database connection error")
+            raise gr.Error(self.LOCALES["database_connection_error"])
 
     def insert_to_store(self, files, num_proc): #TODO:结合多线程与gr.Process
         if self._splitter is None:
             progress = gr.Progress()
-            progress(0, "start to load splitter")
-            for i in progress.tqdm(range(1), desc="loading splitter"):
+            progress(0, self.LOCALES["load_tokenizer"])
+            for i in progress.tqdm(range(1), desc=self.LOCALES["loading_tokenzier"]):
                 self._splitter = CJKTextSplitter()
         text_chunks = []
         progress = gr.Progress()
-        progress(0, "start to split files")
+        progress(0, self.LOCALES["start_to_split_docs"])
         for chunks in progress.tqdm(
             files,
-            desc="split files"
+            desc=self.LOCALES["spliting_docs"]
         ):
             text_chunks.extend(split(self._splitter, chunks))
         BATCH_SIZE = 1000
-        progress(0, "start to build index")
-        for i in progress.tqdm(range(0, len(text_chunks), BATCH_SIZE), desc="build index"):
+        progress(0, self.LOCALES["start_to_build_index"])
+        for i in progress.tqdm(range(0, len(text_chunks), BATCH_SIZE), desc=self.LOCALES["building_index"]):
             batch_text = text_chunks[i: i + BATCH_SIZE]
             texts, batch_index, batch_ids, batch_document = [], [], [], []
             for text in batch_text:
@@ -106,9 +109,9 @@ class UiEngine(BaseEngine):
 
         docs = docs[~docs["id"].isin(del_ids)]
         if len(del_ids) == 1:
-            gr.Info("1 chunk is deleted")
+            gr.Info(self.LOCALES["deleted_1"])
         elif len(del_ids) > 1:
-            gr.Info(f"{len(del_ids)} chunks are deleted")
+            gr.Info(f"{len(del_ids)} {self.LOCALES['deleted_more']}")
         return docs
 
     def delete_by_id(self, id):
@@ -130,7 +133,7 @@ class UiEngine(BaseEngine):
     def search(self, query, top_k, reranker, threshold):
         docs = super().search(query=query, top_k=top_k, reranker=reranker, threshold=threshold)
         if len(docs) < top_k and len(docs) != 0:
-            gr.Warning("No enough candidates")
+            gr.Warning(self.LOCALES["no_enough_candidates"])
         return pd.DataFrame(docs)
 
     def launch_app(self, host, port):

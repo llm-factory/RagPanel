@@ -14,16 +14,16 @@ def create_ui(lang):
     global LOCALES
     LOCALES = {key: value[lang] for key, value in LOCALES.items()}
     with gr.Blocks() as demo:
-        engine = UiEngine()
+        engine = UiEngine(LOCALES)
         gr.HTML("<center><h1>RAG Panel</h1></center>")
         search_result_state = gr.State()
 
         # database
-        gr.HTML("<b>Database Environment</b>")
+        gr.HTML(f"<b>{LOCALES['Database_Environment']}</b>")
         create_database_block(engine, LOCALES)
 
         # tools
-        gr.HTML("<b>Tools Environment")
+        gr.HTML(f"<b>{LOCALES['Tools_Environment']}")
         create_tools_block(engine, LOCALES)
 
         # functions

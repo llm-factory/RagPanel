@@ -97,7 +97,7 @@ LOCALES = {
     },
     "Insert": {
         "en": "Insert",
-        "zh": "插入文档"
+        "zh": "添加文档"
     },
     "Search": {
         "en": "Retrieve",
@@ -199,65 +199,65 @@ LOCALES = {
         "en": "clear history",
         "zh": "清空聊天记录"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "Database_Environment": {
+        "en": "Database Environment",
+        "zh": "数据库环境"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "Tools_Environment": {
+        "en": "Tools Environment",
+        "zh": "工具环境"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "dep_error": {
+        "en": "Please install dependencies according to your database",
+        "zh": "请根据数据库安装相应依赖"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "storage_connection_error": {
+        "en": "storage connection error",
+        "zh": "键值对数据库连接错误"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "vectorstore_connection_error": {
+        "en": "vectorstore connection error",
+        "zh": "向量数据库连接错误"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "database_connection_error": {
+        "en": "database connection error",
+        "zh": "数据库连接错误"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "load_tokenizer": {
+        "en": "start to load tokenizer",
+        "zh": "开始加载分词器tokenizer"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "loading_tokenzier": {
+        "en": "loading tokenzier",
+        "zh": "正在加载分词器tokenizer"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "start_to_split_docs": {
+        "en": "start to split docs",
+        "zh": "开始分割文档"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "spliting_docs": {
+        "en": "spliting docs",
+        "zh": "正在分割文档"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "start_to_build_index": {
+        "en": "start to build index",
+        "zh": "开始构建索引"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "building_index": {
+        "en": "building index",
+        "zh": "正在构建索引"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "deleted_1": {
+        "en": "1 chunk has been deleted",
+        "zh": "已删除一个文档块"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "deleted_more": {
+        "en": "chunks are deleted",
+        "zh": "个文档块已被删除"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "no_enough_candidates": {
+        "en": "No enough candidates",
+        "zh": "无足够候选文档"
     },
     "": {
         "en": "",
