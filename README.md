@@ -15,7 +15,7 @@ cd RagPanel
 pip install -e ".[es, milvus]"
 ```
 
-3. Create a `.env` and a `config.yaml` as follows:
+3. Create a `.env` and a `config.yaml` as follows (If you only use the Web UI, you don't need to create these two files, because they can be configured in the UI):
 ```
 # .env
 # imitater or openai
@@ -55,14 +55,14 @@ database:
   collection: init
 
 build:
-  folder: ./examples/inputs
+  folder: ./inputs
 
 launch:
   host: 127.0.0.1
   port: 8080
 
 dump:
-  folder: ./examples/chat_history
+  folder: ./chat_history
 ```
 
 4. Run `ragpanel-cli --action YOUR_ACTION --config CONFIG_FILE` to start.  
@@ -70,10 +70,10 @@ Here are action choices:
 `build`: read data, split docs and build index.  
 `launch`: launch app server.  
 `dump`: dump chat history.  
-`webui`: visual webui (driven by Gradio).
+`webui`: visual webui (driven by Gradio). No need to specify config path.
 
 ## Api Example
-Assuming you have created **.env** and **config.yaml** properly, and **started your database server**, you can see README in [examples](examples) folder to know how to start and use API server.
+Assuming you have created **.env** and **config.yaml** properly, and **started your database server**, you can see README in [examples/api](examples/api/) folder to know how to start and use API server.
    
 ## Web UI
 You can start a webui server to set and test your environment as follows:

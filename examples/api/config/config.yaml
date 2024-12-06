@@ -2,11 +2,11 @@ database:
   collection: init
 
 build:
-  folder: ./examples/inputs
+  folder: ./inputs
 
 launch:
   host: 127.0.0.1
   port: 8080
 
 dump:
-  folder: ./examples/chat_history
+  folder: ./chat_history

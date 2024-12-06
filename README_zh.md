@@ -15,7 +15,7 @@ cd RagPanel
 pip install -e ".[es, milvus]"
 ```
 
-3. 创建如下的`.env` 和 `config.yaml` 文件:
+3. 创建如下的`.env` 和 `config.yaml`文件（如果您仅使用Web UI，则不需要创建这两个文件，可在UI中配置）:
 ```
 # .env
 # imitater or openai
@@ -55,14 +55,14 @@ database:
   collection: init
 
 build:
-  folder: ./examples/inputs
+  folder: ./inputs
 
 launch:
   host: 127.0.0.1
   port: 8080
 
 dump:
-  folder: ./examples/chat_history
+  folder: ./chat_history
 ```
 
 4. 运行 `ragpanel-cli --action YOUR_ACTION --config CONFIG_FILE_PATH`  
@@ -70,10 +70,10 @@ dump:
 `build`: 读取数据，分割嵌入。  
 `launch`: 启动app服务。  
 `dump`: 导出聊天历史。  
-`webui`: 可视化网页UI (由Gradio驱动)。
+`webui`: 可视化网页UI (由Gradio驱动)，不需要指定config路径。
 
 ## Api服务样例
-假设您已经创建完 **.env**和 **config.yaml**，并且**启动了数据库服务**，您可以参考[examples](examples)文件夹下的README来启动和使用api服务。  
+假设您已经创建完 **.env**和 **config.yaml**，并且**启动了数据库服务**，您可以参考[examples/api](examples/api/)文件夹下的README来启动和使用api服务。  
    
 ## 网页UI
 您可以启动网页UI来设置和测试您的环境配置，如下所示:
