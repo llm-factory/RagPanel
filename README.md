@@ -1,11 +1,12 @@
 # RagPanel
 [English | [简体中文](README_zh.md)]
 ## Quick Start
-1. Start database server, including a storage server and a vectorstore server.  
-Supported storages: `redis`,  `elasticsearch`.  
+1. Start database server, including a kv storage server and a vectorstore server.  
+Supported kv storages: `redis`,  `elasticsearch`.  
 Supported vectorstores: `chroma`, `milvus`.  
 You can deploy them using docker. (See [docker](docker/) folder)
 ![database](assets/database.png)
+The data storage situation is shown in the figure above. This project supports sparse retrieval and dense retrieval: sparse retrieval searches the document content in the KV database and directly obtains the document content; dense retrieval searches in the vector store and obtains the document block id, and then get the document content from the KV database.
 
 2. Install dependencies according to your database server. Take `elasticsearch`+`milvus` as an example:
 ```
@@ -72,16 +73,11 @@ Here are action choices:
 `webui`: visual webui (driven by Gradio).
 
 ## Api Example
-Assuming you have created **.env** and **config.yaml** properly, and **started your database server**, take data in [examples](examples) folder as an example.  
-1. Run `ragpanel-cli --action build --config examples/config/config.yaml` to build index.  
-2. Run `ragpanel-cli --action launch --config examples/config/config.yaml` to launch api service.
-3. Send post to server like [post.py](examples/post.py). You can run `python examples/post.py` to test.  
-4. Run `ragpanel-cli --action dump --config examples/config/config.yaml` to dump your chat history if needed.  
-You can see README in [examples](examples) folder for more details.
+Assuming you have created **.env** and **config.yaml** properly, and **started your database server**, you can see README in [examples](examples) folder to know how to start and use API server.
    
 ## Web UI
 You can start a webui server to set and test your environment as follows:
-1. Run `ragpanel-cli --action webui`. You will see ui like:
+1. Run `ragpanel-cli --action webui`. Choose the language `en` (English) or `zh` (Chinese). You will see ui like:
 ![Web UI](assets/webui.png)
 
 2. Set proper parameters and then try to insert, retrieve and chat to check your environment.

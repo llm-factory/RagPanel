@@ -1,11 +1,12 @@
 # RagPanel
 [[English](README.md) | 简体中文]
 ## 快速开始
-1. 启动数据库服务，包括一个传统数据库和一个向量数据库。
-目前支持的传统数据库: `redis`,  `elasticsearch`  
+1. 启动数据库服务，包括一个键值对数据库和一个向量数据库。
+目前支持的键值数据库: `redis`,  `elasticsearch`  
 目前支持的向量数据库: `chroma`, `milvus`  
 您可以使用docker部署 (见[docker](docker)文件夹)
-![database_zh](assets/database_zh.png)
+![database_zh](assets/database_zh.png)  
+数据存储情况如上图所示，本项目支持稀疏检索、稠密检索：稀疏检索在键值数据库中对文档内容检索，直接得到文档内容；稠密检索在向量数据库中检索，得到文档块id，再直接在键值数据库中得到文档内容。
 
 2. 根据启动的数据库服务安装依赖项。 以 `elasticsearch`+`milvus` 为例:
 ```
@@ -72,16 +73,11 @@ dump:
 `webui`: 可视化网页UI (由Gradio驱动)。
 
 ## Api服务样例
-假设您已经创建完 **.env**和 **config.yaml**，并且**启动了数据库服务**，下面以[examples](examples)文件夹下的内容为例来展示如何启动和使用api服务。  
-1. 运行 `ragpanel-cli --action build --config examples/config/config.yaml`来构建索引。  
-2. 运行 `ragpanel-cli --action launch --config examples/config/config.yaml`来启动api服务。
-3. 向服务器发送post请求，格式参考[post.py](examples/post.py)，您可以试运行`python examples/post.py`来查看结果。  
-4. 如果需要导出聊天记录，可以运行`ragpanel-cli --action dump --config examples/config/config.yaml`来导出。  
-您可以查看[examples](examples)文件夹下的README来了解更多信息。
+假设您已经创建完 **.env**和 **config.yaml**，并且**启动了数据库服务**，您可以参考[examples](examples)文件夹下的README来启动和使用api服务。  
    
 ## 网页UI
 您可以启动网页UI来设置和测试您的环境配置，如下所示:
-1. 运行 `ragpanel-cli --action webui`。 您会看到如下界面：
-![Web UI](./assets/webui.png)
+1. 运行 `ragpanel-cli --action webui`。之后选择语言`en`（英语）或`zh`（中文），您会看到如下界面：
+![Web UI](./assets/webui_zh.png)
 
 2. 设置合适的环境参数，并尝试构建索引、查询、聊天等，以测试环境配置是否有效。
