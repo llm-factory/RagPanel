@@ -43,6 +43,11 @@ MILVUS_URI=http://localhost:19530
 MILVUS_TOKEN=0
 ```
 
+> [!NOTE]
+> 闭源模型推荐使用 [One API](https://github.com/songquanpeng/one-api) 接入。
+> 
+> 开源模型推荐使用 [imitater](https://github.com/the-seeds/imitater) 接入。
+
 ```
 # config.yaml
 database:
@@ -80,6 +85,3 @@ dump:
 ![Web UI](./assets/webui.png)
 
 2. 设置合适的环境参数，并尝试构建索引、查询、聊天等，以测试环境配置是否有效。
-
-## 本地模型支持
-我们的框架仅支持API调用，所以如果您希望使用本地模型，可以参考我们的[imitater](https://github.com/the-seeds/imitater)项目来将本地模型转化为支持OpenAI API调用的形式。
