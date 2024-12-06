@@ -184,8 +184,8 @@ LOCALES = {
         "zh": "RAG模板"
     },
     "hello": {
-        "en": "Ask me anything",
-        "zh": "请提出您的问题"
+        "en": "How can I help you?",
+        "zh": "有什么可以帮忙的？"
     },
     "chat": {
         "en": "chat",
@@ -263,41 +263,37 @@ LOCALES = {
         "en": "0 if not set",
         "zh": "如未设置请填0"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "dense": {
+        "en": "dense",
+        "zh": "稠密"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "sparse": {
+        "en": "sparse",
+        "zh": "稀疏"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "hybrid": {
+        "en": "hybrid",
+        "zh": "混合"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "Retriever": {
+        "en": "Retriever",
+        "zh": "检索器"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "configuration_applied": {
+        "en": "configuration applied",
+        "zh": "配置已应用"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "cleared_successfully": {
+        "en": "cleared successfully",
+        "zh": "清空成功"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "reranker": {
+        "en": "reranker",
+        "zh": "重排器"
     },
-    "": {
-        "en": "",
-        "zh": ""
-    },
-    "": {
-        "en": "",
-        "zh": ""
+    "retriever": {
+        "en": "retriever",
+        "zh": "检索器"
     },
     "": {
         "en": "",

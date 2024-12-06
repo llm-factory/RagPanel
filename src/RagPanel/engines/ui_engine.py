@@ -14,14 +14,18 @@ class UiEngine(BaseEngine):
         self.file_history = []
         self.file_chunk_map = {}
         self.LOCALES = LOCALES
+        self.threshold = 1.0
+        self.top_k = 5
         
-    def update_tools(self):
+    def update_tools(self, threshold, top_k):
         from cardinal.model.config import settings
         settings.default_chat_model = os.getenv("DEFAULT_CHAT_MODEL")
         settings.default_embed_model = os.getenv("DEFAULT_EMBED_MODEL")
         settings.hf_tokenizer_path = os.getenv("HF_TOKENIZER_PATH")
         self.splitter = CJKTextSplitter(int(os.getenv("DEFAULT_CHUNK_SIZE")),
                                         int(os.getenv("DEFAULT_CHUNK_OVERLAP")))
+        self.threshold = threshold
+        self.top_k = top_k
 
     def create_database(self, collection, storage, storage_path, vectorstore, vectorestore_path, vectorstore_token):
         # config
@@ -130,9 +134,9 @@ class UiEngine(BaseEngine):
             except:
                 gr.Warning("") # TODO
 
-    def search(self, query, top_k, reranker, threshold):
-        docs = super().search(query=query, top_k=top_k, reranker=reranker, threshold=threshold)
-        if len(docs) < top_k and len(docs) != 0:
+    def search(self, query):
+        docs = super().search(query=query, top_k=self.top_k, reranker="None", threshold=self.threshold)
+        if len(docs) < self.top_k and len(docs) != 0:
             gr.Warning(self.LOCALES["no_enough_candidates"])
         return pd.DataFrame(docs)
 

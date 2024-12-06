@@ -38,6 +38,13 @@ default_envs = {
 }
 
 def save_to_env(name, value):
+    if name == 'RETRIEVER':
+        if value == '稠密':
+            value = 'dense'
+        elif value == '稀疏':
+            value = 'sparse'
+        elif value == '混合':
+            value = 'hybrid'
     os.environ[name] = str(value)
 
 

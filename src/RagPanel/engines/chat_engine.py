@@ -27,11 +27,8 @@ class ChatEngine:
         self.with_doc = False
         self.reranker = "None"
         
-    def update(self, top_k, threshold, reranker, template):
+    def update(self, template):
         self.kbqa_template = Template(template)
-        self.top_k = top_k
-        self.reranker = reranker
-        self.threshold = threshold
         
     def dump_history(self):
         histories = [[message.model_dump()

@@ -1,6 +1,5 @@
 import os
 import gradio as gr
-from ..info import info_clear_database, info_create_database, info_destroy_database
 
 
 def create_database_block(engine, LOCALES):
@@ -90,6 +89,6 @@ def create_database_block(engine, LOCALES):
 
     database_confirm_btn.click(engine.create_database,
                                 [collection, storage_choice, storage_path, vectorstore_choice, vectorstore_path, vectorstore_token]
-                                ).success(info_create_database)
-    database_clear_btn.click(engine.clear_database).success(info_clear_database)
+                                ).success(gr.Info, gr.State(LOCALES["configuration_applied"]))
+    database_clear_btn.click(engine.clear_database).success(gr.Info, gr.State(LOCALES["cleared_successfully"]))
     return demo

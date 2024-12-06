@@ -6,12 +6,11 @@ load_dotenv()
 
 
 from ..engines import UiEngine
-from ..utils.locales import LOCALES
 from .components import create_database_block, create_functions_block, create_tools_block
 
 
 def create_ui(lang):
-    global LOCALES
+    from ..utils.locales import LOCALES
     LOCALES = {key: value[lang] for key, value in LOCALES.items()}
     with gr.Blocks() as demo:
         engine = UiEngine(LOCALES)
