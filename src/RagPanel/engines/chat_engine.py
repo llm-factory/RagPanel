@@ -75,7 +75,7 @@ class ChatEngine:
             messages.append(AssistantMessage(content=ai_message))
         
         gr.Info("retrieving docs...")
-        docs = self.engine.search(query=query, threshold=self.threshold, top_k=self.top_k, reranker=self.reranker)
+        docs = self.engine.search(query=query)
         if len(docs):
             docs = docs["content"].tolist()
             query = self.kbqa_template.apply(context="\n".join(docs), query=query)

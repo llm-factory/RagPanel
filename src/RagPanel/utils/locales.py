@@ -295,9 +295,9 @@ LOCALES = {
         "en": "retriever",
         "zh": "检索器"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "database_not_found_error": {
+        "en": "Please apply your database config first",
+        "zh": "请先应用您的数据库设置"
     },
     "": {
         "en": "",

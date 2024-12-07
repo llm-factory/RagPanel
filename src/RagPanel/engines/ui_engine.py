@@ -16,6 +16,7 @@ class UiEngine(BaseEngine):
         self.LOCALES = LOCALES
         self.threshold = 1.0
         self.top_k = 5
+        self.reranker = "None"
         
     def update_tools(self, threshold, top_k):
         from cardinal.model.config import settings
@@ -26,6 +27,7 @@ class UiEngine(BaseEngine):
                                         int(os.getenv("DEFAULT_CHUNK_OVERLAP")))
         self.threshold = threshold
         self.top_k = top_k
+        self.reranker = os.getenv("RERANKER", "None")
 
     def create_database(self, collection, storage, storage_path, vectorstore, vectorestore_path, vectorstore_token):
         # config
@@ -60,6 +62,8 @@ class UiEngine(BaseEngine):
             super().clear_database()
         except TimeoutError:
             raise gr.Error(self.LOCALES["database_connection_error"])
+        except ValueError:
+            raise gr.Error(self.LOCALES["database_not_found_error"])
 
     def insert_to_store(self, files, num_proc): #TODO:结合多线程与gr.Process
         if self._splitter is None:
@@ -135,7 +139,7 @@ class UiEngine(BaseEngine):
                 gr.Warning("") # TODO
 
     def search(self, query):
-        docs = super().search(query=query, top_k=self.top_k, reranker="None", threshold=self.threshold)
+        docs = super().search(query=query, top_k=self.top_k, reranker=self.reranker, threshold=self.threshold)
         if len(docs) < self.top_k and len(docs) != 0:
             gr.Warning(self.LOCALES["no_enough_candidates"])
         return pd.DataFrame(docs)
