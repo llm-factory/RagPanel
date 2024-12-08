@@ -1,21 +1,36 @@
 # RagPanel
 [English | [简体中文](README_zh.md)]
-## Quick Start
-1. Start database server, including a kv storage server and a vectorstore server.  
-Supported kv storages: `redis`,  `elasticsearch`.  
-Supported vectorstores: `chroma`, `milvus`.  
-You can deploy them using docker. (See [docker](docker/) folder)
-![database](assets/database.png)
-The data storage situation is shown in the figure above. This project supports sparse retrieval and dense retrieval: sparse retrieval searches the document content in the KV database and directly obtains the document content; dense retrieval searches in the vector store and obtains the document block id, and then get the document content from the KV database.
-
-2. Install dependencies according to your database server. Take `elasticsearch`+`milvus` as an example:
+## 📄Introduction
+Rag Panel is an open source RAG rapid deployment project, including visual interactive interface and API calls.
+## 🚀Quick Start
+0. Prepare a chat model and an embedding model. Closed source models are recommended to use [One API](https://github.com/songquanpeng/one-api) to access (OpenAI API is also OK). Open source models are recommended to use [imitater](https://github.com/the-seeds/imitater) to access.
+1. Clone git and create conda environment:
 ```
 git clone https://github.com/the-seeds/RagPanel
 cd RagPanel
-pip install -e ".[es, milvus]"
+conda create -n ragpanel python=3.10
+conda activate ragpanel
+```
+2. Start database server, including a kv storage server and a vector storage server.  
+Supported kv storages: `redis`,  `elasticsearch`.  
+Supported vector storages: `chroma`, `milvus`.  
+We recommend deploy them using docker and we have provided docker compose file in [docker](docker) folder.   
+Take `elasticsearch` + `chroma` as an example, you can run `cd docker/elasticsearch && docker compose up -d` to start `elasticsearch`. `chroma` only needs to follow later steps to install the python dependencies to run and don't need docker.
+> [!NOTE] 
+> Pulling docker image of `redis` is unstable, we recommend using [source code](https://github.com/redis/redis?tab=readme-ov-file#installing-redis) to install it.
+
+3. Install dependencies according to your database server. Again we take `elasticsearch`+`chroma` as an example:
+```
+pip install -e ".[elasticsearch, chroma]"
 ```
 
-3. Create a `.env` and a `config.yaml` as follows (If you only use the Web UI, you don't need to create these two files, because they can be configured in the UI):
+4. Run `ragpanel-cli --action webui`, and choose language `en` (English) or `zh` (Chinese) to start a Web UI like:
+![Web UI](assets/webui.png)
+
+## 📡Api Example
+Create a `.env` and a `config.yaml` as follows: 
+> [!Note]
+> If you have used Web UI, the data you filled in the UI will be saved as `.env` and `config.yaml` automatically when you click `save and apply` button
 ```
 # .env
 # imitater or openai
@@ -44,11 +59,6 @@ MILVUS_URI=http://localhost:19530
 MILVUS_TOKEN=0
 ```
 
-> [!NOTE]
-> Closed source models are recommended to use [One API](https://github.com/songquanpeng/one-api) to access。
-> 
-> Open source models are recommended to use [imitater](https://github.com/the-seeds/imitater) to access。
-
 ```
 # config.yaml
 database:
@@ -64,20 +74,8 @@ launch:
 dump:
   folder: ./chat_history
 ```
-
-4. Run `ragpanel-cli --action YOUR_ACTION --config CONFIG_FILE` to start.  
-Here are action choices:  
-`build`: read data, split docs and build index.  
-`launch`: launch app server.  
-`dump`: dump chat history.  
-`webui`: visual webui (driven by Gradio). No need to specify config path.
-
-## Api Example
 Assuming you have created **.env** and **config.yaml** properly, and **started your database server**, you can see README in [examples/api](examples/api/) folder to know how to start and use API server.
-   
-## Web UI
-You can start a webui server to set and test your environment as follows:
-1. Run `ragpanel-cli --action webui`. Choose the language `en` (English) or `zh` (Chinese). You will see ui like:
-![Web UI](assets/webui.png)
 
-2. Set proper parameters and then try to insert, retrieve and chat to check your environment.
+### 🗄Database
+![database](assets/database.png)
+The data storage situation is shown in the figure above. This project supports sparse retrieval and dense retrieval: sparse retrieval searches the document content in the KV database and directly obtains the document content; dense retrieval searches in the vector store and obtains the document block id, and then get the document content from the KV database.
