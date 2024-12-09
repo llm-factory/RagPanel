@@ -26,9 +26,15 @@ class ChatEngine:
         self.threshold = 1.0
         self.with_doc = False
         self.reranker = "None"
+        self.enable_rag = True
+        self.show_docs = True
+        self.save_history = True
         
-    def update(self, template):
+    def update(self, template, enable_rag, show_docs, save_history):
         self.kbqa_template = Template(template)
+        self.enable_rag = enable_rag
+        self.show_docs = show_docs
+        self.save_history = save_history
         
     def dump_history(self):
         histories = [[message.model_dump()
@@ -65,6 +71,7 @@ class ChatEngine:
         self.collector.collect(History(messages=(augmented_messages + [AssistantMessage(content=response)])))
             
     def ui_chat(self, history, query):
+        init_query = query
         if self.chat_model is None:
             self.chat_model = ChatOpenAI()
         messages = []
@@ -73,13 +80,16 @@ class ChatEngine:
             ai_message = conversation[1]
             messages.append(HumanMessage(content=user_message))
             messages.append(AssistantMessage(content=ai_message))
-        
-        gr.Info("retrieving docs...")
-        docs = self.engine.search(query=query)
-        if len(docs):
-            docs = docs["content"].tolist()
-            query = self.kbqa_template.apply(context="\n".join(docs), query=query)
-        history += [[query, ""]]
+        if self.enable_rag:
+            gr.Info("retrieving docs...")
+            docs = self.engine.search(query=query)
+            if len(docs):
+                docs = docs["content"].tolist()
+                query = self.kbqa_template.apply(context="\n".join(docs), query=query)
+        if self.show_docs:
+            history += [[query, ""]]
+        else:
+            history += [[init_query, ""]]
         messages.append(HumanMessage(content=query))
         for new_token in self.chat_model.stream_chat(messages=messages):
             history[-1][1] += new_token

@@ -9,6 +9,14 @@ def create_chat_tab(engine, LOCALES):
                                           lines=3,
                                           label=LOCALES["template_label"],
                                           info=LOCALES["template_info"])
+                with gr.Column():
+                    enable_rag_checkbox = gr.Checkbox(value=True,
+                                                  label=LOCALES["enable_rag"])
+                    show_docs_checkbox = gr.Checkbox(value=True,
+                                                     label=LOCALES["show_docs"],
+                                                     info=LOCALES["show_docs_info"])
+                    save_history_checkbox = gr.Checkbox(value=True,
+                                                        label=LOCALES["save_history"])
             def new_chat():
                 return gr.Chatbot(label=LOCALES["chat"], value="", placeholder=LOCALES["hello"])
             chat_bot = new_chat()
@@ -25,7 +33,7 @@ def create_chat_tab(engine, LOCALES):
                     
             chat_button.click(
                 engine.chat_engine.update, 
-                [template_box]
+                [template_box, enable_rag_checkbox, show_docs_checkbox, save_history_checkbox]
             ).then(
                 engine.chat_engine.ui_chat, 
                 [chat_bot, query_box], 
@@ -34,7 +42,7 @@ def create_chat_tab(engine, LOCALES):
             
             query_box.submit(
                 engine.chat_engine.update, 
-                [template_box]
+                [template_box, enable_rag_checkbox, show_docs_checkbox, save_history_checkbox]
             ).then(
                 engine.chat_engine.ui_chat, 
                 [chat_bot, query_box], 

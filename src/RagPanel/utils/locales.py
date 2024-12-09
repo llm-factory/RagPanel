@@ -299,21 +299,21 @@ LOCALES = {
         "en": "Please apply your database config first",
         "zh": "请先应用您的数据库设置"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "enable_rag": {
+        "en": "enable RAG",
+        "zh": "启用RAG"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "show_docs": {
+        "en": "show retrieved docs",
+        "zh": "展示检索结果"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "save_history": {
+        "en": "save chat history to storage",
+        "zh": "保存聊天记录到数据库"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "show_docs_info": {
+        "en": "Your query will be shown with retrieved docs",
+        "zh": "您的查询会附带检索结果一起显示"
     },
     "": {
         "en": "",
