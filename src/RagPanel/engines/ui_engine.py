@@ -73,7 +73,7 @@ class UiEngine(BaseEngine):
         except ValueError:
             raise gr.Error(self.LOCALES["database_not_found_error"])
 
-    def insert(self, filepath, num_proc, progress=gr.Progress(track_tqdm=True)):
+    def insert(self, filepath, num_proc, batch_size, progress=gr.Progress(track_tqdm=True)):
         self.check_database()
         self.file_history.extend(filepath)
         file_contents = []
@@ -89,10 +89,9 @@ class UiEngine(BaseEngine):
                 text_chunks.extend(chunks)
                 bar.update(1)
         bar.close()
-        BATCH_SIZE = 1000
         bar = tqdm(total=len(text_chunks), desc=self.LOCALES["build_index"])
-        for i in range(0, len(text_chunks), BATCH_SIZE):
-            batch_text = text_chunks[i: i + BATCH_SIZE]
+        for i in range(0, len(text_chunks), batch_size):
+            batch_text = text_chunks[i: i + batch_size]
             texts, batch_index, batch_ids, batch_document = [], [], [], []
             for text in batch_text:
                 index = DocIndex()

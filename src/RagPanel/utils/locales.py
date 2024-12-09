@@ -311,13 +311,13 @@ LOCALES = {
         "en": "insert to database",
         "zh": "将文档加入数据库"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "batch_embed": {
+        "en": "embedding batch size",
+        "zh": "词嵌入批大小"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "batch_embed_info": {
+        "en": "embed one chunk batch every time to accelerate",
+        "zh": "每次嵌入一批文档块以加速"
     },
     "": {
         "en": "",
