@@ -17,17 +17,22 @@ class UiEngine(BaseEngine):
         self.threshold = 1.0
         self.top_k = 5
         self.reranker = "None"
+        self.tmp_threshold = 1.0
+        self.tmp_top_k = 5
         
-    def update_tools(self, threshold, top_k):
+    def set(self, name, value):
+        setattr(self, name, value)
+        
+    def update_tools(self):
         from cardinal.model.config import settings
         settings.default_chat_model = os.getenv("DEFAULT_CHAT_MODEL")
         settings.default_embed_model = os.getenv("DEFAULT_EMBED_MODEL")
         settings.hf_tokenizer_path = os.getenv("HF_TOKENIZER_PATH")
+        self.threshold = self.tmp_threshold
+        self.top_k = self.tmp_top_k
+        self.reranker = os.getenv("RERANKER", "None")
         self.splitter = CJKTextSplitter(int(os.getenv("DEFAULT_CHUNK_SIZE")),
                                         int(os.getenv("DEFAULT_CHUNK_OVERLAP")))
-        self.threshold = threshold
-        self.top_k = top_k
-        self.reranker = os.getenv("RERANKER", "None")
 
     def create_database(self, collection, storage, storage_path, vectorstore, vectorestore_path, vectorstore_token):
         # config
