@@ -58,4 +58,4 @@ def interactive_cli(config, action):
     elif action == Action.WEBUI:
         from ..webui import create_ui
         lang = click.prompt('choose your language', type=click.Choice(["en", "zh"]))
-        create_ui(lang).launch()
+        create_ui(lang).queue().launch()

@@ -223,29 +223,17 @@ LOCALES = {
         "en": "database connection error",
         "zh": "数据库连接错误"
     },
-    "load_tokenizer": {
-        "en": "start to load tokenizer",
-        "zh": "开始加载分词器tokenizer"
+    "load_tokenzier": {
+        "en": "load tokenzier",
+        "zh": "加载分词器tokenizer"
     },
-    "loading_tokenzier": {
-        "en": "loading tokenzier",
-        "zh": "正在加载分词器tokenizer"
+    "split_docs": {
+        "en": "split docs",
+        "zh": "分割文档"
     },
-    "start_to_split_docs": {
-        "en": "start to split docs",
-        "zh": "开始分割文档"
-    },
-    "spliting_docs": {
-        "en": "spliting docs",
-        "zh": "正在分割文档"
-    },
-    "start_to_build_index": {
-        "en": "start to build index",
-        "zh": "开始构建索引"
-    },
-    "building_index": {
-        "en": "building index",
-        "zh": "正在构建索引"
+    "build_index": {
+        "en": "build index",
+        "zh": "构建索引"
     },
     "deleted_1": {
         "en": "1 chunk has been deleted",
@@ -315,13 +303,13 @@ LOCALES = {
         "en": "Your query will be shown with retrieved docs",
         "zh": "您的查询会附带检索结果一起显示"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "inserted": {
+        "en": "files inserted",
+        "zh": "文档加入成功"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "insert_docs": {
+        "en": "insert to database",
+        "zh": "将文档加入数据库"
     },
     "": {
         "en": "",

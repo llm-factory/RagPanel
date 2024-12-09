@@ -18,7 +18,7 @@ extras_require={
 
 def main():
     setup(
-        name="rag-panel",
+        name="ragpanel",
         version="0.1",
         author="the-seeds", 
         description="a unified rag platform",

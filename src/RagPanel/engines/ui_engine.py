@@ -1,6 +1,9 @@
 import os
 import pandas as pd
 import gradio as gr
+from tqdm import tqdm
+from functools import partial
+from multiprocessing import Pool
 from .engine import BaseEngine
 from ..utils.file_reader import read_file, split
 from ..utils.protocol import DocIndex, Document, Operator
@@ -70,23 +73,25 @@ class UiEngine(BaseEngine):
         except ValueError:
             raise gr.Error(self.LOCALES["database_not_found_error"])
 
-    def insert_to_store(self, files, num_proc): #TODO:结合多线程与gr.Process
+    def insert(self, filepath, num_proc, progress=gr.Progress(track_tqdm=True)):
+        self.check_database()
+        self.file_history.extend(filepath)
+        file_contents = []
+        for path in filepath:
+            file_contents.extend(read_file(path))
         if self._splitter is None:
-            progress = gr.Progress()
-            progress(0, self.LOCALES["load_tokenizer"])
-            for i in progress.tqdm(range(1), desc=self.LOCALES["loading_tokenzier"]):
-                self._splitter = CJKTextSplitter()
+            self._splitter = CJKTextSplitter()
         text_chunks = []
-        progress = gr.Progress()
-        progress(0, self.LOCALES["start_to_split_docs"])
-        for chunks in progress.tqdm(
-            files,
-            desc=self.LOCALES["spliting_docs"]
-        ):
-            text_chunks.extend(split(self._splitter, chunks))
+        partial_split = partial(split, self._splitter)
+        bar = tqdm(total=len(file_contents), desc=self.LOCALES["split_docs"])
+        with Pool(processes=num_proc) as pool:
+            for chunks in pool.imap_unordered(partial_split, file_contents):
+                text_chunks.extend(chunks)
+                bar.update(1)
+        bar.close()
         BATCH_SIZE = 1000
-        progress(0, self.LOCALES["start_to_build_index"])
-        for i in progress.tqdm(range(0, len(text_chunks), BATCH_SIZE), desc=self.LOCALES["building_index"]):
+        bar = tqdm(total=len(text_chunks), desc=self.LOCALES["build_index"])
+        for i in range(0, len(text_chunks), BATCH_SIZE):
             batch_text = text_chunks[i: i + BATCH_SIZE]
             texts, batch_index, batch_ids, batch_document = [], [], [], []
             for text in batch_text:
@@ -103,16 +108,11 @@ class UiEngine(BaseEngine):
                 batch_ids.append(index.doc_id)
                 batch_index.append(index)
                 batch_document.append(document)
+                bar.update(1)
             self._vectorstore.insert(texts, batch_index)
             self._storage.insert(batch_ids, batch_document)
-
-    def insert(self, filepath, num_proc):
-        self.check_database()
-        self.file_history.extend(filepath)
-        files = []
-        for path in filepath:
-            files.extend(read_file(path))
-        self.insert_to_store(files, num_proc)
+        bar.close()
+        return self.LOCALES["inserted"]
 
     def delete(self, del_index, docs):
         doc_ids = docs['id'].tolist()

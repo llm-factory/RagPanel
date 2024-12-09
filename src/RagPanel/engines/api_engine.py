@@ -24,12 +24,13 @@ class ApiEngine(BaseEngine):
             for chunks in tqdm(
                 pool.imap_unordered(partial_split, file_contents),
                 total=len(file_contents),
-                desc="Split content",
+                desc="split content",
             ):
                 text_chunks.extend(chunks)
 
         BATCH_SIZE=1000
-        for i in tqdm(range(0, len(text_chunks), BATCH_SIZE), desc="Build index"):
+        bar = tqdm(total=len(text_chunks), desc="build index")
+        for i in range(0, len(text_chunks), BATCH_SIZE):
             batch_text = text_chunks[i: i + BATCH_SIZE]
             texts, batch_index, batch_ids, batch_document = [], [], [], []
             for text in batch_text:
@@ -42,6 +43,7 @@ class ApiEngine(BaseEngine):
                 batch_ids.append(index.doc_id)
                 batch_index.append(index)
                 batch_document.append(document)
+                bar.update(1)
             self._vectorstore.insert(texts, batch_index)
             self._storage.insert(batch_ids, batch_document)
 
