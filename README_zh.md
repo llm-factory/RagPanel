@@ -11,7 +11,7 @@ cd RagPanel
 conda create -n ragpanel python=3.10
 conda activate ragpanel
 ```
-2. 启动数据库服务，包括一个键值对数据库和一个向量数据库。
+2. 启动数据库服务，包括一个键值对数据库和一个向量数据库。  
 目前支持的键值数据库: `redis`,  `elasticsearch`  
 目前支持的向量数据库: `chroma`, `milvus`  
 我们推荐使用docker部署，并在[docker](docker)文件夹下提供了docker compose文件。  
