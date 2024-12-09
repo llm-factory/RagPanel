@@ -13,7 +13,7 @@ def create_splitter_tab(LOCALES):
             path.change(save_to_env, [gr.State("HF_TOKENIZER_PATH"), path])
             chunk_size = gr.Number(value=os.getenv('DEFAULT_CHUNK_SIZE', "300"),
                                    label=LOCALES["chunk_size"],
-                                   step=50, 
+                                   step=50,
                                    scale=2)
             chunk_size.change(save_to_env, [gr.State("DEFAULT_CHUNK_SIZE"), chunk_size])
             chunk_overlap = gr.Number(value=os.getenv('DEFAULT_CHUNK_OVERLAP', "30"),

@@ -4,6 +4,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+from ..utils import init_env
+init_env()
 
 from ..engines import UiEngine
 from .components import create_database_block, create_functions_block, create_tools_block

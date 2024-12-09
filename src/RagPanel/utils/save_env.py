@@ -41,6 +41,11 @@ default_envs = {
     "MILVUS_TOKEN":"0"
 }
 
+def init_env():
+    for key, value in default_envs.items():
+        if key not in os.environ:
+            os.environ[key] = value
+
 def save_to_env(name, value):
     if name == 'RETRIEVER':
         if value == '稠密':

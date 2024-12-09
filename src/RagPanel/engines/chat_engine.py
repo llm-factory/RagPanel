@@ -10,10 +10,7 @@ if TYPE_CHECKING:
 class ChatEngine:
     def __init__(self, engine, name) -> None:
         self.engine = engine
-        try:
-            self.chat_model = ChatOpenAI()
-        except:
-            self.chat_model = None
+        self.chat_model = None
         self.name = name
         # 可能还未确定database
         try:

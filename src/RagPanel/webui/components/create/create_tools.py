@@ -16,4 +16,5 @@ def create_tools_block(engine, LOCALES):
         save_env_button = gr.Button(LOCALES["apply_and_save"])
     save_env_button.click(save_as_dotenv)
     save_env_button.click(engine.update_tools, [threshold, top_k])
+    save_env_button.click(gr.Info, gr.State(LOCALES["configuration_applied"]))
     return demo

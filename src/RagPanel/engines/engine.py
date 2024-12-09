@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from .chat_engine import ChatEngine
 from ..utils.protocol import DocIndex, Document
-from cardinal import AutoStorage, AutoVectorStore, DenseRetriever, BaseCollector
+from cardinal import AutoStorage, AutoVectorStore, DenseRetriever, BaseCollector, EmbedOpenAI
 
 
 class BaseEngine:
@@ -32,6 +32,7 @@ class BaseEngine:
     def check_database(self):
         if self._storage is None or self._vectorstore is None or self._retriever is None:
             raise ValueError("Please create a database first")
+        self._vectorstore._vectorstore._vectorizer = EmbedOpenAI(batch_size=1000)
 
     def clear_database(self):
         self.destroy_database()
