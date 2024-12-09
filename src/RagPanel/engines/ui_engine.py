@@ -90,6 +90,7 @@ class UiEngine(BaseEngine):
                 bar.update(1)
         bar.close()
         bar = tqdm(total=len(text_chunks), desc=self.LOCALES["build_index"])
+        left_bar = len(text_chunks)
         for i in range(0, len(text_chunks), batch_size):
             batch_text = text_chunks[i: i + batch_size]
             texts, batch_index, batch_ids, batch_document = [], [], [], []
@@ -107,9 +108,10 @@ class UiEngine(BaseEngine):
                 batch_ids.append(index.doc_id)
                 batch_index.append(index)
                 batch_document.append(document)
-                bar.update(1)
             self._vectorstore.insert(texts, batch_index)
             self._storage.insert(batch_ids, batch_document)
+            bar.update(min(left_bar, batch_size))
+            left_bar -= batch_size
         bar.close()
         return self.LOCALES["inserted"]
 

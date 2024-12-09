@@ -232,8 +232,8 @@ LOCALES = {
         "zh": "分割文档"
     },
     "build_index": {
-        "en": "build index",
-        "zh": "构建索引"
+        "en": "build index (this may take times)",
+        "zh": "构建索引（可能需要一段时间）"
     },
     "deleted_1": {
         "en": "1 chunk has been deleted",

@@ -17,7 +17,7 @@ Supported vector storages: `chroma`, `milvus`.
 We recommend deploy them using docker and we have provided docker compose file in [docker](docker) folder.   
 Take `elasticsearch` + `chroma` as an example, you can run `cd docker/elasticsearch && docker compose up -d` to start `elasticsearch`. `chroma` only needs to follow later steps to install the python dependencies to run and don't need docker.
 > [!NOTE] 
-> Pulling docker image of `redis` is unstable, we recommend using [source code](https://github.com/redis/redis?tab=readme-ov-file#installing-redis) to install it.
+> Pulling docker image is sometimes unstable and maybe you need proxy. Besides, you can also install redis by [source code](https://github.com/redis/redis?tab=readme-ov-file#installing-redis). Then you can start `redis` + `chroma` without docker.
 
 3. Install dependencies according to your database server. Again we take `elasticsearch`+`chroma` as an example:
 ```

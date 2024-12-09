@@ -17,7 +17,7 @@ conda activate ragpanel
 我们推荐使用docker部署，并在[docker](docker)文件夹下提供了docker compose文件。  
 以`elasticsearch` + `chroma`为例，您可以运行`cd docker/elasticsearch && docker compose up -d`来通过docker运行`elasticsearch`. `chroma`仅需根据后续步骤安装python依赖即可，无需使用docker运行。
 > [!Note]
-> `redis`的docker镜像拉取不稳定，我们推荐通过[源码](https://github.com/redis/redis?tab=readme-ov-file#installing-redis)安装。
+> docker镜像拉取有时不稳定，您可能需要启动代理。此外，您也可以通过[源码](https://github.com/redis/redis?tab=readme-ov-file#installing-redis)安装redis，来不使用docker完成`redis`+`chroma`的启动。
 
 
 3. 根据启动的数据库服务安装依赖项。 以 `elasticsearch`+`chroma` 为例:
