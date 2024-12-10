@@ -76,5 +76,5 @@ dump:
 假设您已经创建完 **.env**和 **config.yaml**，并且**启动了数据库服务**，您可以参考[examples/api](examples/api/)文件夹下的README来启动和使用api服务。  
 
 ## 🗄数据库
-![database_zh](assets/database_zh.png)  
+![database_zh](assets/database_usage_zh.png)  
 数据存储情况如上图所示，本项目支持稀疏检索、稠密检索：稀疏检索在键值数据库中对文档内容检索，直接得到文档内容；稠密检索在向量数据库中检索，得到文档块id，再直接在键值数据库中得到文档内容。
