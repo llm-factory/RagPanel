@@ -319,9 +319,9 @@ LOCALES = {
         "en": "embed one chunk batch every time to accelerate",
         "zh": "每次嵌入一批文档块以加速"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "lang": {
+        "en": "en",
+        "zh": "zh"
     },
     "": {
         "en": "",

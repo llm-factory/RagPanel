@@ -13,7 +13,8 @@ extras_require={
     "es": "elasticsearch[async]",
     "elasticsearch": "elasticsearch[async]",
     "chroma": "chromadb",
-    "milvus": "pymilvus>=2.3.0"
+    "milvus": "pymilvus>=2.3.0",
+    "neo4j": "neo4j"
 }
 
 def main():

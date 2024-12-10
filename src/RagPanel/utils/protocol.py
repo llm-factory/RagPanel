@@ -19,6 +19,19 @@ class CSV():
         self.contents = contents
         
         
+class Entity(BaseModel):
+    name: str
+    type: str
+    desc: str
+    
+    
+class Relation(BaseModel):
+    head: str
+    tail: str
+    desc: str
+    strength: int
+    
+        
 class DocIndex(BaseModel):
     doc_id: str = Field(default_factory=lambda: uuid.uuid4().hex)
 

@@ -57,10 +57,16 @@ class BaseEngine:
         
     @abstractmethod
     def insert(self):
-        r"""
-        read, split and embed files
+        """
+            read, split and embed files
         """
         ...
+        
+    def graph_insert(self, file_contents):
+        from ..utils import Extractor
+        extractor = Extractor(file_contents, "en")
+        entities, relations = extractor.extract_graph(3)
+        claims = extractor.extract_claim()
 
     def search(self, query, top_k, reranker, threshold = None):
         self.check_database()
