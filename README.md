@@ -11,17 +11,20 @@ cd RagPanel
 conda create -n ragpanel python=3.10
 conda activate ragpanel
 ```
-2. Start database server, including a kv storage server and a vector storage server.  
-Supported kv storages: `redis`,  `elasticsearch`.  
-Supported vector storages: `chroma`, `milvus`.  
-We recommend deploy them using docker and we have provided docker compose file in [docker](docker) folder.   
-Take `elasticsearch` + `chroma` as an example, you can run `cd docker/elasticsearch && docker compose up -d` to start `elasticsearch`. `chroma` only needs to follow later steps to install the python dependencies to run and don't need docker.
+2. Start database server, including a kv storage server and a vector storage server.We recommend deploy them using docker and we have provided docker compose file in [docker](docker) folder. Take `redis` as an example, you can run following command to start `redis`:
+```
+cd docker/redis
+docker compose up -d
+```
+&emsp;&emsp;Supported kv storages: `redis`,  `elasticsearch`.  
+&emsp;&emsp;Supported vector storages: `chroma`, `milvus`.  
+&emsp;&emsp;`chroma` only needs to follow later steps to install the python dependencies to run and don't need docker.
 > [!NOTE] 
 > Pulling docker image is sometimes unstable and maybe you need proxy. Besides, you can also install redis by [source code](https://github.com/redis/redis?tab=readme-ov-file#installing-redis). Then you can start `redis` + `chroma` without docker.
 
-3. Install dependencies according to your database server. Again we take `elasticsearch`+`chroma` as an example:
+3. Install dependencies according to your database server. Again we take `redis`+`chroma` as an example:
 ```
-pip install -e ".[elasticsearch, chroma]"
+pip install -e ".[redis, chroma]"
 ```
 
 4. Run `ragpanel-cli --action webui`, and choose language `en` (English) or `zh` (Chinese) to start a Web UI like:

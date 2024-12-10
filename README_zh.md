@@ -11,18 +11,21 @@ cd RagPanel
 conda create -n ragpanel python=3.10
 conda activate ragpanel
 ```
-2. 启动数据库服务，包括一个键值对数据库和一个向量数据库。  
-目前支持的键值数据库: `redis`,  `elasticsearch`  
-目前支持的向量数据库: `chroma`, `milvus`  
-我们推荐使用docker部署，并在[docker](docker)文件夹下提供了docker compose文件。  
-以`elasticsearch` + `chroma`为例，您可以运行`cd docker/elasticsearch && docker compose up -d`来通过docker运行`elasticsearch`. `chroma`仅需根据后续步骤安装python依赖即可，无需使用docker运行。
+2. 启动数据库服务，包括一个键值对数据库和一个向量数据库。我们推荐使用docker部署，并在[docker](docker)文件夹下提供了docker compose文件。以`redis`为例，您可以运行以下命令启动`redis`：
+```
+cd docker/redis
+docker compose up -d
+```
+&emsp;&emsp;目前支持的键值数据库: `redis`,  `elasticsearch`  
+&emsp;&emsp;目前支持的向量数据库: `chroma`, `milvus`  
+&emsp;&emsp;`chroma`仅需根据后续步骤安装python依赖即可，无需使用docker运行。
 > [!Note]
 > docker镜像拉取有时不稳定，您可能需要启动代理。此外，您也可以通过[源码](https://github.com/redis/redis?tab=readme-ov-file#installing-redis)安装redis，来不使用docker完成`redis`+`chroma`的启动。
 
 
-3. 根据启动的数据库服务安装依赖项。 以 `elasticsearch`+`chroma` 为例:
+3. 根据启动的数据库服务安装依赖项。 以 `redis`+`chroma` 为例:
 ```
-pip install -e ".[elastisearch, chroma]"
+pip install -e ".[redis, chroma]"
 ```
 
 4. 运行 `ragpanel-cli --action webui`来启动Web UI，并根据提示选则英文`en`或中文`zh`。可看到如下界面：  
