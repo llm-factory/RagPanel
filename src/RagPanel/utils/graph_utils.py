@@ -10,7 +10,12 @@ def parseEntity(entity_attributes):
     
 def parseRelation(relation_attributes):
     try:
-        relation = Relation(head=relation_attributes[1], tail=relation_attributes[2], desc=relation_attributes[3], strength=int(relation_attributes[4]))
+        head=relation_attributes[1]
+        tail=relation_attributes[2]
+        # keep undirected
+        if head > tail:
+            head, tail = tail, head
+        relation = Relation(head=head, tail=tail, desc=relation_attributes[3], strength=int(relation_attributes[4]))
         return [relation]
     except:
         return []

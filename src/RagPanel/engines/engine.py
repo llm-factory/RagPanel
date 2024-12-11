@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from .chat_engine import ChatEngine
 from ..utils.protocol import DocIndex, Document
-from cardinal import AutoStorage, AutoVectorStore, DenseRetriever, BaseCollector, EmbedOpenAI
+from cardinal import AutoStorage, AutoGraphStorage, AutoVectorStore, DenseRetriever, BaseCollector, EmbedOpenAI
 
 
 class BaseEngine:
@@ -63,10 +63,12 @@ class BaseEngine:
         ...
         
     def graph_insert(self, file_contents):
-        from ..utils import Extractor
-        extractor = Extractor(file_contents, "en")
-        entities, relations = extractor.extract_graph(3)
-        claims = extractor.extract_claim()
+        # extract entities
+        from ..utils import GraphProcessor
+        processor = GraphProcessor("en", 1)
+        entities, relations = processor.extract_graph(file_contents)
+        # embed to vectorstore & insert to graph storage
+        claims = processor.extract_claim()
 
     def search(self, query, top_k, reranker, threshold = None):
         self.check_database()
