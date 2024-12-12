@@ -1,4 +1,6 @@
 import re
+import json
+from collections import defaultdict
 from tqdm import tqdm
 from cardinal import ChatOpenAI, HumanMessage, AssistantMessage, AutoGraphStorage
 from .graph_utils import parseEntity, parseRelation
@@ -9,6 +11,7 @@ class GraphProcessor:
         self._chat_model = ChatOpenAI()
         self._max_gleaning = max_gleaning
         self._graph_storage = AutoGraphStorage(collection)
+        self._graph_storage.drop_community()
         from .prompt import prompts
         self._prompts = prompts[lang]
         
@@ -87,12 +90,12 @@ class GraphProcessor:
         bar.close()
         bar = tqdm(total=len(entities_to_summarize), desc="summarize same entities")
         # summarize and insert same name entity
-        for name, desc in entities_to_summarize.items():
-            prompt = self._prompts["SUMMARIZE"].format(entity_name=name, description_list=desc)
+        for name, entity in entities_to_summarize.items():
+            prompt = self._prompts["SUMMARIZE"].format(entity_name=name, description_list=entity.desc)
             entities_to_summarize[name].desc = self._chat([HumanMessage(content=prompt)])
+            self._graph_storage.insert_node([name], [entity])
             bar.update(1)
         bar.close()
-        self._graph_storage.insert_node(entities_to_summarize.keys(), entities_to_summarize.values())
         return new_entities
 
     def insert_relations(self, relations):
@@ -124,16 +127,47 @@ class GraphProcessor:
         bar.close()
         
         bar = tqdm(total=len(relations_to_summarize), desc="summarize same relations")
-        heads = []
-        tails = []
-        for key, desc in relations_to_summarize.items():
+        for key, relation in relations_to_summarize.items():
             entity1, entity2 = key
-            heads.append(entity1)
-            tails.append(entity2)
             entities = entity1 + " ## " + entity2
-            prompt = self._prompts["SUMMARIZE"].format(entity_name=entities, description_list=desc)
+            prompt = self._prompts["SUMMARIZE"].format(entity_name=entities, description_list=relation.desc)
             relations_to_summarize[key].desc = self._chat([HumanMessage(content=prompt)])
+            self._graph_storage.insert_edge([entity1], [entity2], [relation])
             bar.update(1)
         bar.close()
-        self._graph_storage.insert_edge(heads, tails, relations_to_summarize.values())
         return new_relations
+
+    def generater_community_report(self):
+        self._graph_storage.clustering()
+        communities_schema = self._graph_storage.community_schema()
+        communities_by_level = defaultdict(list)
+        for community in communities_schema.values():
+            communities_by_level[community["level"]].append(community)
+        reports = {}
+        for level in sorted(list(communities_by_level.keys())):
+            # generate level by level
+            for community in communities_by_level[level]:
+                community_elements_info = self._pack_community_elements(community)
+                prompt = self._prompts["COMMUNITY_REPORT"].format(input_text = community_elements_info)
+                response = self._chat([HumanMessage(content=prompt)])
+                try:
+                    report = json.loads(response) # TODO: json format error exception handler
+                except json.decoder.JSONDecodeError:
+                    report = ""
+                reports.update({
+                    community["title"]:{"report": report,
+                                               "data": community}})
+        self._graph_storage.drop_community()
+        return reports
+
+    def _pack_community_elements(self, community):
+        # TODO: truncate & use sub communities
+        entities = "\nEntities\n\nid,entity,description\n"
+        relations = "\nRelations\n\nid,source,target,description\n"
+        for i, entity_name in enumerate(community["nodes"]):
+            entity = self._graph_storage.query_node(entity_name)
+            entities += ",".join([str(i), entity["name"], entity["desc"]]) + '\n'
+        for i, (head, tail) in enumerate(community["edges"]):
+            relation = self._graph_storage.query_edge(head, tail)
+            relations += ",".join([str(i), head, tail, relation["desc"]]) + '\n'
+        return entities + relations

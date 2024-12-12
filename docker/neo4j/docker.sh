@@ -4,6 +4,6 @@ docker run -it --rm \
   --env NEO4J_PLUGINS='["apoc","graph-data-science"]' \
   --env NEO4J_dbms_security_procedures_unrestricted=gds.*,apoc.*\
   --env NEO4J_dbms_security_procedures_allowlist=gds.*,apoc.*\
-  --volume=plugins:/plugins\
-  --volume=data:/data\
+  -v plugins:/plugins\
+  -v data:/data\
   neo4j:5.11.0
