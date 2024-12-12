@@ -31,6 +31,10 @@ class Relation(BaseModel):
     desc: str
     strength: int
     
+    
+class StrModel(BaseModel):
+    string: str
+    
         
 class DocIndex(BaseModel):
     doc_id: str = Field(default_factory=lambda: uuid.uuid4().hex)

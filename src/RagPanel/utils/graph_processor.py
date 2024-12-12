@@ -1,8 +1,9 @@
 import re
 import json
-from collections import defaultdict
 from tqdm import tqdm
-from cardinal import ChatOpenAI, HumanMessage, AssistantMessage, AutoGraphStorage
+from pydantic import BaseModel
+from collections import defaultdict
+from cardinal import ChatOpenAI, HumanMessage, AssistantMessage, AutoGraphStorage, AutoVectorStore
 from .graph_utils import parseEntity, parseRelation
 from .protocol import Entity
 
@@ -10,7 +11,7 @@ class GraphProcessor:
     def __init__(self, lang, max_gleaning, collection):
         self._chat_model = ChatOpenAI()
         self._max_gleaning = max_gleaning
-        self._graph_storage = AutoGraphStorage(collection)
+        self._graph_storage = AutoGraphStorage[BaseModel](collection)
         self._graph_storage.drop_community()
         from .prompt import prompts
         self._prompts = prompts[lang]
@@ -19,6 +20,10 @@ class GraphProcessor:
         response = self._chat_model.chat(messages=messages)
         messages.append(AssistantMessage(content=response))
         return response
+    
+    def destroy(self):
+        self._graph_storage.drop_community()
+        self._graph_storage.destroy()
         
     def extract_graph(self, file_contents):
         prompt_config = {
@@ -99,7 +104,6 @@ class GraphProcessor:
         return new_entities
 
     def insert_relations(self, relations):
-        new_relations = []
         relations_to_summarize = {}
         bar = tqdm(total=len(relations), desc="insert relations")
         for relation in relations:
@@ -114,7 +118,6 @@ class GraphProcessor:
                         entity = Entity(name=name, type="UNKNOWN", desc=relation.desc)
                         self._graph_storage.insert_node([name], [entity])
                 self._graph_storage.insert_edge([head], [tail], [relation])
-                new_relations.append((head, tail))
             else:
                 if (head, tail) not in relations_to_summarize.keys():
                     relation.desc = edge["desc"] + "\n##\n" + relation.desc
@@ -135,7 +138,6 @@ class GraphProcessor:
             self._graph_storage.insert_edge([entity1], [entity2], [relation])
             bar.update(1)
         bar.close()
-        return new_relations
 
     def generater_community_report(self):
         self._graph_storage.clustering()
@@ -144,19 +146,16 @@ class GraphProcessor:
         for community in communities_schema.values():
             communities_by_level[community["level"]].append(community)
         reports = {}
+        bar = tqdm(total=len(communities_schema), desc="generate community report")
         for level in sorted(list(communities_by_level.keys())):
             # generate level by level
             for community in communities_by_level[level]:
                 community_elements_info = self._pack_community_elements(community)
                 prompt = self._prompts["COMMUNITY_REPORT"].format(input_text = community_elements_info)
-                response = self._chat([HumanMessage(content=prompt)])
-                try:
-                    report = json.loads(response) # TODO: json format error exception handler
-                except json.decoder.JSONDecodeError:
-                    report = ""
-                reports.update({
-                    community["title"]:{"report": report,
-                                               "data": community}})
+                report = self._chat([HumanMessage(content=prompt)])
+                reports.update({community["title"]: report})
+                bar.update(1)
+        bar.close()
         self._graph_storage.drop_community()
         return reports
 
@@ -171,3 +170,17 @@ class GraphProcessor:
             relation = self._graph_storage.query_edge(head, tail)
             relations += ",".join([str(i), head, tail, relation["desc"]]) + '\n'
         return entities + relations
+
+    def local_search(self, candidate_entities_name, top_k):
+        candidate_entities = []
+        for entity_name in candidate_entities_name:
+            candidate_entities.append(self._graph_storage.query_node(entity_name.string))
+        # score communities by entity rank
+        community_score_map = defaultdict(int)
+        num_entities = len(candidate_entities)
+        for i, candidate_entity in enumerate(candidate_entities):
+            for community_id in candidate_entity["community_id"]:
+                community_score_map[community_id] += num_entities - i
+        sorted_communities_map = sorted(community_score_map.items(), key=lambda item:item[1], reverse=True)
+        top_community_ids = [item[0] for item in sorted_communities_map][:top_k]
+        return top_community_ids

@@ -48,3 +48,21 @@ class ApiEngine(BaseEngine):
             self._storage.insert(batch_ids, batch_document)
 
         self.logger.info("Build completed.")
+
+    def graph_insert(self, folder, num_proc):
+        self.check_database()
+        if self._splitter is None:
+            print("loading splitter...")
+            self._splitter = CJKTextSplitter()
+        file_contents = read_folder(folder)
+        text_chunks = []
+        partial_split = partial(split, self._splitter)
+        with Pool(processes=num_proc) as pool:
+            for chunks in tqdm(
+                pool.imap_unordered(partial_split, file_contents),
+                total=len(file_contents),
+                desc="split content",
+            ):
+                text_chunks.extend(chunks)
+        super().graph_insert(file_contents=text_chunks)
+        
