@@ -323,6 +323,70 @@ LOCALES = {
         "en": "en",
         "zh": "zh"
     },
+    "graph_storage": {
+        "en": "graph storage",
+        "zh": "图数据库"
+    },
+    "graph_storage_uri": {
+        "en": "graph storage uri",
+        "zh": "图数据库uri"
+    },
+    "graph_storage_info": {
+        "en": "Required only when using GraphRAG",
+        "zh": "仅使用GraphRAG时需要"
+    },
+    "RAG_Method": {
+        "en": "RAG Method",
+        "zh": "RAG方式"
+    },
+    "build_graph_index": {
+        "en": "build graph index",
+        "zh": "构建图索引"
+    },
+    "Retrieve": {
+        "en": "Retrieve",
+        "zh": "检索"
+    },
+    "cluster_level": {
+        "en": "max community level",
+        "zh": "最高社区等级"
+    },
+    "": {
+        "en": "",
+        "zh": ""
+    },
+    "": {
+        "en": "",
+        "zh": ""
+    },
+    "": {
+        "en": "",
+        "zh": ""
+    },
+    "": {
+        "en": "",
+        "zh": ""
+    },
+    "": {
+        "en": "",
+        "zh": ""
+    },
+    "": {
+        "en": "",
+        "zh": ""
+    },
+    "": {
+        "en": "",
+        "zh": ""
+    },
+    "": {
+        "en": "",
+        "zh": ""
+    },
+    "": {
+        "en": "",
+        "zh": ""
+    },
     "": {
         "en": "",
         "zh": ""

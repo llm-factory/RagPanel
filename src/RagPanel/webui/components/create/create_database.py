@@ -20,6 +20,23 @@ def create_database_block(engine, LOCALES):
         return storage_path
 
 
+    def get_graph_storage_path(graph_storage):
+        label = LOCALES["graph_storage_uri"]
+        if graph_storage is not None:
+            if graph_storage == 'neo4j':
+                default_path = os.getenv("NEO4J_URI", "bolt://localhost:7687")
+            elif graph_storage == 'None':
+                default_path = "None"
+        else:
+            default_path = os.getenv("NEO4J_URI", "bolt://localhost:7687")
+        graph_storage_path = gr.Textbox(
+            label=label,
+            value=default_path,
+            scale=2
+        )
+        return graph_storage_path
+    
+    
     def get_vectorstore_path(vectorstore):
         label = LOCALES["vectorstore_uri"]
         if vectorstore is not None:
@@ -82,13 +99,25 @@ def create_database_block(engine, LOCALES):
             
             vectorstore_token = get_vectorstore_token(vectorstore)
             vectorstore_choice.change(get_vectorstore_token, vectorstore_choice, vectorstore_token)
+            
+        with gr.Row():
+            graph_storage = os.getenv('GRAPH_STORAGE', engine.supported_graph_storages[0])
+            graph_storage_choice = gr.Dropdown(
+                label=LOCALES["graph_storage"],
+                choices=engine.supported_graph_storages,
+                value=graph_storage,
+                info=LOCALES["graph_storage_info"],
+                allow_custom_value=True
+            )
+            graph_storage_path = get_graph_storage_path(graph_storage)
+            graph_storage_choice.change(get_graph_storage_path, graph_storage_choice, graph_storage_path)
 
         with gr.Row():
             database_confirm_btn = gr.Button(LOCALES["apply_and_save"])
             database_clear_btn = gr.Button(LOCALES["clear_database"])
 
     database_confirm_btn.click(engine.create_database,
-                                [collection, storage_choice, storage_path, vectorstore_choice, vectorstore_path, vectorstore_token]
+                                [collection, storage_choice, storage_path, vectorstore_choice, vectorstore_path, vectorstore_token, graph_storage_choice, graph_storage_path]
                                 ).success(gr.Info, gr.State(LOCALES["configuration_applied"]))
     database_clear_btn.click(engine.clear_database).success(gr.Info, gr.State(LOCALES["cleared_successfully"]))
     return demo

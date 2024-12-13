@@ -5,9 +5,10 @@ from tqdm import tqdm
 from functools import partial
 from multiprocessing import Pool
 from .engine import BaseEngine
+from ..utils.graph_processor import GraphProcessor
 from ..utils.file_reader import read_file, split
 from ..utils.protocol import DocIndex, Document, Operator
-from ..utils.save_env import save_to_env, save_storage_path, save_vectorstore_path
+from ..utils.save_env import save_to_env, save_storage_path, save_vectorstore_path, save_graph_storage_path
 from cardinal import AutoStorage, AutoVectorStore, CJKTextSplitter, AutoCondition, DenseRetriever, BaseCollector
 
 
@@ -37,16 +38,20 @@ class UiEngine(BaseEngine):
         self.splitter = CJKTextSplitter(int(os.getenv("DEFAULT_CHUNK_SIZE")),
                                         int(os.getenv("DEFAULT_CHUNK_OVERLAP")))
 
-    def create_database(self, collection, storage, storage_path, vectorstore, vectorestore_path, vectorstore_token):
+    def create_database(self, collection, storage, storage_path, vectorstore, vectorestore_path, vectorstore_token, graph_storage, graph_storage_path):
         # config
         save_to_env("STORAGE", storage)
         save_to_env("VECTORSTORE", vectorstore)
+        save_to_env("GRAPH_STORAGE", graph_storage)
         from cardinal.storage.config import settings
         settings.storage = storage
         save_storage_path(storage_path, settings)
         from cardinal.vectorstore.config import settings
         settings.vectorstore = vectorstore
         save_vectorstore_path(vectorestore_path, vectorstore_token, settings)
+        from cardinal.graph.config import settings
+        settings.graph_storage = graph_storage
+        save_graph_storage_path(graph_storage_path, settings)
         # create
         try:
             self._storage = AutoStorage[Document](collection)
@@ -60,6 +65,8 @@ class UiEngine(BaseEngine):
             raise gr.Error(self.LOCALES["dep_error"])
         except Exception:
             raise gr.Error(self.LOCALES["vectorstore_connection_error"])
+        if graph_storage != "None":
+            self._graph_processor = GraphProcessor("en", 1, collection)
         self._retriever = DenseRetriever[DocIndex](vectorstore_name=collection, threshold=1.0)
         self.chat_engine.name = "history_" + collection
         self.chat_engine.collector = BaseCollector(storage_name="history_" + collection)
@@ -89,6 +96,8 @@ class UiEngine(BaseEngine):
                 text_chunks.extend(chunks)
                 bar.update(1)
         bar.close()
+        if os.getenv("RAG_METHOD", "naive") == 'graph':
+            return super().graph_insert(text_chunks)
         bar = tqdm(total=len(text_chunks), desc=self.LOCALES["build_index"])
         left_bar = len(text_chunks)
         for i in range(0, len(text_chunks), batch_size):
@@ -145,7 +154,10 @@ class UiEngine(BaseEngine):
                 gr.Warning("") # TODO
 
     def search(self, query):
-        docs = super().search(query=query, top_k=self.top_k, reranker=self.reranker, threshold=self.threshold)
+        if os.getenv("RAG_METHOD", "naive") == 'graph':
+            docs = super().graph_search(query, top_k=self.top_k, mode="local", threshold=self.threshold)
+        else:
+            docs = super().search(query=query, top_k=self.top_k, reranker=self.reranker, threshold=self.threshold)
         if len(docs) < self.top_k and len(docs) != 0:
             gr.Warning(self.LOCALES["no_enough_candidates"])
         return pd.DataFrame(docs)

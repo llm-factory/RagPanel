@@ -22,6 +22,10 @@ class BaseEngine:
             "chroma",
             "milvus"
         ]
+        self.supported_graph_storages = [
+            "None",
+            "neo4j"
+        ]
 
     def create_database(self, collection):
         self._storage = AutoStorage[BaseModel](collection)
@@ -86,9 +90,12 @@ class BaseEngine:
         if mode == 'local':
             candidate_entities_name = self._retriever.retrieve(query=query, top_k=top_k)
             top_community_ids = self._graph_processor.local_search(candidate_entities_name, top_k)
-            top_community_reports = [self._storage.query(f"Cluster {community_id}").string for community_id in top_community_ids]
+            docs = []
+            for community_id in top_community_ids:
+                report = self._storage.query(f"Cluster {community_id}").string
+                docs.append({"id": community_id, "content": report})
             self._retriever._threshold = tmp_threshold
-            return "\n".join(top_community_reports)
+            return docs
         else:
             self._retriever._threshold = tmp_threshold
             raise NotImplementedError

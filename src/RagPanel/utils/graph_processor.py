@@ -1,4 +1,5 @@
 import re
+import os
 import json
 from tqdm import tqdm
 from pydantic import BaseModel
@@ -11,6 +12,10 @@ class GraphProcessor:
     def __init__(self, lang, max_gleaning, collection):
         self._chat_model = ChatOpenAI()
         self._max_gleaning = max_gleaning
+        from cardinal.graph.config import settings
+        settings.graph_storage = os.getenv("GRAPH_STORAGE")
+        settings.neo4j_uri = os.getenv("NEO4J_URI")
+        settings.cluster_level = os.getenv("CLUSTER_LEVEL")
         self._graph_storage = AutoGraphStorage[BaseModel](collection)
         self._graph_storage.drop_community()
         from .prompt import prompts

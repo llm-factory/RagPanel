@@ -1,6 +1,6 @@
 import gradio as gr
 from ....utils import save_as_dotenv
-from ..tools import create_splitter_tab,create_model_tab, create_retriever_tab
+from ..tools import create_splitter_tab,create_model_tab, create_retrieve_tab
 
 
 def create_tools_block(engine, LOCALES):
@@ -9,8 +9,8 @@ def create_tools_block(engine, LOCALES):
             create_splitter_tab(LOCALES)
         with gr.Tab(LOCALES["Model"]):
             create_model_tab(LOCALES)
-        with gr.Tab(LOCALES["Retriever"]):
-            create_retriever_tab(engine, LOCALES)
+        with gr.Tab(LOCALES["Retrieve"]):
+            create_retrieve_tab(engine, LOCALES)
         save_env_button = gr.Button(LOCALES["apply_and_save"])
     save_env_button.click(save_as_dotenv)
     save_env_button.click(engine.update_tools)

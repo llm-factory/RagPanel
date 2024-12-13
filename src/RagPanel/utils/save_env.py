@@ -15,6 +15,10 @@ envs_to_save = [
     "SEARCH_TARGET",
     "REDIS_URI",
     "ELASTICSEARCH_URI",
+    "GRAPH_STORAGE",
+    "NEO4J_URI",
+    "CLUSTER_LEVEL",
+    "RETRIEVE_METHOD",
     "VECTORSTORE",
     "CHROMA_PATH",
     "MILVUS_URI",
@@ -35,6 +39,10 @@ default_envs = {
     "SEARCH_TARGET":"content",
     "REDIS_URI":"redis://localhost:6379",
     "ELASTICSEARCH_URI":"http://localhost:9001",
+    "GRAPH_STORAGE": "neo4j",
+    "NEO4J_URI": "bolt://localhost:7687",
+    "CLUSTER_LEVEL": "1",
+    "RETRIEVE_METHOD": "graph",
     "VECTORSTORE":"chroma",
     "CHROMA_PATH":"./chroma",
     "MILVUS_URI":"http://localhost:19530",
@@ -47,13 +55,11 @@ def init_env():
             os.environ[key] = value
 
 def save_to_env(name, value):
-    if name == 'RETRIEVER':
-        if value == '稠密':
-            value = 'dense'
-        elif value == '稀疏':
-            value = 'sparse'
-        elif value == '混合':
-            value = 'hybrid'
+    if name == "naive":
+        os.environ["RERANKER"] = value
+    elif name == "graph":
+        os.environ["CLUSTER_LEVEL"] = value
+        
     os.environ[name] = str(value)
 
 
@@ -66,6 +72,13 @@ def save_storage_path(value, settings):
         os.environ['ELASTICSEARCH_URI'] = value
         settings.elasticsearch_uri = value
 
+
+def save_graph_storage_path(value, settings):
+    graph_storage = os.environ['GRAPH_STORAGE']
+    if graph_storage == 'neo4j':
+        os.environ['NEO4J_URI'] = value
+        settings.neo4j_uri = value
+        
 
 def save_vectorstore_path(value, token, settings):
     vectorestore = os.environ['VECTORSTORE']
