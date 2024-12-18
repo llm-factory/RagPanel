@@ -6,4 +6,4 @@ sse-starlette
 tenacity
 tiktoken
 transformers
-pycardinal @ git+https://github.com/the-seeds/cardinal.git@main
+pycardinal
