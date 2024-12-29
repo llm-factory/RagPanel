@@ -4,17 +4,17 @@
 RagPanel is an open source **RAG rapid deployment** project that can quickly deploy databases and RAG platforms with just a few lines of code.  
 You can insert files, search queries, delete search results, delete added files, chat using retrieval and complete other operations through the visual Web UI. This project also supports completing these operations through API calls. This project currently integrates Naive RAG, Graph RAG and other RAG methods.
 ## 🚀Quick Start
-1. Prepare models
-This project requires a chat model and an embedding model. The project only supports  OpenAI API calls. So if you want to use other forms of APIs or open source models, you can refer to the [Model Deployment] (#modeldeployment) section to deploy the model.
+### Prepare models
+This project requires a chat model and an embedding model. The project only supports  OpenAI API calls. So if you want to use other forms of APIs or open source models, you can refer to the [Model Deployment](#model-deployment) section to deploy the model.
 
-2. Clone git and create conda environment
+### Clone git and create conda environment
 ```
 git clone https://github.com/the-seeds/RagPanel
 cd RagPanel
 conda create -n ragpanel python=3.10
 conda activate ragpanel
 ```
-3. Start database service  
+### Start database service  
 You need to start a kv storage and a vector storage. We recommend deploy them using docker and we have provided docker compose file in [docker](docker) folder. Take `redis` as an example, you can run following command to start `redis`:
 ```
 cd docker/redis
@@ -25,12 +25,12 @@ docker-compose up -d
 > [!NOTE] 
 > `chroma` only needs to follow later steps to install the python dependencies to run and don't need docker. And you can also install redis by [source code](https://github.com/redis/redis?tab=readme-ov-file#installing-redis). Then you can start `redis` + `chroma` without docker.
 
-4. Install project and dependencies according to your database  
-Again we take `redis`+`chroma` as an example:
+### Install project and dependencies
+You need to install project and dependencies according to your database. Again we take `redis`+`chroma` as an example:
 ```
 pip install -e ".[redis, chroma]"
 ```  
-&emsp;&emsp;You can also install the dependencies through pip by yourself after installing this project using `pip install -e .`. You can refer to the dependency table:
+You can also install the dependencies through pip by yourself after installing this project using `pip install -e .`. You can refer to the dependency table:
 |database|dependency|
 |-|-|
 |redis|redis|
@@ -38,7 +38,8 @@ pip install -e ".[redis, chroma]"
 |chroma|chromadb|
 |milvus|pymilvus|
 
-5. Run `ragpanel-cli --action webui`, and choose language `en` (English) or `zh` (Chinese) to start a Web UI like:
+### Start Web UI
+Run `ragpanel-cli --action webui`, and choose language `en` (English) or `zh` (Chinese) to start a Web UI like:
 ![Web UI](assets/webui.png)
 
 ## 📚Graph RAG
