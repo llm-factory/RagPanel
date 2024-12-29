@@ -26,7 +26,7 @@ Build index: 100%|████████████████████�
 ```
 
 ### 启动API
-构建索引完毕后，您可以启动API服务了，运行`ragpanel --action launch --config ./config/config.yaml`即可。您会看到如下输出：
+构建索引完毕后，您可以启动API服务了，运行`ragpanel-cli --action launch --config ./config/config.yaml`即可。您会看到如下输出：
 ```
 INFO:     Started server process [10455]
 INFO:     Waiting for application startup.

@@ -26,7 +26,7 @@ Build index: 100%|████████████████████�
 ```
 
 ### Launch API
-After building index, you can launch API server with `ragpanel --action launch --config ./config/config.yaml`. You would see:
+After building index, you can launch API server with `ragpanel-cli --action launch --config ./config/config.yaml`. You would see:
 ```
 INFO:     Started server process [10455]
 INFO:     Waiting for application startup.
