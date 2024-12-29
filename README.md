@@ -1,35 +1,91 @@
 # RagPanel
 [English | [简体中文](README_zh.md)]
 ## 📄Introduction
-Rag Panel is an open source RAG rapid deployment project, including visual interactive interface and API calls.
+RagPanel is an open source **RAG rapid deployment** project that can quickly deploy databases and RAG platforms with just a few lines of code.  
+You can insert files, search queries, delete search results, delete added files, chat using retrieval and complete other operations through the visual Web UI. This project also supports completing these operations through API calls. This project currently integrates Naive RAG, Graph RAG and other RAG methods.
 ## 🚀Quick Start
-0. Prepare a chat model and an embedding model. Closed source models are recommended to use [One API](https://github.com/songquanpeng/one-api) to access (OpenAI API is also OK). Open source models are recommended to use [imitater](https://github.com/the-seeds/imitater) to access.
-1. Clone git and create conda environment:
+1. Prepare models
+This project requires a chat model and an embedding model. The project only supports  OpenAI API calls. So if you want to use other forms of APIs or open source models, you can refer to the [Model Deployment] (#modeldeployment) section to deploy the model.
+
+2. Clone git and create conda environment
 ```
 git clone https://github.com/the-seeds/RagPanel
 cd RagPanel
 conda create -n ragpanel python=3.10
 conda activate ragpanel
 ```
-2. Start database server, including a kv storage server and a vector storage server (**and a graph storage for GraphRAG**).We recommend deploy them using docker and we have provided docker compose file in [docker](docker) folder. Take `redis` as an example, you can run following command to start `redis`:
+3. Start database service  
+You need to start a kv storage and a vector storage. We recommend deploy them using docker and we have provided docker compose file in [docker](docker) folder. Take `redis` as an example, you can run following command to start `redis`:
 ```
 cd docker/redis
-docker compose up -d
+docker-compose up -d
 ```
 &emsp;&emsp;Supported kv storages: `redis`,  `elasticsearch`.  
 &emsp;&emsp;Supported vector storages: `chroma`, `milvus`.  
-&emsp;&emsp;Supported graph storages: `neo4j`.  
-&emsp;&emsp;`chroma` only needs to follow later steps to install the python dependencies to run and don't need docker.
 > [!NOTE] 
-> Pulling docker image is sometimes unstable and maybe you need proxy. Besides, you can also install redis by [source code](https://github.com/redis/redis?tab=readme-ov-file#installing-redis). Then you can start `redis` + `chroma` without docker.
+> `chroma` only needs to follow later steps to install the python dependencies to run and don't need docker. And you can also install redis by [source code](https://github.com/redis/redis?tab=readme-ov-file#installing-redis). Then you can start `redis` + `chroma` without docker.
 
-3. Install dependencies according to your database server. Again we take `redis`+`chroma`+`neo4j` as an example:
+4. Install project and dependencies according to your database  
+Again we take `redis`+`chroma` as an example:
 ```
-pip install -e ".[redis, chroma, neo4j]"
+pip install -e ".[redis, chroma]"
 ```  
+&emsp;&emsp;You can also install the dependencies through pip by yourself after installing this project using `pip install -e .`. You can refer to the dependency table:
+|database|dependency|
+|-|-|
+|redis|redis|
+|elasticsearch|elasticsearch[async]|
+|chroma|chromadb|
+|milvus|pymilvus|
 
-4. Run `ragpanel-cli --action webui`, and choose language `en` (English) or `zh` (Chinese) to start a Web UI like:
+5. Run `ragpanel-cli --action webui`, and choose language `en` (English) or `zh` (Chinese) to start a Web UI like:
 ![Web UI](assets/webui.png)
+
+## 📚Graph RAG
+### Introduction
+![graphrag](assets/graphrag.png)
+Our GraphRAG implementation is shown in the figure. First we use LLM to extract entities and relations from docs, and summarize similar entities or relations. Then we insert these elements into graph storage and get the knowledge graph. Next, we use Leiden clustering to get a graph community. And finally we use LLM to generate community reports and store them.  
+When one query is given, we will first retrieve related entities in vector storage, and then query communities the entities belong to. In the end, we query reports of communities in KV storage as the retrieval results. 
+### Usage
+After you complete the [Quick Start](#quick-start) section, you only need to complete the deployment of the graph database to use GraphRAG.  
+Currently, the graph database only supports `neo4j`. You can use docker to deploy `neo4j` and install dependencies through the following code:  
+```
+mkdir neo4j && cd neo4j
+docker run -it --rm \
+  --publish=7474:7474 --publish=7687:7687 \
+  --env NEO4J_AUTH=none \
+  --env NEO4J_PLUGINS='["apoc","graph-data-science"]' \
+  --env NEO4J_dbms_security_procedures_unrestricted=gds.*,apoc.*\
+  --env NEO4J_dbms_security_procedures_allowlist=gds.*,apoc.*\
+  -v ./plugins:/plugins\
+  -v ./data:/data\
+  neo4j:5.11.0
+pip install neo4j
+```
+At this point, you can switch the `graph database` option from `None` to `neo4j` in the Web UI, and switch the `RAG Method` to `graph` in `Tools Environment`-`Retrieve` to start Graph RAG.
+
+## 🤖Model deployment
+### Closed source model
+We recommend using [One API](https://github.com/songquanpeng/one-api) to access. You can check the official warehouse for more deployment tutorials. A quick deployment solution is given below:  
+First use docker to deploy One API:
+```  
+docker run --name one-api -d --restart always -p 3000:3000 -e TZ=Asia/Shanghai -v /home/ubuntu/data/one-api:/data justsong/one-api
+```
+Then visit [http://localhost:3000/](http://localhost:3000/) and log in to configure. The initial account username is `root` and the password is `123456`. Add your closed source model API Key in the `Channels` page, and then add an access token in the `Tokens` page. You can then use the newly added token to access the One API in the same way as the OpenAI API.
+### Open source model
+We recommend using [imitater](https://github.com/the-seeds/imitater) to access. A quick deployment solution is given below:  
+First pull the repository and install:
+```
+git clone https://github.com/the-seeds/imitater.git
+cd imitater
+conda create -n imitater python=3.10
+conda activate imitater
+pip install -e .
+```
+Modify the sample configuration file `config/example.yaml` of the `imitater` project, and then run the project:
+```
+imitater -c config/example.yaml
+```
 
 ## 📡Api Example
 Create a `.env` and a `config.yaml` as follows: 
@@ -84,12 +140,3 @@ dump:
   folder: ./chat_history
 ```
 Assuming you have created **.env** and **config.yaml** properly, and **started your database server**, you can see README in [examples/api](examples/api/) folder to know how to start and use API server.
-
-## 📚Graph RAG
-![graphrag](assets/graphrag.png)
-Our GraphRAG implementation is shown in the figure. First we use LLM to extract entities and relations from docs, and summarize similar entities or relations. Then we insert these elements into graph storage and get the knowledge graph. Next, we use Leiden clustering to get a graph community. And finally we use LLM to generate community reports and store them.  
-When one query is given, we will first retrieve related entities in vector storage, and then query communities the entities belong to. In the end, we query reports of communities in KV storage as the retrieval results. 
-
-## 🗄Database
-![database](assets/database_usage.png)  
-The data storage usage is shown in the figure above. This project supports sparse retrieval and dense retrieval: sparse retrieval searches the document content in the KV database and directly obtains the document content; dense retrieval searches in the vector store and obtains the document block id, and then get the document content from the KV database.
