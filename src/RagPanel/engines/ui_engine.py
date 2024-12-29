@@ -34,7 +34,7 @@ class UiEngine(BaseEngine):
         settings.hf_tokenizer_path = os.getenv("HF_TOKENIZER_PATH")
         self.threshold = self.tmp_threshold
         self.top_k = self.tmp_top_k
-        self.reranker = os.getenv("RERANKER", "None")
+        self.reranker = os.getenv("RERANKER")
         self.splitter = CJKTextSplitter(int(os.getenv("DEFAULT_CHUNK_SIZE")),
                                         int(os.getenv("DEFAULT_CHUNK_OVERLAP")))
 
@@ -96,7 +96,7 @@ class UiEngine(BaseEngine):
                 text_chunks.extend(chunks)
                 bar.update(1)
         bar.close()
-        if os.getenv("RAG_METHOD", "naive") == 'graph':
+        if os.getenv("RAG_METHOD") == 'graph':
             return super().graph_insert(text_chunks)
         bar = tqdm(total=len(text_chunks), desc=self.LOCALES["build_index"])
         left_bar = len(text_chunks)
@@ -154,7 +154,7 @@ class UiEngine(BaseEngine):
                 gr.Warning("") # TODO
 
     def search(self, query):
-        if os.getenv("RAG_METHOD", "naive") == 'graph':
+        if os.getenv("RAG_METHOD") == 'graph':
             docs = super().graph_search(query, top_k=self.top_k, mode="local", threshold=self.threshold)
         else:
             docs = super().search(query=query, top_k=self.top_k, reranker=self.reranker, threshold=self.threshold)

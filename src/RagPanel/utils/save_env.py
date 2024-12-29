@@ -18,7 +18,7 @@ envs_to_save = [
     "GRAPH_STORAGE",
     "NEO4J_URI",
     "CLUSTER_LEVEL",
-    "RETRIEVE_METHOD",
+    "RAG_METHOD",
     "VECTORSTORE",
     "CHROMA_PATH",
     "MILVUS_URI",
@@ -39,10 +39,10 @@ default_envs = {
     "SEARCH_TARGET":"content",
     "REDIS_URI":"redis://localhost:6379",
     "ELASTICSEARCH_URI":"http://localhost:9001",
-    "GRAPH_STORAGE": "neo4j",
+    "GRAPH_STORAGE": "None",
     "NEO4J_URI": "bolt://localhost:7687",
     "CLUSTER_LEVEL": "1",
-    "RETRIEVE_METHOD": "graph",
+    "RAG_METHOD": "naive",
     "VECTORSTORE":"chroma",
     "CHROMA_PATH":"./chroma",
     "MILVUS_URI":"http://localhost:19530",
@@ -59,8 +59,8 @@ def save_to_env(name, value):
         os.environ["RERANKER"] = value
     elif name == "graph":
         os.environ["CLUSTER_LEVEL"] = value
-        
-    os.environ[name] = str(value)
+    else:
+        os.environ[name] = str(value)
 
 
 def save_storage_path(value, settings):
@@ -96,5 +96,5 @@ def save_vectorstore_path(value, token, settings):
 def save_as_dotenv():
     with open(".env", "w") as f:
         for env in envs_to_save:
-            f.write(f"{env}={os.getenv(env, default_envs[env])}\n")
+            f.write(f"{env}={os.getenv(env)}\n")
             

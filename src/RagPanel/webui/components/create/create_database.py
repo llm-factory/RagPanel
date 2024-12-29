@@ -7,11 +7,11 @@ def create_database_block(engine, LOCALES):
         default_path = ""
         if storage is not None:
             if storage == 'redis':
-                default_path = os.getenv("REDIS_URI", "redis://localhost:6379")
+                default_path = os.getenv("REDIS_URI")
             elif storage == 'es':
-                default_path = os.getenv("ELASTICSEARCH_URI", "http://localhost:9001")
+                default_path = os.getenv("ELASTICSEARCH_URI")
         else:
-            default_path = os.getenv("REDIS_URI", "redis://localhost:6379")
+            default_path = os.getenv("REDIS_URI")
         storage_path = gr.Textbox(
             label=LOCALES["kv_storage_uri"],
             value=default_path,
@@ -24,11 +24,11 @@ def create_database_block(engine, LOCALES):
         label = LOCALES["graph_storage_uri"]
         if graph_storage is not None:
             if graph_storage == 'neo4j':
-                default_path = os.getenv("NEO4J_URI", "bolt://localhost:7687")
+                default_path = os.getenv("NEO4J_URI")
             elif graph_storage == 'None':
                 default_path = "None"
         else:
-            default_path = os.getenv("NEO4J_URI", "bolt://localhost:7687")
+            default_path = os.getenv("NEO4J_URI")
         graph_storage_path = gr.Textbox(
             label=label,
             value=default_path,
@@ -41,12 +41,12 @@ def create_database_block(engine, LOCALES):
         label = LOCALES["vectorstore_uri"]
         if vectorstore is not None:
             if vectorstore == 'chroma':
-                default_path = os.getenv("CHROMA_PATH", "./chroma")
+                default_path = os.getenv("CHROMA_PATH")
                 label = LOCALES["vectorstore_path"]
             elif vectorstore == 'milvus':
-                default_path = os.getenv("MILVUS_URI", "http://localhost:19530")
+                default_path = os.getenv("MILVUS_URI")
         else:
-            default_path = os.getenv("CHROMA_PATH", "./chroma")
+            default_path = os.getenv("CHROMA_PATH")
         vectorstore_path = gr.Textbox(
             label=label,
             value=default_path,
@@ -69,7 +69,7 @@ def create_database_block(engine, LOCALES):
 
     with gr.Blocks() as demo:
         with gr.Row():
-            storage = os.getenv("STORAGE", engine.supported_storages[0])
+            storage = os.getenv("STORAGE")
             storage_choice = gr.Dropdown(
                 label=LOCALES["kv_storage"],
                 choices=engine.supported_storages,
@@ -86,7 +86,7 @@ def create_database_block(engine, LOCALES):
             )
 
         with gr.Row():
-            vectorstore = os.getenv('VECTORSTORE', engine.supported_vectorstores[0])
+            vectorstore = os.getenv('VECTORSTORE')
             vectorstore_choice = gr.Dropdown(
                 label=LOCALES["vectorstore"],
                 choices=engine.supported_vectorstores,
@@ -101,7 +101,7 @@ def create_database_block(engine, LOCALES):
             vectorstore_choice.change(get_vectorstore_token, vectorstore_choice, vectorstore_token)
             
         with gr.Row():
-            graph_storage = os.getenv('GRAPH_STORAGE', engine.supported_graph_storages[0])
+            graph_storage = os.getenv('GRAPH_STORAGE')
             graph_storage_choice = gr.Dropdown(
                 label=LOCALES["graph_storage"],
                 choices=engine.supported_graph_storages,

@@ -8,7 +8,7 @@ def create_retrieve_tab(engine, LOCALES):
         with gr.Row():
             rag_dropdown = gr.Dropdown(label=LOCALES["RAG_Method"],
                                         choices=["naive", "graph"],
-                                        value=os.getenv('RAG_METHOD', "naive"),
+                                        value=os.getenv('RAG_METHOD'),
                                         type="value")
             rag_dropdown.change(save_to_env, [gr.State("RAG_METHOD"), rag_dropdown])
             
@@ -22,7 +22,7 @@ def create_retrieve_tab(engine, LOCALES):
                                         label=LOCALES["cluster_level"])
                     return cluster_slider
                 
-            second_conf = get_second_conf(os.getenv('RAG_METHOD', "naive"))
+            second_conf = get_second_conf(os.getenv('RAG_METHOD'))
             second_conf.change(save_to_env, [rag_dropdown, second_conf])
             rag_dropdown.change(get_second_conf, rag_dropdown, second_conf)
                 
