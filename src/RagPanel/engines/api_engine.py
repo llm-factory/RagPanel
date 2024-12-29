@@ -1,3 +1,4 @@
+import os
 from tqdm import tqdm
 from multiprocessing import Pool
 from functools import partial
@@ -27,6 +28,8 @@ class ApiEngine(BaseEngine):
                 desc="split content",
             ):
                 text_chunks.extend(chunks)
+        if os.getenv("RAG_METHOD") == 'graph':
+            return super().graph_insert(text_chunks)
 
         BATCH_SIZE=1000
         bar = tqdm(total=len(text_chunks), desc="build index")
@@ -49,20 +52,8 @@ class ApiEngine(BaseEngine):
 
         self.logger.info("Build completed.")
 
-    def graph_insert(self, folder, num_proc):
-        self.check_database()
-        if self._splitter is None:
-            print("loading splitter...")
-            self._splitter = CJKTextSplitter()
-        file_contents = read_folder(folder)
-        text_chunks = []
-        partial_split = partial(split, self._splitter)
-        with Pool(processes=num_proc) as pool:
-            for chunks in tqdm(
-                pool.imap_unordered(partial_split, file_contents),
-                total=len(file_contents),
-                desc="split content",
-            ):
-                text_chunks.extend(chunks)
-        super().graph_insert(file_contents=text_chunks)
-        
+    def search(self, query, top_k, reranker, threshold = None):
+        if os.getenv("RAG_METHOD") == 'graph':
+            return super().graph_search(query=query, top_k=top_k, mode="local", threshold=threshold)
+        else:
+            return super().search(query=query, top_k=top_k, reranker=reranker, threshold=threshold)

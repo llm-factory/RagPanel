@@ -91,7 +91,7 @@ imitater -c config/example.yaml
 ## 📡Api Example
 Create a `.env` and a `config.yaml` as follows: 
 > [!Note]
-> If you have used Web UI, the data you filled in the UI will be saved as `.env` and `config.yaml` automatically when you click `save and apply` button
+> If you have used Web UI, the data you filled in the UI will be saved as `.env` automatically when you click `save and apply` button
 ```
 # .env
 # imitater or openai
@@ -106,6 +106,9 @@ HF_TOKENIZER_PATH=01-ai/Yi-6B-Chat
 # text splitter
 DEFAULT_CHUNK_SIZE=300
 DEFAULT_CHUNK_OVERLAP=100
+
+# retrieve
+RAG_METHOD=naive
 
 # storages
 STORAGE=redis

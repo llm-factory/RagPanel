@@ -90,7 +90,7 @@ imitater -c config/example.yaml
 ```
 
 ## 📡Api服务样例
-创建如下的`.env` 和 `config.yaml`文件（如果您使用过Web UI，则可点击其中的`应用并保存`自动生成这两个文件）:
+创建如下的`.env` 和 `config.yaml`文件（如果您使用过Web UI，则可点击其中的`应用并保存`自动生成`.env`）:
 ```
 # .env
 # imitater or openai
@@ -105,6 +105,9 @@ HF_TOKENIZER_PATH=01-ai/Yi-6B-Chat
 # text splitter
 DEFAULT_CHUNK_SIZE=300
 DEFAULT_CHUNK_OVERLAP=100
+
+# retrieve
+RAG_METHOD=naive
 
 # storages
 STORAGE=redis
