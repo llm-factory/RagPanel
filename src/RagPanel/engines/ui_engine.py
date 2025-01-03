@@ -129,6 +129,7 @@ class UiEngine(BaseEngine):
         del_ids = []
         for index in del_index:
             del_ids.append(doc_ids[index])
+            self.delete_by_id(doc_ids[index])
 
         docs = docs[~docs["id"].isin(del_ids)]
         if len(del_ids) == 1:
