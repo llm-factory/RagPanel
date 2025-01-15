@@ -2,7 +2,7 @@ import os
 import gradio as gr
 
 
-def create_database_block(engine, LOCALES):
+def create_database_block(engine, collection_name, LOCALES):
     def get_storage_path(storage):
         default_path = ""
         if storage is not None:
@@ -81,7 +81,7 @@ def create_database_block(engine, LOCALES):
             storage_choice.change(get_storage_path, storage_choice, storage_path)
 
             collection = gr.Textbox(
-                value="init",
+                value=collection_name,
                 label=LOCALES["collection_name"],
             )
 

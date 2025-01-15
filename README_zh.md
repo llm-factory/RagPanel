@@ -147,8 +147,12 @@ build:
   folder: ./inputs
 
 launch:
-  host: 127.0.0.1
+  host: 127.0.0.1    # 对外开放需要设为 0.0.0.0
   port: 8080
+
+webui:
+  host: 127.0.0.1    # 对外开放需要设为 0.0.0.0
+  port: 7860
 
 dump:
   folder: ./chat_history

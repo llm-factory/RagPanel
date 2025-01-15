@@ -11,7 +11,7 @@ from ..engines import UiEngine
 from .components import create_database_block, create_functions_block, create_tools_block
 
 
-def create_ui(lang):
+def create_ui(lang, collection):
     from ..utils.locales import LOCALES
     LOCALES = {key: value[lang] for key, value in LOCALES.items()}
     with gr.Blocks() as demo:
@@ -21,7 +21,7 @@ def create_ui(lang):
 
         # database
         gr.HTML(f"<b>{LOCALES['Database_Environment']}</b>")
-        create_database_block(engine, LOCALES)
+        create_database_block(engine, collection, LOCALES)
 
         # tools
         gr.HTML(f"<b>{LOCALES['Tools_Environment']}")
