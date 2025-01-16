@@ -92,6 +92,12 @@ class ModelList(BaseModel):
     object: Literal["list"] = "list"
     data: List[ModelCard] = []
 
+class RetrieveRequest(BaseModel):
+    query: str
+    top_k: int = 5
+    threshold: Optional[float] = None
+    reranker: Optional[str] = None
+
 class Operator(IntEnum):
     Eq = 0
     Ne = 1

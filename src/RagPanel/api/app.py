@@ -17,6 +17,7 @@ from ..utils.protocol import (
     ChatCompletionResponseStreamChoice,
     ModelCard,
     ModelList,
+    RetrieveRequest
 )
 
 
@@ -68,5 +69,22 @@ def launch_app(engine:BaseEngine, collection:str, host: str, port: int) -> None:
     @app.get("/v1/models", response_model=ModelList)
     async def list_models():
         return ModelList(data=[ModelCard()])
+    
+    @app.post("/v1/retrieve")
+    async def create_retrieve_completion(request: RetrieveRequest,status_code=status.HTTP_200_OK): 
+        top_k = getattr(request, "top_k", 2)
+        threshold = getattr(request, "threshold", 0.5)
+        reranker = getattr(request,"reranker","")
+        docs = engine.search(
+            query=request.query,
+            top_k=top_k,
+            threshold=threshold,
+            reranker=reranker
+        )
+        content = "\n".join([doc["content"] for doc in docs])
+        choice_data = ChatCompletionResponseChoice(
+            message=ChatCompletionMessage(role=Role.ASSISTANT, content=content), finish_reason="stop"
+        )
+        return ChatCompletionResponse(choices=[choice_data])
 
     uvicorn.run(app, host=host, port=port)
