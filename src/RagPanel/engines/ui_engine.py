@@ -8,6 +8,7 @@ from .engine import BaseEngine
 from ..utils.graph_processor import GraphProcessor
 from ..utils.file_reader import read_file, split
 from ..utils.protocol import DocIndex, Document, Operator
+from ..utils.save_config import update_config, save_config
 from ..utils.save_env import save_to_env, save_storage_path, save_vectorstore_path, save_graph_storage_path, get_storage_path, get_graph_storage_path, get_vectorstore_path
 from cardinal import AutoStorage, AutoVectorStore, CJKTextSplitter, AutoCondition, DenseRetriever, BaseCollector
 from ..utils.exception import (
@@ -77,6 +78,8 @@ class UiEngine(BaseEngine):
 
     def apply_and_save_database(self, collection, storage, storage_path, vectorstore, vectorstore_path, vectorstore_token, graph_storage, graph_storage_path):
         self.collection = collection
+        update_config("database", "collection", collection)
+        save_config()
         save_to_env("STORAGE", storage)
         save_to_env("VECTORSTORE", vectorstore)
         save_to_env("GRAPH_STORAGE", graph_storage)
