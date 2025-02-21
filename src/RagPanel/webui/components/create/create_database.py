@@ -116,7 +116,7 @@ def create_database_block(engine, collection_name, LOCALES):
             database_confirm_btn = gr.Button(LOCALES["apply_and_save"])
             database_clear_btn = gr.Button(LOCALES["clear_database"])
 
-    database_confirm_btn.click(engine.create_database,
+    database_confirm_btn.click(engine.apply_and_save_database,
                                 [collection, storage_choice, storage_path, vectorstore_choice, vectorstore_path, vectorstore_token, graph_storage_choice, graph_storage_path]
                                 ).success(gr.Info, gr.State(LOCALES["configuration_applied"]))
     database_clear_btn.click(engine.clear_database).success(gr.Info, gr.State(LOCALES["cleared_successfully"]))

@@ -3,12 +3,19 @@ from pydantic import BaseModel
 from .chat_engine import ChatEngine
 from ..utils.protocol import StrModel
 from cardinal import AutoStorage, AutoVectorStore, DenseRetriever, BaseCollector, EmbedOpenAI
+from ..utils.exception import (
+    DatabaseConnectionError, 
+    DatabaseNotFoundError,
+    DatabaseNotInitializedError,
+    StorageConnectionError,
+    VectorStoreConnectionError
+)
 
 
 class BaseEngine:
-    def __init__(self):
+    def __init__(self, collection="init"):
         self._splitter = None
-        self.collection = None
+        self.collection = collection
         self._storage = None
         self._vectorstore = None
         self._retriever = None
@@ -27,37 +34,36 @@ class BaseEngine:
             "neo4j"
         ]
 
-    def create_database(self, collection):
-        self._storage = AutoStorage[BaseModel](collection)
-        self._vectorstore = AutoVectorStore[BaseModel](collection)
-        self._retriever = DenseRetriever[BaseModel](vectorstore_name=collection, threshold=1.0)
-        self.chat_engine.name = "history_" + collection
-        self.chat_engine.collector = BaseCollector(storage_name="history_" + collection)
-        self.collection = collection
+    def create_database(self):
+        try:
+            self._storage = AutoStorage[BaseModel](self.collection)
+        except Exception as e:
+            raise StorageConnectionError(f"Storage connection failed: {str(e)}")
+            
+        try:
+            self._vectorstore = AutoVectorStore[BaseModel](self.collection)
+        except Exception as e:
+            raise VectorStoreConnectionError(f"Vector store connection failed: {str(e)}")
+            
+        self._retriever = DenseRetriever[BaseModel](vectorstore_name=self.collection, threshold=1.0)
+        self.chat_engine.name = "history_" + self.collection
+        self.chat_engine.collector = BaseCollector(storage_name="history_" + self.collection)
         
     def check_database(self):
         if self._storage is None or self._vectorstore is None or self._retriever is None:
-            raise ValueError("Please create a database first")
-        self._vectorstore._vectorstore._vectorizer = EmbedOpenAI(batch_size=1000)
-        self._retriever._vectorstore = self._vectorstore
+            self.create_database()
 
     def clear_database(self):
+        self.check_database()
         self.destroy_database()
-        try:
-            self._storage = AutoStorage[BaseModel](self.collection)
-        except Exception:
-            raise TimeoutError("storage connection error")
-        try:
-            self._vectorstore = AutoVectorStore[BaseModel](self.collection)
-        except Exception:
-            raise TimeoutError("vectorstore connection error")
+        self.create_database()
 
     def destroy_database(self):
         self.check_database()
         if not self._storage.exists():
             self._storage = None
             self._vectorstore = None
-            return
+            raise DatabaseNotFoundError("Database does not exist")
         self._storage.destroy()
         self._vectorstore.destroy()
         if self._graph_processor is not None:

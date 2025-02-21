@@ -15,7 +15,7 @@ def create_ui(lang, collection):
     from ..utils.locales import LOCALES
     LOCALES = {key: value[lang] for key, value in LOCALES.items()}
     with gr.Blocks() as demo:
-        engine = UiEngine(LOCALES)
+        engine = UiEngine(LOCALES, collection)
         gr.HTML("<center><h1>RAG Panel</h1></center>")
         search_result_state = gr.State()
 

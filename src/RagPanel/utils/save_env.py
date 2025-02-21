@@ -63,35 +63,53 @@ def save_to_env(name, value):
         os.environ[name] = str(value)
 
 
-def save_storage_path(value, settings):
+def save_storage_path(value):
     storage = os.environ['STORAGE']
     if storage == 'redis':
         os.environ['REDIS_URI'] = value
-        settings.redis_uri = value
     elif storage == 'es':
         os.environ['ELASTICSEARCH_URI'] = value
-        settings.elasticsearch_uri = value
 
+def get_storage_path():
+    storage = os.environ['STORAGE']
+    storage_path = None
+    if storage == 'redis':
+        storage_path = os.environ['REDIS_URI']
+    elif storage == 'es':
+        storage_path = os.environ['ELASTICSEARCH_URI']
+    return storage_path
 
-def save_graph_storage_path(value, settings):
+def save_graph_storage_path(value):
     graph_storage = os.environ['GRAPH_STORAGE']
     if graph_storage == 'neo4j':
         os.environ['NEO4J_URI'] = value
-        settings.neo4j_uri = value
+
+def get_graph_storage_path():
+    graph_storage = os.environ['GRAPH_STORAGE']
+    graph_storage_path = None
+    if graph_storage == 'neo4j':
+        graph_storage_path = os.environ['NEO4J_URI']
+    return graph_storage_path
         
 
-def save_vectorstore_path(value, token, settings):
-    vectorestore = os.environ['VECTORSTORE']
-    if os.getenv('OPENAI_API_KEY') is None:
-        os.environ['OPENAI_API_KEY'] = "0"
-    if vectorestore == 'chroma':
+def save_vectorstore_path(value, token):
+    vectorstore = os.environ['VECTORSTORE']
+    if vectorstore == 'chroma':
         os.environ['CHROMA_PATH'] = value
-        settings.chroma_path = value
-    elif vectorestore == 'milvus':
+    elif vectorstore == 'milvus':
         os.environ['MILVUS_URI'] = value
-        settings.milvus_uri = value
         os.environ['MILVUS_TOKEN'] = token
-        settings.milvus_token = token
+
+def get_vectorstore_path():
+    vectorstore = os.environ['VECTORSTORE']
+    vectorstore_path = None
+    vectorstore_token = None
+    if vectorstore == 'chroma':
+        vectorstore_path = os.environ['CHROMA_PATH']
+    elif vectorstore == 'milvus':
+        vectorstore_path = os.environ['MILVUS_URI']
+        vectorstore_token = os.environ['MILVUS_TOKEN']
+    return vectorstore_path, vectorstore_token
 
 def save_as_dotenv():
     with open(".env", "w") as f:

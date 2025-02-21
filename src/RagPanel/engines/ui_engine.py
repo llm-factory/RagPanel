@@ -8,13 +8,21 @@ from .engine import BaseEngine
 from ..utils.graph_processor import GraphProcessor
 from ..utils.file_reader import read_file, split
 from ..utils.protocol import DocIndex, Document, Operator
-from ..utils.save_env import save_to_env, save_storage_path, save_vectorstore_path, save_graph_storage_path
+from ..utils.save_env import save_to_env, save_storage_path, save_vectorstore_path, save_graph_storage_path, get_storage_path, get_graph_storage_path, get_vectorstore_path
 from cardinal import AutoStorage, AutoVectorStore, CJKTextSplitter, AutoCondition, DenseRetriever, BaseCollector
+from ..utils.exception import (
+    DatabaseConnectionError, 
+    DatabaseNotFoundError,
+    DatabaseNotInitializedError,
+    StorageConnectionError,
+    VectorStoreConnectionError
+)
 
 
 class UiEngine(BaseEngine):
-    def __init__(self, LOCALES):
-        super().__init__()
+    def __init__(self, LOCALES, collection="init"):
+        super().__init__(collection)
+        self.init_cardinal()
         self.file_history = []
         self.file_chunk_map = {}
         self.LOCALES = LOCALES
@@ -26,62 +34,83 @@ class UiEngine(BaseEngine):
         
     def set(self, name, value):
         setattr(self, name, value)
-        
-    def update_tools(self):
+
+    def init_cardinal(self):
+        storage = os.getenv("STORAGE", "redis")
+        vectorstore = os.getenv("VECTORSTORE", "chroma")
+        graph_storage = os.getenv("GRAPH_STORAGE", "None")
+        storage_path = get_storage_path()
+        vectorstore_path, vectorstore_token = get_vectorstore_path()
+        graph_storage_path = get_graph_storage_path()
+
+        from cardinal.storage.config import settings
+        settings.storage = storage
+        if storage == 'redis':
+            settings.redis_uri = storage_path
+        elif storage == 'es':
+            settings.elasticsearch_uri = storage_path
+
+        from cardinal.vectorstore.config import settings
+        settings.vectorstore = vectorstore
+        if vectorstore == 'chroma':
+            settings.chroma_path =  vectorstore_path
+        elif vectorstore == 'milvus':
+            settings.milvus_uri = vectorstore_path
+            settings.milvus_token = vectorstore_token
+
+        from cardinal.graph.config import settings
+        settings.graph_storage = graph_storage
+        if graph_storage == 'neo4j':
+            settings.neo4j_uri = graph_storage_path
+
         from cardinal.model.config import settings
         settings.default_chat_model = os.getenv("DEFAULT_CHAT_MODEL")
         settings.default_embed_model = os.getenv("DEFAULT_EMBED_MODEL")
         settings.hf_tokenizer_path = os.getenv("HF_TOKENIZER_PATH")
+        
+    def update_tools(self):
         self.threshold = self.tmp_threshold
         self.top_k = self.tmp_top_k
         self.reranker = os.getenv("RERANKER")
         self.splitter = CJKTextSplitter(int(os.getenv("DEFAULT_CHUNK_SIZE")),
                                         int(os.getenv("DEFAULT_CHUNK_OVERLAP")))
 
-    def create_database(self, collection, storage, storage_path, vectorstore, vectorestore_path, vectorstore_token, graph_storage, graph_storage_path):
-        # config
+    def apply_and_save_database(self, collection, storage, storage_path, vectorstore, vectorstore_path, vectorstore_token, graph_storage, graph_storage_path):
+        self.collection = collection
         save_to_env("STORAGE", storage)
         save_to_env("VECTORSTORE", vectorstore)
         save_to_env("GRAPH_STORAGE", graph_storage)
-        from cardinal.storage.config import settings
-        settings.storage = storage
-        save_storage_path(storage_path, settings)
-        from cardinal.vectorstore.config import settings
-        settings.vectorstore = vectorstore
-        save_vectorstore_path(vectorestore_path, vectorstore_token, settings)
-        from cardinal.graph.config import settings
-        settings.graph_storage = graph_storage
-        save_graph_storage_path(graph_storage_path, settings)
-        # create
+        save_storage_path(storage_path)
+        save_vectorstore_path(vectorstore_path, vectorstore_token)
+        save_graph_storage_path(graph_storage_path)
+        self.init_cardinal()
+        
         try:
-            self._storage = AutoStorage[Document](collection)
-        except NameError:
-            raise gr.Error(self.LOCALES["dep_error"])
-        except Exception:
-            raise gr.Error(self.LOCALES["storage_connection_error"])
-        try:
-            self._vectorstore = AutoVectorStore[DocIndex](collection)
-        except NameError:
-            raise gr.Error(self.LOCALES["dep_error"])
-        except Exception:
-            raise gr.Error(self.LOCALES["vectorstore_connection_error"])
+            super().create_database()
+        except StorageConnectionError as e:
+            raise gr.Error(f"{self.LOCALES['storage_connection_error']}: {str(e)}")
+        except VectorStoreConnectionError as e:
+            raise gr.Error(f"{self.LOCALES['vectorstore_connection_error']}: {str(e)}")
+        except DatabaseConnectionError as e:
+            raise gr.Error(f"{self.LOCALES['database_error']}: {str(e)}")
+        
         if graph_storage != "None":
             self._graph_processor = GraphProcessor("en", 1, collection)
-        self._retriever = DenseRetriever[DocIndex](vectorstore_name=collection, threshold=1.0)
-        self.chat_engine.name = "history_" + collection
-        self.chat_engine.collector = BaseCollector(storage_name="history_" + collection)
-        self.collection = collection
 
     def clear_database(self):
         try:
             super().clear_database()
-        except TimeoutError:
-            raise gr.Error(self.LOCALES["database_connection_error"])
-        except ValueError:
-            raise gr.Error(self.LOCALES["database_not_found_error"])
+        except (StorageConnectionError, VectorStoreConnectionError) as e:
+            raise gr.Error(f"{self.LOCALES['database_connection_error']}: {str(e)}")
 
     def insert(self, filepath, num_proc, batch_size, progress=gr.Progress(track_tqdm=True)):
-        self.check_database()
+        try:
+            self.check_database()
+        except DatabaseNotInitializedError:
+            raise gr.Error(self.LOCALES["database_not_initialized_error"])
+        except DatabaseConnectionError as e:
+            raise gr.Error(f"{self.LOCALES['database_error']}: {str(e)}")
+            
         self.file_history.extend(filepath)
         file_contents = []
         for path in filepath:

@@ -9,8 +9,8 @@ from ..utils.protocol import DocIndex, Document
 
 
 class ApiEngine(BaseEngine):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, collection="init"):
+        super().__init__(collection)
         self.logger = get_logger(__name__)
         
     def insert(self, folder, num_proc):
