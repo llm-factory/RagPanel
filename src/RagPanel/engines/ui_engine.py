@@ -107,12 +107,7 @@ class UiEngine(BaseEngine):
             raise gr.Error(f"{self.LOCALES['database_connection_error']}: {str(e)}")
 
     def insert(self, filepath, num_proc, batch_size, progress=gr.Progress(track_tqdm=True)):
-        try:
-            self.check_database()
-        except DatabaseNotInitializedError:
-            raise gr.Error(self.LOCALES["database_not_initialized_error"])
-        except DatabaseConnectionError as e:
-            raise gr.Error(f"{self.LOCALES['database_error']}: {str(e)}")
+        self.check_database()
             
         self.file_history.extend(filepath)
         file_contents = []

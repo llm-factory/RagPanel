@@ -78,7 +78,11 @@ class BaseEngine:
         
     def graph_insert(self, file_contents):
         from ..utils import GraphProcessor
+        collection = self.collection
+        self.collection = "graph_" + collection
+        self.create_database()
         self._graph_processor = GraphProcessor("en", 1, self.collection)
+        self.collection = collection
         entities, relations = self._graph_processor.extract_graph(file_contents)
         new_entities = self._graph_processor.insert_entities(entities)
         self._vectorstore.insert(new_entities, [StrModel(string=e_name) for e_name in new_entities])
