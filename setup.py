@@ -20,7 +20,7 @@ extras_require={
 def main():
     setup(
         name="ragpanel",
-        version="0.1",
+        version="0.2",
         author="the-seeds", 
         description="a unified rag platform",
         long_description=open("README.md").read(),

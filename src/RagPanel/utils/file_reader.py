@@ -1,6 +1,13 @@
 import os
 from tqdm import tqdm
 from .protocol import Text, CSV
+import json
+import csv
+import docx2txt
+from pdfminer.high_level import extract_text
+import win32com.client
+import tempfile
+import shutil
 
 
 def read_txt(filepath):
@@ -9,50 +16,31 @@ def read_txt(filepath):
 
 
 def read_csv(filepath):
-    import csv
     with open(filepath, "r", encoding="utf-8") as f:
         reader = csv.reader(f)
-        # regard 1st col as key and 2nd col as value
         keys = []
         contents = []
         for row in reader:
-            keys.append(row[0])
-            contents.append(row[1])
+            if len(row) >= 2:  # 确保至少有两列
+                keys.append(row[0])
+                contents.append(row[1])
         return CSV(filepath, keys, contents)
-    
+
 
 def read_json(filepath):
-    import json
     with open(filepath, "r", encoding='utf-8') as f:
         jsons = json.load(f)
-        keys = jsons.keys()
-        contents = jsons.values()
-        contents = [str(content) for content in contents]
+        keys = list(jsons.keys())
+        contents = [str(content) for content in jsons.values()]
         return CSV(filepath, keys, contents)
-    
 
-def read_word(filepath, is_doc):
-    try:
-        from docx import Document
-    except ImportError:
-        print("please install python-docx with 'pip install python-docx' to read .docx files")
-        raise
-    
-    if is_doc: #TODO: change to .docx first
-        pass
-    
-    doc = Document(filepath)
-    contents = "\n".join(para.text for para in doc.paragraphs)
-    return Text(filepath, contents)
+
+def read_word(filepath):
+    text = docx2txt.process(filepath)
+    return Text(filepath, text)
 
 
 def read_pdf(filepath):
-    try:
-        from pdfminer.high_level import extract_text
-    except ImportError:
-        print("please install pdfminer.six with 'pip install pdfminer.six' to read .pdf files")
-        raise
-
     contents = extract_text(filepath)
     return Text(filepath, contents)
 
@@ -61,23 +49,21 @@ def read_file(filepath):
     # supported types: .txt, .json, .docx, .doc, .pdf, .csv
     _, extension = os.path.splitext(filepath)
     extension = extension.lower()
-    if extension == '.txt':
-        return [read_txt(filepath)]
-
-    elif extension == '.csv':
-        return [read_csv(filepath)]
     
-    elif extension == '.json':
-        return [read_json(filepath)]
+    file_handlers = {
+        '.txt': read_txt,
+        '.csv': read_csv,
+        '.json': read_json,
+        '.docx': read_word,
+        '.doc': read_word,
+        '.pdf': read_pdf
+    }
     
-    elif extension == '.docx' or extension == '.doc':
-        return [read_word(filepath, extension=='.doc')]
+    handler = file_handlers.get(extension)
+    if handler is None:
+        raise NotImplementedError(f"不支持的文件类型: {extension}")
     
-    elif extension == '.pdf':
-        return [read_pdf(filepath)]
-
-    else:
-        raise NotImplementedError
+    return handler(filepath)
 
 
 def read_folder(folder):

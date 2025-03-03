@@ -2,8 +2,9 @@ gradio>=4.0.0,<5.0.0
 pdfminer.six
 python-docx
 python-dotenv
+docx2txt
 sse-starlette
 tenacity
 tiktoken
 transformers
-pycardinal
+pycardinal>=0.3.0
