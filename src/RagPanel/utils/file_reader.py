@@ -5,7 +5,6 @@ import json
 import csv
 import docx2txt
 from pdfminer.high_level import extract_text
-import win32com.client
 import tempfile
 import shutil
 
