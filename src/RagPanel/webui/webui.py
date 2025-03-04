@@ -19,14 +19,19 @@ def create_ui(lang, collection):
         gr.HTML("<center><h1>RAG Panel</h1></center>")
         search_result_state = gr.State()
 
-        # database
-        gr.HTML(f"<b>{LOCALES['Database_Environment']}</b>")
-        create_database_block(engine, collection, LOCALES)
+        with gr.Tabs() as tabs:
+            # Main functions tab
+            with gr.Tab(LOCALES["Functions"]):
+                create_functions_block(engine, search_result_state, LOCALES)
 
-        # tools
-        gr.HTML(f"<b>{LOCALES['Tools_Environment']}")
-        create_tools_block(engine, LOCALES)
+            # Configuration tab
+            with gr.Tab(LOCALES["Configuration"]):
+                # database
+                gr.HTML(f"<b>{LOCALES['Database_Environment']}</b>")
+                create_database_block(engine, collection, LOCALES)
 
-        # functions
-        create_functions_block(engine, search_result_state, LOCALES)
+                # tools
+                gr.HTML(f"<b>{LOCALES['Tools_Environment']}</b>")
+                create_tools_block(engine, LOCALES)
+
     return demo

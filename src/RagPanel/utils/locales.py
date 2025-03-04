@@ -351,17 +351,17 @@ LOCALES = {
         "en": "max community level",
         "zh": "最高社区等级"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "Functions": {
+        "en": "Functions",
+        "zh": "功能"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "Configuration": {
+        "en": "Configuration",
+        "zh": "配置"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "history_label": {
+        "en": "chat history",
+        "zh": "历史记录"
     },
     "": {
         "en": "",

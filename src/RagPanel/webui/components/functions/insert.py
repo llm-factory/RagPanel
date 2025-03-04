@@ -8,6 +8,7 @@ def create_insert_tab(engine, LOCALES):
                 proc_slider = gr.Slider(minimum=1,
                                     maximum=32,
                                     step=1,
+                                    value=16,
                                     label=LOCALES["number_of_processes"])
                 batch_slider = gr.Slider(minimum=1,
                                          maximum=4000,
