@@ -62,7 +62,7 @@ def read_file(filepath):
     if handler is None:
         raise NotImplementedError(f"不支持的文件类型: {extension}")
     
-    return handler(filepath)
+    return [handler(filepath)]
 
 
 def read_folder(folder):
