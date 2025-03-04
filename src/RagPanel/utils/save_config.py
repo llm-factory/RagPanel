@@ -6,7 +6,7 @@ from typing import Any, Dict, Optional
 class ConfigManager:
     _config: Dict[str, Any] = {
         "database": {
-            "collection": "test"
+            "collection": "init"
         },
         "build": {
             "folder": "./inputs"
