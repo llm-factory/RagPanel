@@ -363,9 +363,9 @@ LOCALES = {
         "en": "chat history",
         "zh": "历史记录"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "lang_saved": {
+        "en": "Your default language is set to English",
+        "zh": "您的默认语言已设置为中文"
     },
     "": {
         "en": "",

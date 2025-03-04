@@ -17,7 +17,7 @@ class ConfigManager:
         },
         "webui": {
             "host": "127.0.0.1",
-            "port": 7860
+            "port": 7860,
         },
         "dump": {
             "folder": "./chat_history"
@@ -37,6 +37,7 @@ class ConfigManager:
                     self._config.update(loaded_config)
         except FileNotFoundError:
             print(f"Warning: Config file not found at {self._config_path}, using default settings")
+            self.save_config()
 
     def save_config(self) -> None:
         """保存配置到文件"""

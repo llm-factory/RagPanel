@@ -11,6 +11,7 @@ load_dotenv()  # must before utils
 
 from .viewer import dump_history
 from ..engines import ApiEngine
+from ..utils.save_config import save_config, update_config, get_config
 
 
 try:
@@ -32,29 +33,14 @@ class Action(str, Enum):
 
 
 @click.command()
-@click.option("--config", help="Path to your config file", default=None)
 @click.option("--action", required=True, type=click.Choice([act.value for act in Action]), prompt="Choose an action")
-def interactive_cli(config, action):
-    config_dict = None
-    default_config_path = Path(__file__).parent.parent.parent.parent / ".config" / "config.yaml"
+def interactive_cli(action):
+    if action == Action.EXIT:
+        return
+    config_dict = get_config()
 
-    if config is None:
-        config = default_config_path
-
-    try:
-        with open(config, "r", encoding="utf-8") as config_file:
-            config_dict = yaml.safe_load(config_file)
-    except FileNotFoundError:
-        if action not in [Action.WEBUI, Action.EXIT]:
-            config = click.prompt('Default config not found. Please provide path to your config file')
-            with open(config, "r", encoding="utf-8") as config_file:
-                config_dict = yaml.safe_load(config_file)
-        elif action == Action.WEBUI:
-            print("Config file not found, using default settings")
-            config_dict = {}
-
-    if action != Action.EXIT and action != Action.WEBUI:
-        collection = config_dict["database"]["collection"]
+    collection = config_dict["database"]["collection"]
+    if action != Action.WEBUI:
         engine = ApiEngine(collection)
 
     if action == Action.BUILD:
@@ -69,15 +55,15 @@ def interactive_cli(config, action):
         dump_history(Path(folder), "history_" + collection)
     elif action == Action.WEBUI:
         from ..webui import create_ui
-        lang = click.prompt('choose your language', type=click.Choice(["en", "zh"]))
         
-        # 尝试从配置文件读取host和port，如果失败则使用默认值
-        try:
-            host = config_dict.get("webui", {}).get("host", "127.0.0.1")
-            port = int(config_dict.get("webui", {}).get("port", 8080))
-        except (KeyError, TypeError):
-            host = "127.0.0.1"
-            port = 8080
+        host = config_dict.get("webui", {}).get("host", "127.0.0.1")
+        port = int(config_dict.get("webui", {}).get("port", 7860))
+        lang = config_dict.get("webui", {}).get("lang", None)
+        if lang is None:
+            lang = click.prompt('choose your language', type=click.Choice(["en", "zh"]))
+            update_config("webui", "lang", lang)
+            save_config()
+        from ..utils.locales import LOCALES
+        print(LOCALES["lang_saved"][lang])
             
-        collection = config_dict.get("database", {}).get("collection", "init")
         create_ui(lang, collection).queue().launch(server_name=host, server_port=port)
