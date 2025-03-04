@@ -63,7 +63,7 @@ def interactive_cli(action):
             lang = click.prompt('choose your language', type=click.Choice(["en", "zh"]))
             update_config("webui", "lang", lang)
             save_config()
-        from ..utils.locales import LOCALES
-        print(LOCALES["lang_saved"][lang])
+            from ..utils.locales import LOCALES
+            print(LOCALES["lang_saved"][lang])
             
         create_ui(lang, collection).queue().launch(server_name=host, server_port=port)
