@@ -99,6 +99,8 @@ def save_vectorstore_path(value, token):
     elif vectorstore == 'milvus':
         os.environ['MILVUS_URI'] = value
         os.environ['MILVUS_TOKEN'] = token
+    elif vectorstore == 'es':
+        os.environ['ELASTICSEARCH_URI'] = value
 
 def get_vectorstore_path():
     vectorstore = os.environ['VECTORSTORE']
@@ -109,6 +111,8 @@ def get_vectorstore_path():
     elif vectorstore == 'milvus':
         vectorstore_path = os.environ['MILVUS_URI']
         vectorstore_token = os.environ['MILVUS_TOKEN']
+    elif vectorstore == 'es':
+        vectorstore_path = os.environ['ELASTICSEARCH_URI']
     return vectorstore_path, vectorstore_token
 
 def save_as_dotenv():

@@ -20,6 +20,7 @@ class BaseEngine:
         self._vectorstore = None
         self._retriever = None
         self._graph_processor = None
+        self._reranker = None
         self.chat_engine = ChatEngine(self, "history_init")
         self.supported_storages = [
             "redis",
@@ -27,7 +28,8 @@ class BaseEngine:
         ]
         self.supported_vectorstores = [
             "chroma",
-            "milvus"
+            "milvus",
+            "es"
         ]
         self.supported_graph_storages = [
             "None",
