@@ -185,7 +185,7 @@ LOCALES = {
     },
     "hello": {
         "en": "How can I help you?",
-        "zh": "有什么可以帮忙的？"
+        "zh": "有什么我可以帮您的？"
     },
     "chat": {
         "en": "chat",

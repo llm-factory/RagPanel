@@ -67,27 +67,25 @@ class ChatEngine:
             response += new_token
         self.collector.collect(History(messages=(augmented_messages + [AssistantMessage(content=response)])))
             
-    def ui_chat(self, history, query):
-        init_query = query
+    def ui_chat(self, history):
+        query = history[-1]["content"]
         if self.chat_model is None:
             self.chat_model = ChatOpenAI()
         messages = []
-        for conversation in history:
-            user_message = conversation[0]
-            ai_message = conversation[1]
-            messages.append(HumanMessage(content=user_message))
-            messages.append(AssistantMessage(content=ai_message))
+        for conversation in history[:-1]:
+            if conversation["role"] == "user":
+                messages.append(HumanMessage(content=conversation["content"]))
+            else:
+                messages.append(AssistantMessage(content=conversation["content"]))
         if self.enable_rag:
             gr.Info("retrieving docs...")
             docs = self.engine.search(query=query)
             if len(docs):
                 docs = docs["content"].tolist()
                 query = self.kbqa_template.apply(context="\n".join(docs), query=query)
-        if self.show_docs:
-            history += [[query, ""]]
-        else:
-            history += [[init_query, ""]]
+
         messages.append(HumanMessage(content=query))
+        history += [{"role": "assistant", "content": ""}]
         for new_token in self.chat_model.stream_chat(messages=messages):
-            history[-1][1] += new_token
+            history[-1]["content"] += new_token
             yield history

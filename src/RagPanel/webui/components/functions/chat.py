@@ -18,7 +18,15 @@ def create_chat_tab(engine, LOCALES):
                     save_history_checkbox = gr.Checkbox(value=True,
                                                         label=LOCALES["save_history"])
             def new_chat():
-                return gr.Chatbot(label=LOCALES["chat"], value="", placeholder=LOCALES["hello"])
+                return gr.Chatbot(label=LOCALES["chat"], value="", placeholder=LOCALES["hello"], type="messages")
+            
+            def assign(A):
+                return A
+            
+            def update_chat(chat_bot, query):
+                chat_bot += [{"role": "user", "content": query}]
+                return chat_bot
+
             chat_bot = new_chat()
             with gr.Row():
                 def new_query():
@@ -31,25 +39,43 @@ def create_chat_tab(engine, LOCALES):
                     chat_button = gr.Button(LOCALES["enter"], scale=3)
                     clear_button = gr.Button(LOCALES["clear_history"], scale=3)
                     
+            query = gr.State()
+
             chat_button.click(
+                assign, [query_box], [query]
+            ).then(
+                new_query, None, query_box
+            ).then(
+                update_chat, [chat_bot, query], chat_bot
+            ).then(
                 engine.chat_engine.update, 
                 [template_box, enable_rag_checkbox, show_docs_checkbox, save_history_checkbox]
             ).then(
                 engine.chat_engine.ui_chat, 
-                [chat_bot, query_box], 
+                [chat_bot], 
                 chat_bot
             )
             
             query_box.submit(
+                assign, [query_box], [query]
+            ).then(
+                new_query, None, query_box
+            ).then(
+                update_chat, [chat_bot, query], chat_bot
+            ).then(
                 engine.chat_engine.update, 
                 [template_box, enable_rag_checkbox, show_docs_checkbox, save_history_checkbox]
             ).then(
                 engine.chat_engine.ui_chat, 
-                [chat_bot, query_box], 
+                [chat_bot], 
                 chat_bot
-            ).then(new_query, None, query_box)
+            )
             
-            clear_button.click(engine.chat_engine.clear_history)
-            clear_button.click(new_chat, None, chat_bot)
-            clear_button.click(new_query, None, query_box)
+            clear_button.click(
+                engine.chat_engine.clear_history
+            ).then(
+                new_chat, None, chat_bot
+            ).then(
+                new_query, None, query_box
+            )
     return demo
