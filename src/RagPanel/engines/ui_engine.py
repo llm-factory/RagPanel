@@ -187,7 +187,7 @@ class UiEngine(BaseEngine):
             docs = super().graph_search(query, top_k=self.top_k, mode="local", threshold=self.threshold)
         else:
             docs = super().search(query=query, top_k=self.top_k, reranker=self.reranker, threshold=self.threshold)
-        if len(docs) < self.top_k and len(docs) != 0:
+        if len(docs) < self.top_k:
             gr.Warning(self.LOCALES["no_enough_candidates"])
         return pd.DataFrame(docs)
 

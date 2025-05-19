@@ -71,26 +71,30 @@ class ChatEngine:
         self.collector.collect(History(messages=(augmented_messages + [AssistantMessage(content=response)])))
 
     def retrieve(self, query):
-        gr.Info("正在检索文档...")
-        return self.engine.search(query=query)
+        if self.retrieve:
+            gr.Info("正在检索文档...")
+            return self.engine.search(query=query)
          
-    def ui_chat(self, history, docs):
-        query = history[-1]["content"]
+    def ui_chat(self, conversations, docs):
+        query = conversations[-1]["content"]
         if self.chat_model is None:
             self.chat_model = ChatOpenAI()
-        messages = []
-        for conversation in history[:-1]:
+        history = History(messages=[])
+        for conversation in conversations[:-1]:
             if conversation["role"] == "user":
-                messages.append(HumanMessage(content=conversation["content"]))
+                history.messages.append(HumanMessage(content=conversation["content"]))
             else:
-                messages.append(AssistantMessage(content=conversation["content"]))
+                history.messages.append(AssistantMessage(content=conversation["content"]))
 
         if len(docs):
             docs = docs["content"].tolist()
             query = self.kbqa_template.apply(context="\n".join(docs), query=query)
+            conversations[-1]["content"] = query
 
-        messages.append(HumanMessage(content=query))
-        history += [{"role": "assistant", "content": ""}]
-        for new_token in self.chat_model.stream_chat(messages=messages):
-            history[-1]["content"] += new_token
-            yield history
+        history.messages.append(HumanMessage(content=query))
+        conversations += [{"role": "assistant", "content": ""}]
+        for new_token in self.chat_model.stream_chat(messages=history.messages):
+            conversations[-1]["content"] += new_token
+            yield conversations
+        history.messages.append(AssistantMessage(content=conversations[-1]["content"]))
+        self.collector.collect(history)

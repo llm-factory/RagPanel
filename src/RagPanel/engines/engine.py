@@ -55,15 +55,14 @@ class BaseEngine:
 
     def clear_database(self):
         self.check_database()
-        self.destroy_database()
+        try:
+            self.destroy_database()
+        except:
+            pass
         self.create_database()
 
     def destroy_database(self):
         self.check_database()
-        if not self._storage.exists():
-            self._storage = None
-            self._vectorstore = None
-            raise DatabaseNotFoundError("Database does not exist")
         self._storage.destroy()
         self._vectorstore.destroy()
         if self._graph_processor is not None:
@@ -115,7 +114,10 @@ class BaseEngine:
         tmp_threshold = self._retriever._threshold
         if threshold is not None:
             self._retriever._threshold = threshold
-        doc_indexes = self._retriever.retrieve(query=query, top_k=top_k)
+        try:
+            doc_indexes = self._retriever.retrieve(query=query, top_k=top_k)
+        except:
+            return []
         docs = []
         for index in doc_indexes:
             doc_id = index.doc_id

@@ -375,17 +375,17 @@ LOCALES = {
         "en": "No Matching Docs",
         "zh": "无匹配文档"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "load_history": {
+        "en": "load history",
+        "zh": "加载"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "select_history": {
+        "en": "select history",
+        "zh": "选择"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "show_history": {
+        "en": "show history",
+        "zh": "聊天记录"
     },
     "": {
         "en": "",
