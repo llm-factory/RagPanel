@@ -367,17 +367,13 @@ LOCALES = {
         "en": "Your default language is set to English",
         "zh": "您的默认语言已设置为中文"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "retrieved_docs": {
+        "en": "retrieved docs",
+        "zh": "检索结果"
     },
-    "": {
-        "en": "",
-        "zh": ""
-    },
-    "": {
-        "en": "",
-        "zh": ""
+    "No_matching_docs": {
+        "en": "No Matching Docs",
+        "zh": "无匹配文档"
     },
     "": {
         "en": "",

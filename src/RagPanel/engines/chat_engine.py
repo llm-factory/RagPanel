@@ -40,6 +40,9 @@ class ChatEngine:
                     ]
         return histories
     
+    def get_search_results(self):
+        return self.search_results
+    
     def clear_history(self):
         try:
             self.collector._storage.destroy()
@@ -66,8 +69,12 @@ class ChatEngine:
             yield new_token
             response += new_token
         self.collector.collect(History(messages=(augmented_messages + [AssistantMessage(content=response)])))
-            
-    def ui_chat(self, history):
+
+    def retrieve(self, query):
+        gr.Info("正在检索文档...")
+        return self.engine.search(query=query)
+         
+    def ui_chat(self, history, docs):
         query = history[-1]["content"]
         if self.chat_model is None:
             self.chat_model = ChatOpenAI()
@@ -77,12 +84,10 @@ class ChatEngine:
                 messages.append(HumanMessage(content=conversation["content"]))
             else:
                 messages.append(AssistantMessage(content=conversation["content"]))
-        if self.enable_rag:
-            gr.Info("retrieving docs...")
-            docs = self.engine.search(query=query)
-            if len(docs):
-                docs = docs["content"].tolist()
-                query = self.kbqa_template.apply(context="\n".join(docs), query=query)
+
+        if len(docs):
+            docs = docs["content"].tolist()
+            query = self.kbqa_template.apply(context="\n".join(docs), query=query)
 
         messages.append(HumanMessage(content=query))
         history += [{"role": "assistant", "content": ""}]

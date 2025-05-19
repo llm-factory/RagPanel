@@ -1,4 +1,5 @@
 import gradio as gr
+import pandas as pd
 
 def create_chat_tab(engine, LOCALES):
     with gr.Blocks() as demo:
@@ -40,6 +41,7 @@ def create_chat_tab(engine, LOCALES):
                     clear_button = gr.Button(LOCALES["clear_history"], scale=3)
                     
             query = gr.State()
+            search_result_state = gr.State(pd.DataFrame())
 
             chat_button.click(
                 assign, [query_box], [query]
@@ -51,8 +53,12 @@ def create_chat_tab(engine, LOCALES):
                 engine.chat_engine.update, 
                 [template_box, enable_rag_checkbox, show_docs_checkbox, save_history_checkbox]
             ).then(
+                engine.chat_engine.retrieve,
+                [query],
+                search_result_state
+            ).then(
                 engine.chat_engine.ui_chat, 
-                [chat_bot], 
+                [chat_bot, search_result_state], 
                 chat_bot
             )
             
@@ -66,8 +72,12 @@ def create_chat_tab(engine, LOCALES):
                 engine.chat_engine.update, 
                 [template_box, enable_rag_checkbox, show_docs_checkbox, save_history_checkbox]
             ).then(
+                engine.chat_engine.retrieve,
+                [query],
+                search_result_state
+            ).then(
                 engine.chat_engine.ui_chat, 
-                [chat_bot], 
+                [chat_bot, search_result_state], 
                 chat_bot
             )
             
@@ -77,5 +87,13 @@ def create_chat_tab(engine, LOCALES):
                 new_chat, None, chat_bot
             ).then(
                 new_query, None, query_box
+            ).then(
+                lambda: pd.DataFrame(), None, search_result_state
             )
+
+            @gr.render(inputs=search_result_state, triggers=[search_result_state.change])
+            def show_search_results(docs: pd.DataFrame):
+                if any(docs):
+                    gr.Dataframe(docs[["content"]], label=LOCALES["retrieved_docs"])
+
     return demo
