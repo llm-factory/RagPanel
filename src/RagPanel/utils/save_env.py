@@ -30,7 +30,7 @@ default_envs = {
     "OPENAI_API_KEY":"0",
     "DEFAULT_EMBED_MODEL":"text-embedding-ada-002",
     "DEFAULT_CHAT_MODEL":"gpt-4o-mini",
-    "HF_TOKENIZER_PATH":"01-ai/Yi-6B-Chat",
+    "HF_TOKENIZER_PATH":"",
     "DEFAULT_CHUNK_SIZE":"300",
     "DEFAULT_CHUNK_OVERLAP":"30",
     "RETRIEVER":"dense",

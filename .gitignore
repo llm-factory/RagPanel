@@ -160,6 +160,9 @@ flagged/
 # chroma
 chroma/
 
+# neo4j
+neo4j/
+
 # other
 .gitignore
 .config/
