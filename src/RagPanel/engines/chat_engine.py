@@ -1,5 +1,6 @@
 import gradio as gr
 import pandas as pd
+import re
 from typing import TYPE_CHECKING, Generator, Sequence
 from cardinal import AssistantMessage, ChatOpenAI, HumanMessage, Template
 from ..utils.protocol import History
@@ -29,6 +30,12 @@ class ChatEngine:
     
     def get_search_results(self):
         return self.search_results
+    
+    def replace_angle_brackets(self, text):
+        """将成对的<>替换为[]，避免替换单个的<或>"""
+        # 使用正则表达式匹配成对的<>
+        pattern = r'<([^<>]*)>'
+        return re.sub(pattern, r'[\1]', text)
             
     def stream_chat(self, messages: Sequence["BaseMessage"], **kwargs) -> Generator[str, None, None]:
         if self.chat_model is None:
@@ -44,8 +51,10 @@ class ChatEngine:
         augmented_messages = messages[:-1] + [HumanMessage(content=query)]
         response = ""
         for new_token in self.chat_model.stream_chat(augmented_messages, **kwargs):
-            yield new_token
-            response += new_token
+            # 对返回的token应用角括号替换
+            processed_token = self.replace_angle_brackets(new_token)
+            yield processed_token
+            response += processed_token
 
     def retrieve(self, query, enable):
         if enable:
@@ -56,6 +65,8 @@ class ChatEngine:
          
     def ui_chat(self, conversations, docs):
         query = conversations[-1]["content"]
+        original_query = query  # 保存用户原始输入
+        
         if self.chat_model is None:
             self.chat_model = ChatOpenAI()
         history = History(messages=[])
@@ -65,14 +76,21 @@ class ChatEngine:
             else:
                 history.messages.append(AssistantMessage(content=conversation["content"]))
 
+        # 如果有检索到的文档，增强查询但不改变前端显示
         if len(docs):
             docs = docs["content"].tolist()
             query = self.kbqa_template.apply(context="\n".join(docs), query=query)
-            conversations[-1]["content"] = query
 
         history.messages.append(HumanMessage(content=query))
+        
+        # 确保前端显示的是用户原始输入
+        conversations[-1]["content"] = original_query
         conversations += [{"role": "assistant", "content": ""}]
+        
         for new_token in self.chat_model.stream_chat(messages=history.messages):
-            conversations[-1]["content"] += new_token
+            # 对返回的token应用角括号替换
+            processed_token = self.replace_angle_brackets(new_token)
+            conversations[-1]["content"] += processed_token
             yield conversations
+            
         history.messages.append(AssistantMessage(content=conversations[-1]["content"]))

@@ -387,20 +387,144 @@ LOCALES = {
         "en": "show history",
         "zh": "聊天记录"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "ai_qa_system": {
+        "en": "AI Q&A System",
+        "zh": "AI问答系统"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "chat_management": {
+        "en": "Chat Management",
+        "zh": "聊天管理"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "select_chat_history": {
+        "en": "Select Chat History",
+        "zh": "选择聊天记录"
     },
-    "": {
-        "en": "",
-        "zh": ""
+    "new_chat": {
+        "en": "New Chat",
+        "zh": "新建聊天"
+    },
+    "load_chat": {
+        "en": "Load Chat",
+        "zh": "加载聊天"
+    },
+    "delete_chat": {
+        "en": "Delete Chat",
+        "zh": "删除聊天"
+    },
+    "refresh_list": {
+        "en": "Refresh List",
+        "zh": "刷新列表"
+    },
+    "system_config": {
+        "en": "System Config",
+        "zh": "系统配置"
+    },
+    "status_info": {
+        "en": "Status Info",
+        "zh": "状态信息"
+    },
+    "current_session": {
+        "en": "Current Session",
+        "zh": "当前会话"
+    },
+    "total_sessions": {
+        "en": "Total Sessions",
+        "zh": "共有会话"
+    },
+    "system_ready": {
+        "en": "System Ready",
+        "zh": "系统就绪"
+    },
+    "config_options": {
+        "en": "Config Options",
+        "zh": "配置选项"
+    },
+    "save": {
+        "en": "Save",
+        "zh": "保存"
+    },
+    "cancel": {
+        "en": "Cancel",
+        "zh": "取消"
+    },
+    "chat_dialogue": {
+        "en": "Chat Dialogue",
+        "zh": "聊天对话"
+    },
+    "input_placeholder": {
+        "en": "Please enter your question...",
+        "zh": "请输入您的问题..."
+    },
+    "new_chat_created": {
+        "en": "New chat session created!",
+        "zh": "新聊天会话已创建！"
+    },
+    "unknown": {
+        "en": "Unknown",
+        "zh": "未知"
+    },
+    "select_chat_to_load": {
+        "en": "Please select a chat to load",
+        "zh": "请选择要加载的聊天记录"
+    },
+    "chat_not_found": {
+        "en": "Chat record not found",
+        "zh": "找不到对应的聊天记录"
+    },
+    "unknown_session": {
+        "en": "Unknown Session",
+        "zh": "未知会话"
+    },
+    "chat_loaded": {
+        "en": "Chat loaded",
+        "zh": "已加载聊天记录"
+    },
+    "message_count": {
+        "en": "Message count",
+        "zh": "消息数量"
+    },
+    "load_chat_failed": {
+        "en": "Failed to load chat",
+        "zh": "加载聊天记录失败"
+    },
+    "select_chat_to_delete": {
+        "en": "Please select a chat to delete",
+        "zh": "请选择要删除的聊天记录"
+    },
+    "chat_deleted": {
+        "en": "Chat deleted",
+        "zh": "已删除聊天记录"
+    },
+    "delete_chat_failed": {
+        "en": "Failed to delete chat",
+        "zh": "删除聊天记录失败"
+    },
+    "list_refreshed": {
+        "en": "List refreshed",
+        "zh": "列表已刷新"
+    },
+    "config_saved": {
+        "en": "Configuration saved!",
+        "zh": "配置已保存！"
+    },
+    "config_cancelled": {
+        "en": "Configuration changes cancelled",
+        "zh": "已取消配置修改"
+    },
+    "retrieved_related_docs": {
+        "en": "Retrieved Related Documents",
+        "zh": "检索到的相关文档"
+    },
+    "usage_instructions": {
+        "en": "Usage Instructions",
+        "zh": "使用说明"
+    },
+    "usage_instructions_content": {
+        "en": """### 🌟 Features:\n\n#### Chat Management:\n- **🆕 New Chat**: Create a new chat session\n- **📂 Load Chat**: Select and load historical chat records from dropdown\n- **🗑️ Delete Chat**: Delete selected chat record (irreversible)\n- **🔄 Refresh List**: Update chat record list\n\n#### System Configuration:\n- **⚙️ System Config**: Set templates, RAG switches, document display options\n- **💾 Save**: Save current configuration settings\n- **❌ Cancel**: Cancel configuration changes\n\n#### Intelligent Q&A:\n- Support RAG document retrieval enhanced answers\n- Automatically save chat history to Redis database\n- Display retrieved related documents\n- Use first few characters of query as chat title\n\n### 🚀 Usage Steps:\n1. Click \"New Chat\" to start a new conversation\n2. Enter questions in the message input box, click \"Send\" or press Enter\n3. System will automatically retrieve related documents and generate answers\n4. Switch or manage different chat sessions anytime\n5. Adjust system parameters through \"System Config\"\n\n### 💾 Data Storage:\n- Chat records stored in Redis database\n- Support persistence and high-performance access\n- Automatic backup and recovery features\n- Use query content as meaningful chat titles""",
+        "zh": """### 🌟 功能说明：\n\n#### 聊天管理：\n- **🆕 新建聊天**：创建一个新的聊天会话\n- **📂 加载聊天**：从下拉列表中选择并加载历史聊天记录\n- **🗑️ 删除聊天**：删除选中的聊天记录（不可恢复）\n- **🔄 刷新列表**：更新聊天记录列表\n\n#### 系统配置：\n- **⚙️ 系统配置**：设置模板、RAG开关、文档显示等选项\n- **💾 保存**：保存当前配置设置\n- **❌ 取消**：取消配置修改\n\n#### 智能问答：\n- 支持RAG文档检索增强回答\n- 自动保存聊天历史到Redis数据库\n- 显示检索到的相关文档\n- 使用问题的前若干个字符作为聊天标题\n\n### 🚀 使用步骤：\n1. 点击"新建聊天"开始新对话\n2. 在消息输入框中输入问题，点击"发送"或按Enter键\n3. 系统会自动检索相关文档并生成回答\n4. 可以随时切换或管理不同的聊天会话\n5. 通过"系统配置"调整系统参数\n\n### 💾 数据存储：\n- 聊天记录存储在Redis数据库中\n- 支持持久化和高性能访问\n- 自动备份和恢复功能\n- 使用问题内容作为有意义的聊天标题"""
+    },
+    "send": {
+        "en": "Send",
+        "zh": "发送"
     }
 }
