@@ -4,6 +4,7 @@ import gradio as gr
 from tqdm import tqdm
 from functools import partial
 from multiprocessing import Pool
+import json
 from .engine import BaseEngine
 from ..utils.graph_processor import GraphProcessor
 from ..utils.file_reader import read_file, split
@@ -24,14 +25,19 @@ class UiEngine(BaseEngine):
     def __init__(self, LOCALES, collection="init"):
         super().__init__(collection)
         self.init_cardinal()
-        self.file_history = []
-        self.file_chunk_map = {}
         self.LOCALES = LOCALES
         self.threshold = 1.0
         self.top_k = 5
         self.reranker = "None"
         self.tmp_threshold = 1.0
         self.tmp_top_k = 5
+        
+        # 生成基于collection的键名
+        self._file_history_key = f"file_history_{self.collection}"
+        self._file_chunk_map_key = f"file_chunk_map_{self.collection}"
+        
+        # 从数据库加载文件历史和映射关系
+        self._load_file_data()
         
     def set(self, name, value):
         setattr(self, name, value)
@@ -54,7 +60,7 @@ class UiEngine(BaseEngine):
         from cardinal.vectorstore.config import settings
         settings.vectorstore = vectorstore
         if vectorstore == 'chroma':
-            settings.chroma_path =  vectorstore_path
+            settings.chroma_path = vectorstore_path
         elif vectorstore == 'milvus':
             settings.milvus_uri = vectorstore_path
             settings.milvus_token = vectorstore_token
@@ -68,7 +74,66 @@ class UiEngine(BaseEngine):
         settings.default_chat_model = os.getenv("DEFAULT_CHAT_MODEL")
         settings.default_embed_model = os.getenv("DEFAULT_EMBED_MODEL")
         settings.hf_tokenizer_path = os.getenv("HF_TOKENIZER_PATH")
-        
+
+    def _load_file_data(self):
+        """从数据库加载文件历史和映射关系"""
+        try:
+            # 直接使用query方法通过键获取文件历史数据
+            file_history_result = self._storage.query(self._file_history_key)
+            
+            if file_history_result:
+                self.file_history = json.loads(file_history_result.content)
+            else:
+                self.file_history = []
+                
+            # 直接使用query方法通过键获取文件-块映射数据
+            file_chunk_map_result = self._storage.query(self._file_chunk_map_key)
+            
+            if file_chunk_map_result:
+                self.file_chunk_map = json.loads(file_chunk_map_result.content)
+            else:
+                self.file_chunk_map = {}
+                
+        except Exception as e:
+            # 如果加载失败，初始化为空
+            print(f"Warning: Failed to load file data from storage: {e}")
+            self.file_history = []
+            self.file_chunk_map = {}
+
+    def _save_file_data(self):
+        """保存文件历史和映射关系到数据库"""
+        try:
+            # 保存文件历史
+            file_history_doc = Document(
+                doc_id=self._file_history_key,
+                content=json.dumps(self.file_history, ensure_ascii=False)
+            )
+            self._storage.insert([self._file_history_key], [file_history_doc])
+            
+            # 保存文件-块映射关系
+            file_chunk_map_doc = Document(
+                doc_id=self._file_chunk_map_key, 
+                content=json.dumps(self.file_chunk_map, ensure_ascii=False)
+            )
+            self._storage.insert([self._file_chunk_map_key], [file_chunk_map_doc])
+            
+        except Exception as e:
+            print(f"Warning: Failed to save file data to storage: {e}")
+
+    def _destroy_file_data(self):
+        """销毁当前collection对应的文件数据"""
+        try:
+            # 直接删除存储中的文件历史和映射关系
+            self._storage.delete(key=self._file_history_key)
+            self._storage.delete(key=self._file_chunk_map_key)
+            
+            # 清空内存中的数据
+            self.file_history = []
+            self.file_chunk_map = {}
+            
+        except Exception as e:
+            print(f"Warning: Failed to destroy file data from storage: {e}")
+
     def update_tools(self):
         self.threshold = self.tmp_threshold
         self.top_k = self.tmp_top_k
@@ -77,7 +142,12 @@ class UiEngine(BaseEngine):
                                         int(os.getenv("DEFAULT_CHUNK_OVERLAP")))
 
     def apply_and_save_database(self, collection, storage, storage_path, vectorstore, vectorstore_path, vectorstore_token, graph_storage, graph_storage_path):
-        self.collection = collection
+        # 如果collection发生变化，需要更新键名并重新加载数据
+        if collection != self.collection:
+            self.collection = collection
+            self._file_history_key = f"file_history_{self.collection}"
+            self._file_chunk_map_key = f"file_chunk_map_{self.collection}"
+            
         update_config("database", "collection", collection)
         save_config()
         save_to_env("STORAGE", storage)
@@ -91,6 +161,8 @@ class UiEngine(BaseEngine):
 
         try:
             super().create_database()
+            # 重新加载文件数据
+            self._load_file_data()
         except StorageConnectionError as e:
             raise gr.Error(f"{self.LOCALES['storage_connection_error']}: {str(e)}")
         except VectorStoreConnectionError as e:
@@ -104,18 +176,34 @@ class UiEngine(BaseEngine):
     def clear_database(self):
         try:
             super().clear_database()
+            # 销毁当前collection对应的文件数据
+            self._destroy_file_data()
+        except (StorageConnectionError, VectorStoreConnectionError) as e:
+            raise gr.Error(f"{self.LOCALES['database_connection_error']}: {str(e)}")
+
+    def destroy_database(self):
+        """销毁数据库，包括文件数据"""
+        try:
+            # 先销毁文件数据
+            self._destroy_file_data()
+            # 再销毁数据库
+            super().destroy_database()
         except (StorageConnectionError, VectorStoreConnectionError) as e:
             raise gr.Error(f"{self.LOCALES['database_connection_error']}: {str(e)}")
 
     def insert(self, filepath, num_proc, batch_size, progress=gr.Progress(track_tqdm=True)):
         self.check_database()
             
+        # 更新文件历史
         self.file_history.extend(filepath)
+        
         file_contents = []
         for path in filepath:
             file_contents.extend(read_file(path))
+            
         if self._splitter is None:
             self._splitter = CJKTextSplitter()
+            
         text_chunks = []
         partial_split = partial(split, self._splitter)
         bar = tqdm(total=len(file_contents), desc=self.LOCALES["split_docs"])
@@ -124,46 +212,68 @@ class UiEngine(BaseEngine):
                 text_chunks.extend(chunks)
                 bar.update(1)
         bar.close()
+        
         if os.getenv("RAG_METHOD") == 'graph':
-            return super().graph_insert(text_chunks)
+            result = super().graph_insert(text_chunks)
+            # 保存文件数据到数据库
+            self._save_file_data()
+            return result
+            
         bar = tqdm(total=len(text_chunks), desc=self.LOCALES["build_index"])
         left_bar = len(text_chunks)
+        
         for i in range(0, len(text_chunks), batch_size):
             batch_text = text_chunks[i: i + batch_size]
             texts, batch_index, batch_ids, batch_document = [], [], [], []
+            
             for text in batch_text:
                 index = DocIndex()
-                if text["path"] not in self.file_chunk_map.keys():
-                    self.file_chunk_map.update({text["path"]: [index.doc_id]})
+                # 更新文件-块映射关系
+                if text["path"] not in self.file_chunk_map:
+                    self.file_chunk_map[text["path"]] = [index.doc_id]
                 else:
                     self.file_chunk_map[text["path"]].append(index.doc_id)
+                    
                 if text["key"] is None:
                     texts.append(text["content"])
                 else:
                     texts.append(text["key"])
+                    
                 document = Document(doc_id=index.doc_id, content=text["content"])
                 batch_ids.append(index.doc_id)
                 batch_index.append(index)
                 batch_document.append(document)
+                
             self._vectorstore.insert(texts, batch_index)
             self._storage.insert(batch_ids, batch_document)
             bar.update(min(left_bar, batch_size))
             left_bar -= batch_size
+            
         bar.close()
+        
+        # 保存文件数据到数据库
+        self._save_file_data()
+        
         return self.LOCALES["inserted"]
 
     def delete(self, del_index, docs):
         doc_ids = docs['id'].tolist()
         del_ids = []
+        
         for index in del_index:
             del_ids.append(doc_ids[index])
             self.delete_by_id(doc_ids[index])
 
         docs = docs[~docs["id"].isin(del_ids)]
+        
+        # 保存文件数据到数据库
+        self._save_file_data()
+        
         if len(del_ids) == 1:
             gr.Info(self.LOCALES["deleted_1"])
         elif len(del_ids) > 1:
             gr.Info(f"{len(del_ids)} {self.LOCALES['deleted_more']}")
+            
         return docs
 
     def delete_by_id(self, id):
@@ -174,21 +284,34 @@ class UiEngine(BaseEngine):
         for index in del_file_indexes:
             try:
                 file_to_del = self.file_history[index]
-                ids = self.file_chunk_map[file_to_del]
+                ids = self.file_chunk_map.get(file_to_del, [])
+                
                 for id in ids:
                     self.delete_by_id(id)
-                self.file_chunk_map.pop(file_to_del)
-                self.file_history.remove(file_to_del)
-            except:
-                gr.Warning("") # TODO
+                    
+                # 从映射关系中移除
+                if file_to_del in self.file_chunk_map:
+                    self.file_chunk_map.pop(file_to_del)
+                    
+                # 从文件历史中移除
+                if file_to_del in self.file_history:
+                    self.file_history.remove(file_to_del)
+                    
+            except Exception as e:
+                gr.Warning(f"删除文件时出错: {str(e)}")
+                
+        # 保存文件数据到数据库
+        self._save_file_data()
 
     def search(self, query):
         if os.getenv("RAG_METHOD") == 'graph':
             docs = super().graph_search(query, top_k=self.top_k, mode="local", threshold=self.threshold)
         else:
             docs = super().search(query=query, top_k=self.top_k, reranker=self.reranker, threshold=self.threshold)
+            
         if len(docs) < self.top_k:
             gr.Warning(self.LOCALES["no_enough_candidates"])
+            
         return pd.DataFrame(docs)
 
     def launch_app(self, host, port):
