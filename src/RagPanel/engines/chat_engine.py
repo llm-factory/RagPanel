@@ -1,6 +1,7 @@
 import gradio as gr
+import pandas as pd
 from typing import TYPE_CHECKING, Generator, Sequence
-from cardinal import AssistantMessage, BaseCollector, ChatOpenAI, HumanMessage, Template
+from cardinal import AssistantMessage, ChatOpenAI, HumanMessage, Template
 from ..utils.protocol import History
 
 if TYPE_CHECKING:
@@ -12,49 +13,26 @@ class ChatEngine:
         self.engine = engine
         self.chat_model = None
         self.name = name
-        # 可能还未确定database
-        try:
-            self.collector = BaseCollector[History](storage_name=name)
-        except:
-            self.collector = None
         self.kbqa_template = Template("Based on the following context:{context}\n\nAnswer this question:{query}")
         self.window_size = 6
         self.top_k = 2
         self.threshold = 1.0
         self.with_doc = False
         self.reranker = "None"
-        self.enable_rag = True
         self.show_docs = True
         self.save_history = True
         
-    def update(self, template, enable_rag, show_docs, save_history):
+    def update(self, template, show_docs, save_history):
         self.kbqa_template = Template(template)
-        self.enable_rag = enable_rag
         self.show_docs = show_docs
         self.save_history = save_history
-        
-    def dump_history(self):
-        histories = [[message.model_dump()
-                    for message in history.messages]
-                    for history in self.collector.dump()
-                    ]
-        return histories
     
     def get_search_results(self):
         return self.search_results
-    
-    def clear_history(self):
-        try:
-            self.collector._storage.destroy()
-            self.collector = BaseCollector[History](storage_name=self.name)
-        except:
-            return
             
     def stream_chat(self, messages: Sequence["BaseMessage"], **kwargs) -> Generator[str, None, None]:
         if self.chat_model is None:
             self.chat_model = ChatOpenAI()
-        if self.collector is None:
-            self.collector = BaseCollector[History](storage_name=self.name)
         messages = messages[-(self.window_size * 2 + 1) :]
         query = messages[-1].content
 
@@ -68,12 +46,13 @@ class ChatEngine:
         for new_token in self.chat_model.stream_chat(augmented_messages, **kwargs):
             yield new_token
             response += new_token
-        self.collector.collect(History(messages=(augmented_messages + [AssistantMessage(content=response)])))
 
-    def retrieve(self, query):
-        if self.retrieve:
+    def retrieve(self, query, enable):
+        if enable:
             gr.Info("正在检索文档...")
             return self.engine.search(query=query)
+        else:
+            return pd.DataFrame([])
          
     def ui_chat(self, conversations, docs):
         query = conversations[-1]["content"]
@@ -97,4 +76,3 @@ class ChatEngine:
             conversations[-1]["content"] += new_token
             yield conversations
         history.messages.append(AssistantMessage(content=conversations[-1]["content"]))
-        self.collector.collect(history)
