@@ -526,5 +526,318 @@ LOCALES = {
     "send": {
         "en": "Send",
         "zh": "发送"
+    },
+    "delete_tab_title": {
+        "en": "🗑️ File Management - Delete Files",
+        "zh": "🗑️ 文件管理 - 删除文件"
+    },
+    "usage_instructions": {
+        "en": "📋 Usage Instructions",
+        "zh": "📋 使用说明"
+    },
+    "delete_instructions": {
+        "en": """
+**How to delete files:**
+
+1. **Select Files**: Choose one or more files from the dropdown list
+2. **Confirm Selection**: Review your selected files carefully
+3. **Delete**: Click the delete button to permanently remove selected files
+4. **Verification**: Check the status message for confirmation
+
+⚠️ **Warning**: Deleted files cannot be recovered. Please double-check your selection before proceeding.
+
+💡 **Tips**: 
+- You can select multiple files at once
+- The file list updates automatically every 0.5 seconds
+- Only files in the current session history are shown
+        """,
+        "zh": """
+**如何删除文件：**
+
+1. **选择文件**：从下拉列表中选择一个或多个文件
+2. **确认选择**：仔细检查您选择的文件
+3. **删除操作**：点击删除按钮永久移除选中的文件
+4. **操作验证**：查看状态消息确认操作结果
+
+⚠️ **警告**：删除的文件无法恢复，请在操作前仔细确认您的选择。
+
+💡 **提示**：
+- 您可以同时选择多个文件
+- 文件列表每0.5秒自动更新一次
+- 仅显示当前会话历史中的文件
+        """
+    },
+    "select_files_to_delete": {
+        "en": "Select files to delete...",
+        "zh": "选择要删除的文件..."
+    },
+    "delete_files_info": {
+        "en": "Select one or more files from your upload history",
+        "zh": "从您的上传历史中选择一个或多个文件"
+    },
+    "delete_selected_files": {
+        "en": "🗑️ Delete Selected Files",
+        "zh": "🗑️ 删除选中文件"
+    },
+    "operation_status": {
+        "en": "Operation Status",
+        "zh": "操作状态"
+    },
+    "files_deleted": {
+        "en": "Selected files have been deleted successfully!",
+        "zh": "选中的文件已成功删除！"
+    },
+    "delete_success_message": {
+        "en": "✅ Files deleted successfully",
+        "zh": "✅ 文件删除成功"
+    },
+    "delete_error_message": {
+        "en": "Failed to delete some files. Please try again.",
+        "zh": "删除部分文件失败，请重试。"
+    },
+    "delete_failed_message": {
+        "en": "❌ Delete operation failed",
+        "zh": "❌ 删除操作失败"
+    },
+        "insert_tab_title": {
+        "en": "📁 Document Management - Insert Files",
+        "zh": "📁 文档管理 - 插入文件"
+    },
+    "usage_instructions": {
+        "en": "📋 Usage Instructions",
+        "zh": "📋 使用说明"
+    },
+    "insert_instructions": {
+        "en": """
+**How to insert files into the knowledge base:**
+
+1. **Configure Parameters**: 
+   - **Number of Processes**: Set the number of parallel processes for faster processing
+   - **Batch Size**: Configure how many embeddings to process at once
+
+2. **Upload Files**: 
+   - Click the file upload area or drag and drop your files
+   - Multiple files can be selected at once
+   - Supported formats: PDF, TXT, DOC, DOCX, MD, etc.
+
+3. **Start Processing**: 
+   - Click the "Insert Files" button to begin processing
+   - Monitor the progress in the progress display area
+   - Wait for completion confirmation
+
+💡 **Performance Tips**:
+- Higher process count = faster processing (but more CPU usage)
+- Larger batch size = more memory usage but potentially faster processing
+- Optimal settings depend on your system specifications
+
+⚠️ **Note**: Large files or many files may take considerable time to process.
+        """,
+        "zh": """
+**如何将文件插入知识库：**
+
+1. **配置参数**：
+   - **进程数量**：设置并行处理的进程数以加快处理速度
+   - **批处理大小**：配置一次处理多少个嵌入向量
+
+2. **上传文件**：
+   - 点击文件上传区域或拖放您的文件
+   - 可以同时选择多个文件
+   - 支持格式：PDF、TXT、DOC、DOCX、MD 等
+
+3. **开始处理**：
+   - 点击"插入文件"按钮开始处理
+   - 在进度显示区域监控处理进度
+   - 等待完成确认
+
+💡 **性能提示**：
+- 更高的进程数 = 更快的处理速度（但占用更多CPU）
+- 更大的批处理大小 = 更多内存使用但可能更快的处理速度
+- 最佳设置取决于您的系统规格
+
+⚠️ **注意**：大文件或大量文件可能需要相当长的处理时间。
+        """
+    },
+    "processing_parameters": {
+        "en": "⚙️ Processing Parameters",
+        "zh": "⚙️ 处理参数"
+    },
+    "processes_info": {
+        "en": "Number of parallel processes for faster processing",
+        "zh": "并行处理的进程数量，可加快处理速度"
+    },
+    "file_upload_area": {
+        "en": "📤 File Upload Area",
+        "zh": "📤 文件上传区域"
+    },
+    "select_files": {
+        "en": "Select files to insert into knowledge base",
+        "zh": "选择要插入知识库的文件"
+    },
+    "file_upload_tips": {
+        "en": "💡 **Tips**: You can upload multiple files at once. Supported formats include PDF, TXT, DOC, DOCX, MD, and more.",
+        "zh": "💡 **提示**：您可以同时上传多个文件。支持的格式包括 PDF、TXT、DOC、DOCX、MD 等。"
+    },
+    "insert_file": {
+        "en": "🚀 Insert Files into Knowledge Base",
+        "zh": "🚀 插入文件到知识库"
+    },
+    "insertion_progress": {
+        "en": "📊 Processing Progress",
+        "zh": "📊 处理进度"
+    },
+    "progress_placeholder": {
+        "en": "Processing progress will be displayed here...",
+        "zh": "处理进度将在此处显示..."
+    },
+    "file_uploaded": {
+        "en": "Files have been successfully processed and inserted into the knowledge base!",
+        "zh": "文件已成功处理并插入知识库！"
+    },
+    "upload_complete_message": {
+        "en": "File insertion completed successfully",
+        "zh": "文件插入完成"
+    },
+    "insert_error_message": {
+        "en": "An error occurred during file insertion. Please check your files and try again.",
+        "zh": "文件插入过程中发生错误，请检查您的文件并重试。"
+    },
+    "insert_failed_message": {
+        "en": "File insertion failed",
+        "zh": "文件插入失败"
+    },
+    "insertion_started_message": {
+        "en": "File insertion process started...",
+        "zh": "文件插入过程已开始..."
+    },
+        "search_delete_tab_title": {
+        "en": "🔍 Knowledge Base - Search & Delete",
+        "zh": "🔍 知识库 - 搜索删除"
+    },
+    "search_delete_instructions": {
+        "en": """
+**How to search and delete content:**
+
+1. **Search Content**:
+   - Enter your search query in the text box
+   - Click "Search" to find matching documents
+   - Use clear and specific keywords for better results
+
+2. **Review Results**:
+   - Browse through the search results
+   - Each result shows a preview of the content
+   - Results are numbered for easy reference
+
+3. **Select and Delete**:
+   - Check the items you want to delete
+   - Use "Select All" to select all results
+   - Click "Delete Selected" to remove chosen items
+   - Confirm the deletion when prompted
+
+⚠️ **Warning**: Deleted content cannot be recovered. Please review your selection carefully.
+
+💡 **Tips**:
+- Use specific keywords to narrow down results
+- Review content previews before deleting
+- You can select multiple items for batch deletion
+        """,
+        "zh": """
+**如何搜索和删除内容：**
+
+1. **搜索内容**：
+   - 在文本框中输入搜索查询
+   - 点击"搜索"查找匹配的文档
+   - 使用清晰具体的关键词以获得更好的结果
+
+2. **查看结果**：
+   - 浏览搜索结果
+   - 每个结果显示内容预览
+   - 结果按编号排列便于参考
+
+3. **选择和删除**：
+   - 勾选要删除的项目
+   - 使用"全选"选择所有结果
+   - 点击"删除选中项"移除选择的项目
+   - 在提示时确认删除操作
+
+⚠️ **警告**：删除的内容无法恢复，请仔细检查您的选择。
+
+💡 **提示**：
+- 使用具体的关键词缩小搜索范围
+- 删除前查看内容预览
+- 可以选择多个项目进行批量删除
+        """
+    },
+    "search_section": {
+        "en": "🔍 Search Query",
+        "zh": "🔍 搜索查询"
+    },
+    "search_placeholder": {
+        "en": "Enter your search keywords here...",
+        "zh": "在此输入搜索关键词..."
+    },
+    "clear_search": {
+        "en": "🗑️ Clear",
+        "zh": "🗑️ 清空"
+    },
+    "search_results_section": {
+        "en": "📋 Search Results & Actions",
+        "zh": "📋 搜索结果与操作"
+    },
+    "search_status_ready": {
+        "en": "Ready to search. Enter your query above.",
+        "zh": "准备搜索，请在上方输入查询内容。"
+    },
+    "search_results_found": {
+        "en": "Found {count} matching results:",
+        "zh": "找到 {count} 个匹配结果："
+    },
+    "delete_selected": {
+        "en": "🗑️ Delete Selected",
+        "zh": "🗑️ 删除选中项"
+    },
+    "no_search_results": {
+        "en": "No matching documents found. Try different keywords.",
+        "zh": "未找到匹配的文档，请尝试不同的关键词。"
+    },
+    "empty_query_warning": {
+        "en": "Please enter a search query.",
+        "zh": "请输入搜索查询。"
+    },
+    "search_status_completed": {
+        "en": "Search completed. Found {count} results.",
+        "zh": "搜索完成，找到 {count} 个结果。"
+    },
+    "search_status_error": {
+        "en": "Search failed. Please try again.",
+        "zh": "搜索失败，请重试。"
+    },
+    "no_items_selected": {
+        "en": "Please select items to delete.",
+        "zh": "请选择要删除的项目。"
+    },
+    "delete_confirmation_required": {
+        "en": "Click delete again to confirm the operation.",
+        "zh": "再次点击删除以确认操作。"
+    },
+    "delete_success": {
+        "en": "Successfully deleted {count} items.",
+        "zh": "成功删除 {count} 个项目。"
+    },
+    "delete_error": {
+        "en": "Delete failed: {error}",
+        "zh": "删除失败：{error}"
+    },
+    "search_error": {
+        "en": "Search error: {error}",
+        "zh": "搜索错误：{error}"
+    },
+    "select_none": {
+        "en": "☐ Select None",
+        "zh": "☐ 全不选"
+    },
+    # 修改原有的键值对
+    "select_all": {
+        "en": "☑️ Select All",
+        "zh": "☑️ 全选"
     }
 }

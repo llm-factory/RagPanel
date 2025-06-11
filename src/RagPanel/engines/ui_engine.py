@@ -74,6 +74,11 @@ class UiEngine(BaseEngine):
         settings.default_chat_model = os.getenv("DEFAULT_CHAT_MODEL")
         settings.default_embed_model = os.getenv("DEFAULT_EMBED_MODEL")
         settings.hf_tokenizer_path = os.getenv("HF_TOKENIZER_PATH")
+        
+        try:
+            super().create_database()
+        except:
+            pass
 
     def _load_file_data(self):
         """从数据库加载文件历史和映射关系"""
