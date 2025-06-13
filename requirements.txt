@@ -7,4 +7,4 @@ sse-starlette
 tenacity
 tiktoken
 transformers
-pycardinal>=0.5.0
+pycardinal>=0.5.1
