@@ -11,11 +11,9 @@ from ..utils.file_reader import read_file, split
 from ..utils.protocol import DocIndex, Document, Operator
 from ..utils.save_config import update_config, save_config
 from ..utils.save_env import *
-from cardinal import AutoStorage, AutoVectorStore, CJKTextSplitter, AutoCondition, DenseRetriever, BaseCollector
+from cardinal import CJKTextSplitter, AutoCondition, EmbedOpenAI
 from ..utils.exception import (
     DatabaseConnectionError, 
-    DatabaseNotFoundError,
-    DatabaseNotInitializedError,
     StorageConnectionError,
     VectorStoreConnectionError
 )
@@ -43,6 +41,9 @@ class UiEngine(BaseEngine):
         setattr(self, name, value)
 
     def init_cardinal(self):
+        from cardinal.model.config import settings
+        settings.embed_api_key=os.environ.get("EMBED_API_KEY", None)
+        settings.embed_base_url=os.environ.get("EMBED_BASE_URL", None)
         storage = os.getenv("STORAGE", "redis")
         vectorstore = os.getenv("VECTORSTORE", "chroma")
         graph_storage = os.getenv("GRAPH_STORAGE", "None")
@@ -69,11 +70,6 @@ class UiEngine(BaseEngine):
         settings.graph_storage = graph_storage
         if graph_storage == 'neo4j':
             settings.neo4j_uri = graph_storage_path
-
-        from cardinal.model.config import settings
-        settings.default_chat_model = os.getenv("DEFAULT_CHAT_MODEL")
-        settings.default_embed_model = os.getenv("DEFAULT_EMBED_MODEL")
-        settings.hf_tokenizer_path = os.getenv("HF_TOKENIZER_PATH")
         
         try:
             super().create_database()
@@ -145,6 +141,13 @@ class UiEngine(BaseEngine):
         self.reranker = os.getenv("RERANKER")
         self.splitter = CJKTextSplitter(int(os.getenv("DEFAULT_CHUNK_SIZE")),
                                         int(os.getenv("DEFAULT_CHUNK_OVERLAP")))
+        from cardinal.model.config import settings
+        settings.embed_api_key=os.environ.get("EMBED_API_KEY", None)
+        settings.embed_base_url=os.environ.get("EMBED_BASE_URL", None)
+        try:
+            self._vectorstore._vectorstore._vectorizer = EmbedOpenAI()
+        except Exception as e:
+            print(f"Vector store connection failed: {str(e)}")
 
     def apply_and_save_database(self, collection, storage, storage_path, vectorstore, vectorstore_path, vectorstore_token, graph_storage, graph_storage_path):
         # 如果collection发生变化，需要更新键名并重新加载数据

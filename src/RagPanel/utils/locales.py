@@ -839,5 +839,50 @@ LOCALES = {
     "select_all": {
         "en": "☑️ Select All",
         "zh": "☑️ 全选"
+    },
+    "default_openai_config": {
+    "en": "Default OpenAI Configuration",
+    "zh": "默认OpenAI配置"
+    },
+    "embed_config": {
+        "en": "Embedding Model Configuration (Optional)",
+        "zh": "Embedding模型专用配置（可选）"
+    },
+    "model_config": {
+        "en": "Model Configuration",
+        "zh": "模型配置"
+    },
+    "embed_url": {
+        "en": "Embedding Model URL",
+        "zh": "Embedding模型URL"
+    },
+    "embed_url_placeholder": {
+        "en": "Leave empty to use default OpenAI URL",
+        "zh": "留空则使用默认OpenAI URL"
+    },
+    "embed_api": {
+        "en": "Embedding Model API Key",
+        "zh": "Embedding模型API Key"
+    },
+    "embed_api_placeholder": {
+        "en": "Leave empty to use default OpenAI API Key",
+        "zh": "留空则使用默认OpenAI API Key"
+    },
+    # 假设你已经有这些字段，如果没有也需要添加：
+    "openai_url": {
+        "en": "OpenAI Base URL",
+        "zh": "OpenAI基础URL"
+    },
+    "openai_api": {
+        "en": "OpenAI API Key",
+        "zh": "OpenAI API密钥"
+    },
+    "chat_model": {
+        "en": "Chat Model",
+        "zh": "对话模型"
+    },
+    "embedding_model": {
+        "en": "Embedding Model",
+        "zh": "嵌入模型"
     }
 }

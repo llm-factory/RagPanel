@@ -38,8 +38,7 @@ class ChatEngine:
         return re.sub(pattern, r'[\1]', text)
             
     def stream_chat(self, messages: Sequence["BaseMessage"], **kwargs) -> Generator[str, None, None]:
-        if self.chat_model is None:
-            self.chat_model = ChatOpenAI()
+        self.chat_model = ChatOpenAI()
         messages = messages[-(self.window_size * 2 + 1) :]
         query = messages[-1].content
 
@@ -66,9 +65,8 @@ class ChatEngine:
     def ui_chat(self, conversations, docs):
         query = conversations[-1]["content"]
         original_query = query  # 保存用户原始输入
-        
-        if self.chat_model is None:
-            self.chat_model = ChatOpenAI()
+
+        self.chat_model = ChatOpenAI()
         history = History(messages=[])
         for conversation in conversations[:-1]:
             if conversation["role"] == "user":
